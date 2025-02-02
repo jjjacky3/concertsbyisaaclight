@@ -4,10 +4,5 @@ OnlyConcerts is a web application that aims to revolutionize how concert-goers d
 The motivation for this project stems from the challenges in the concert industry. Ticket prices have skyrocketed(thanks to social media and scalpers). The cost is more substantial when one considers transportation and time commitment. Our team wants to ensure that we and other concert-goers feel confident in their purchases. However, there is no consolidated platform where users can access comprehensive reviews and details about touring artists' performances, making it difficult to make informed decisions about concert attendance.
 
 # Contributors
-Aayam Kc
-Damian Lo
-Matthew Lafrance
-Ihan Do
-Jack Zhang
-Isaac Light
+Aayam Kc, Damian Lo, Matthew Lafrance, Ihan Do, Jack Zhang, Isaac Light
 
