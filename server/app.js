@@ -3,7 +3,7 @@ const app = express();
 const cors = require("cors");
 require("dotenv").config();
 const bodyParser = require("body-parser");
-const indexroute = require("./routes/index");
+const indexroute = require("./server/routes/index");
 
 const PORT = process.env.PORT || 3000;
 const corsOptions = {
