@@ -1,7 +1,7 @@
 import './NavBar.css';
 const NavBar = ({ goFunc }) => {
     return (
-        <div style={{ width: "100%", height: 102, position: 'relative' }}>
+        <div style={{ width: "100%", height: 70, position: 'relative' }}>
             <div className="NavBarBackground"></div>
             <div className="LogoIcon"></div>
             <input className="SearchBar" style={{ position: 'absolute', left: '122px', top: '6px' }} />
