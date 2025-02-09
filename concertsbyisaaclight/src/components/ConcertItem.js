@@ -23,7 +23,7 @@ const ConcertDisplay = ({ tourTitle, tourDate, tourDes, tourRate, concertPrice }
             </div>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px' }}>
                 <p className='TourDes' style={{ marginTop: '10px' }}>{tourDes}</p>
-                <div className='RatingBox'>{tourRate}</div>
+                <div className='ConcertRatingBox'>{tourRate}</div>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: '20px' }}>
                 <p className='ConcertPriceBox'>{concertPrice}</p>
