@@ -1,8 +1,10 @@
 .ConcertDisplayBox {
     width: 750px;
-    height: 200px;
+    height: 220px;
     background-color: #b6b6b6c3;
     border-radius: 20px;
+    margin-top: 10px;
+
 }
 
 .TourLabel {
@@ -54,5 +56,5 @@
 
 .FullDetailsButton {
     width: 100px;
-    height: 40px
+    height: 40px;
 }

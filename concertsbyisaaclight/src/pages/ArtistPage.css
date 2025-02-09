@@ -2,11 +2,11 @@
     height: 800px;
     width: 800px;
     background: rgb(233, 233, 233);
-}
-
-.ArtistBanner {
-    width: 100%;
-    height: 300px;
-    background-size: cover;
-    background-position: center;
+    overflow-y: auto;
+    overflow-x: hidden;
+    border: 2px solid #ccc;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
 }

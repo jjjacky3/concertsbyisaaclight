@@ -22,24 +22,36 @@
     border: 3px solid white;
     margin-top: 20px;
     margin-left: 30px;
-    position: absolute;
 }
 
 .ArtistName {
-    position: absolute;
     width: 1000px;
     height: 100px;
     display: flex;
     justify-content: left;
-    align-items: left;
-    text-align: left;
+    align-items: center;
+    text-align: center;
     color: white;
     font-size: 48pt;
     font-family: Inter, sans-serif;
     font-weight: 700;
     word-wrap: break-word;
-    border: 3px solid white;
     margin-top: 20px;
     margin-left: 30px;
     position: absolute;
+    left: 150px;
+}
+
+.GoAgain {
+    width: 200px;
+    height: 100px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    color: white;
+    font-size: 28pt;
+    font-family: Inter, sans-serif;
+    word-wrap: break-word;
 }

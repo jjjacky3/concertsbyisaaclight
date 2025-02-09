@@ -1,7 +1,7 @@
 import './ConcertItem.css';
 import { useState } from "react";
 
-const ConcertDisplay = ({ tourTitle, tourDate, tourDes, tourRate, concertPrice }) => {
+const ConcertItem = ({ tourTitle, tourDate, tourDes, tourRate, concertPrice }) => {
 
     const [borderWeight, setBorderWeight] = useState(0);
 
@@ -25,7 +25,7 @@ const ConcertDisplay = ({ tourTitle, tourDate, tourDes, tourRate, concertPrice }
                 <p className='TourDes' style={{ marginTop: '10px' }}>{tourDes}</p>
                 <div className='ConcertRatingBox'>{tourRate}</div>
             </div>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: '20px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: '20px', marginTop: '20px' }}>
                 <p className='ConcertPriceBox'>{concertPrice}</p>
                 <button className='FullDetailsButton'>Full Details</button>
             </div>
@@ -35,4 +35,4 @@ const ConcertDisplay = ({ tourTitle, tourDate, tourDes, tourRate, concertPrice }
     )
 }
 
-export default ConcertDisplay
+export default ConcertItem

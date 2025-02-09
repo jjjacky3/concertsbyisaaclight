@@ -1,5 +1,5 @@
 import NavBar from '../components/NavBar';
-import ConcertDisplay from '../components/ConcertItem'
+import ConcertItem from '../components/ConcertItem'
 import ArtistBanner from '../components/ArtistBanner';
 import { goToHome } from '../pages/nav_methods'
 import '../pages/ArtistPage.css';
@@ -13,7 +13,11 @@ const ArtistPage = () => {
             <NavBar goFunc={goToHome} />
             <ArtistBanner />
             <div className='concertList'>
-                <ConcertDisplay />
+                <ConcertItem />
+                <ConcertItem />
+                <ConcertItem />
+                <ConcertItem />
+                <ConcertItem />
             </div>
 
         </div >
