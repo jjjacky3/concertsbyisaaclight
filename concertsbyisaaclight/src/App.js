@@ -1,8 +1,9 @@
 import LoginPage from './pages/LoginPage';
+import ArtistPage from './pages/ArtistPage';
 import './App.css';
 
 function App() {
-  return <LoginPage />;
+  return <ArtistPage />;
 }
 
 export default App;
