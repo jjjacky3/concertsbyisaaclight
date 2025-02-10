@@ -70,7 +70,7 @@ const Home = () => {
       rating: 4.6,
       reviews: 1100,
       image: thuyImage,
-      tags: ['Pop', 'Indie']
+      tags: ['Pop', 'Indie', 'R&B']
     }
   ];
 
@@ -97,7 +97,7 @@ const Home = () => {
           >
             <Menu className="w-6 h-6" />
           </button>
-          <h1 className="text-2xl font-bold">Discover Concerts</h1>
+          <h1 className="text-2xl font-bold">OnlyConcerts</h1>
         </div>
         <div className="flex items-center space-x-4">
           {/* Search input */}
