@@ -51,10 +51,12 @@
     font-size: 20pt;
     font-weight: 700;
     border: 2px solid black;
-    width: 100px
+    width: 100px;
+    border-radius: 10px;
 }
 
 .FullDetailsButton {
     width: 100px;
     height: 40px;
+    border-radius: 10px;
 }

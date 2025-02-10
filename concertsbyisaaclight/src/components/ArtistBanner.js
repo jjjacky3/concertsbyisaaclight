@@ -1,11 +1,21 @@
 import './ArtistBanner.css';
+import React, { useState } from "react";
+import Artist from '../models/Artist';
 
-const ArtistBanner = (artistImage, artistRating, artistName, goAgain) => {
+const ArtistBanner = ({ artist }) => {
 
-    artistImage = `url('/graphics/AlecBenjaminBanner.jpg')`
-    artistRating = 4.7
-    artistName = "Alec Benjamin"
-    goAgain = "88%"
+    let artistImage = artist.image;
+    let artistRating = artist.rating;
+    let artistName = artist.name;
+    let goAgain = artist.goAgain + '%';
+
+    // Dropdown State
+    const [selectedValue, setSelectedValue] = useState("All Tours");
+
+    const handleChange = (event) => {
+        setSelectedValue(event.target.value);
+    }
+
 
 
     return (
@@ -14,14 +24,20 @@ const ArtistBanner = (artistImage, artistRating, artistName, goAgain) => {
                 <div className='BannerRatingBox'>{artistRating}</div>
                 <div className='ArtistName'>{artistName}</div>
             </div>
-            <div style={{ border: '2px solid white', width: '1000px', top: '150px', height: '120px', left: '30px', position: 'absolute', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <div style={{ width: '500px', top: '150px', height: '120px', left: '30px', position: 'absolute', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <div className='GoAgain'>
                     <strong>{goAgain}</strong>
                     <span style={{ fontSize: '20px' }}>Would go Again</span>
                 </div>
                 <div style={{ width: '1px', height: '100px', border: '1px solid white', left: '200px', background: 'white', position: 'absolute' }}></div>
+                <select className='AllToursSelection' value={selectedValue} onChange={handleChange}>
+                    <option value="">All Tours</option> {/* Default empty option */}
+                    <option value="option1">Option 1</option>
+                    <option value="option2">Option 2</option>
+                    <option value="option3">Option 3</option>
+                </select>
             </div>
-            <button className='AllToursSelection'></button>
+
 
         </div >
 
