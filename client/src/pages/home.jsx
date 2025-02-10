@@ -4,6 +4,11 @@ import ConcertCard from '../components/ConcertCard';
 import ConcertModal from '../components/ConcertModal';
 import FilterModal from '../components/FilterModal';
 import { Filter, Menu, Sun, Moon, Timer, TrendingUp, Users, MapPin } from 'lucide-react';
+import beyonceImage from './homeimages/carter.jpeg'
+import thuyImage from './homeimages/thuy.jpg'
+import duaImage from './homeimages/dua.jpg'
+
+
 
 const Home = () => {
   const [activeGenre, setActiveGenre] = useState('All');
@@ -29,42 +34,43 @@ const Home = () => {
     { id: 4, name: 'Local Venues', icon: MapPin, color: 'from-blue-500 to-indigo-500' }
   ];
 
+  // Updated concerts array with six entries, replacing Dream Theater with THUY.
   const concerts = [
     {
       id: 1,
-      artist: 'Taylor Swift',
-      tourName: 'Eras Tour',
-      venue: 'SoFi Stadium',
-      date: 'Aug 5',
-      price: '$199+',
+      artist: 'Beyoncé',
+      tourName: 'Cowboy Carter Tour',
+      venue: 'Mercedes‑Benz Stadium',
+      date: 'Jul 10–11',
+      price: '$210+',
       rating: 4.9,
       reviews: 2453,
-      image: '/api/placeholder/400/300',
+      image: beyonceImage,
       tags: ['Pop', 'Stadium Show']
     },
     {
       id: 2,
-      artist: 'The Weeknd',
-      tourName: 'After Hours Tour',
-      venue: 'Madison Square Garden',
-      date: 'Sept 15',
-      price: '$150+',
+      artist: 'Dua Lipa',
+      tourName: 'Future Nostalgia Tour',
+      venue: 'State Farm Arena',
+      date: 'Sept 13–14',
+      price: '$211+',
       rating: 4.7,
       reviews: 1829,
-      image: '/api/placeholder/400/300',
-      tags: ['R&B', 'Arena Show']
+      image: duaImage,
+      tags: ['Pop', 'Arena Show']
     },
     {
       id: 3,
-      artist: 'Bad Bunny',
-      tourName: 'Most Wanted Tour',
-      venue: 'T-Mobile Arena',
-      date: 'Oct 1',
-      price: '$175+',
-      rating: 4.8,
-      reviews: 2105,
-      image: '/api/placeholder/400/300',
-      tags: ['Latin', 'Arena Show']
+      artist: 'THUY',
+      tourName: 'THUY Live',
+      venue: 'Center Stage Atlanta',
+      date: 'Feb 12',
+      price: '$60',
+      rating: 4.6,
+      reviews: 1100,
+      image: thuyImage,
+      tags: ['Pop', 'Indie']
     }
   ];
 
