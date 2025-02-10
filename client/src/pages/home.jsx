@@ -1,132 +1,194 @@
-import React from 'react';
-import { Search, Star, Calendar, Ticket } from 'lucide-react';
+import React, { useState } from 'react';
+import { Calendar, MapPin, Timer, Star, Music, Ticket, TrendingUp, Users, Heart, Share2, Filter } from 'lucide-react';
 
 const HomePage = () => {
-  const headerStyle = {
-    backgroundColor: '#2563eb',
-    color: 'white',
-    padding: '4rem 2rem',
-  };
+  const [activeGenre, setActiveGenre] = useState('All');
+  
+  const categories = [
+    { id: 1, name: 'Live Tonight', icon: Timer, color: 'from-red-500 to-orange-500' },
+    { id: 2, name: 'Trending Tours', icon: TrendingUp, color: 'from-purple-500 to-pink-500' },
+    { id: 3, name: 'Festivals', icon: Users, color: 'from-green-500 to-teal-500' },
+    { id: 4, name: 'Local Venues', icon: MapPin, color: 'from-blue-500 to-indigo-500' }
+  ];
 
-  const containerStyle = {
-    maxWidth: '1200px',
-    margin: '0 auto',
-    padding: '0 1rem',
-  };
+  const concerts = [
+    {
+      id: 1,
+      artist: 'Taylor Swift',
+      tourName: 'Eras Tour',
+      venue: 'SoFi Stadium',
+      date: 'Aug 5',
+      price: '$199+',
+      rating: 4.9,
+      reviews: 2453,
+      image: '/api/placeholder/400/300',
+      tags: ['Pop', 'Stadium Show']
+    },
+    {
+      id: 2,
+      artist: 'The Weeknd',
+      tourName: 'After Hours Tour',
+      venue: 'Madison Square Garden',
+      date: 'Sept 15',
+      price: '$150+',
+      rating: 4.7,
+      reviews: 1829,
+      image: '/api/placeholder/400/300',
+      tags: ['R&B', 'Arena Show']
+    },
+    {
+      id: 3,
+      artist: 'Bad Bunny',
+      tourName: 'Most Wanted Tour',
+      venue: 'T-Mobile Arena',
+      date: 'Oct 1',
+      price: '$175+',
+      rating: 4.8,
+      reviews: 2105,
+      image: '/api/placeholder/400/300',
+      tags: ['Latin', 'Arena Show']
+    }
+  ];
 
-  const searchContainerStyle = {
-    display: 'flex',
-    alignItems: 'center',
-    backgroundColor: 'white',
-    padding: '0.5rem 1rem',
-    borderRadius: '8px',
-    marginTop: '2rem',
-  };
+  const SideNavigation = () => (
+    <div className="space-y-8">
+      <div className="space-y-4">
+        <h3 className="font-bold text-lg">Discover</h3>
+        <ul className="space-y-2">
+          {['All', 'New Tours', 'Recommended', 'Nearby', 'Following'].map(item => (
+            <li 
+              key={item}
+              className={`cursor-pointer flex items-center space-x-2 p-2 rounded-lg hover:bg-gray-200 transition-colors
+                ${activeGenre === item ? 'bg-gray-200 font-medium' : ''}`}
+              onClick={() => setActiveGenre(item)}
+            >
+              <span>{item}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
 
-  const searchInputStyle = {
-    width: '100%',
-    padding: '0.5rem',
-    border: 'none',
-    outline: 'none',
-    fontSize: '1rem',
-  };
+      <div className="space-y-4">
+        <h3 className="font-bold text-lg">Genres</h3>
+        <ul className="space-y-2">
+          {['Pop', 'Rock', 'Hip-Hop', 'Electronic', 'Latin', 'R&B', 'Country', 'Jazz'].map(genre => (
+            <li 
+              key={genre}
+              className={`cursor-pointer flex items-center space-x-2 p-2 rounded-lg hover:bg-gray-200 transition-colors
+                ${activeGenre === genre ? 'bg-gray-200 font-medium' : ''}`}
+              onClick={() => setActiveGenre(genre)}
+            >
+              <Music className="w-4 h-4" />
+              <span>{genre}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  );
 
-  const featuresContainerStyle = {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
-    gap: '2rem',
-    padding: '4rem 1rem',
-  };
+  const ConcertCard = ({ concert }) => (
+    <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300">
+      <div className="relative group">
+        <img src={concert.image} alt={concert.artist} className="w-full h-48 object-cover" />
+        <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all duration-300 flex items-center justify-center opacity-0 group-hover:opacity-100">
+          <div className="flex space-x-4">
+            <button className="p-2 bg-white rounded-full hover:bg-gray-100">
+              <Heart className="w-6 h-6 text-red-500" />
+            </button>
+            <button className="p-2 bg-white rounded-full hover:bg-gray-100">
+              <Share2 className="w-6 h-6 text-blue-500" />
+            </button>
+          </div>
+        </div>
+      </div>
+      <div className="p-4 space-y-3">
+        <div className="flex justify-between items-start">
+          <div>
+            <h3 className="font-bold text-lg">{concert.artist}</h3>
+            <p className="text-sm text-gray-600">{concert.tourName}</p>
+          </div>
+          <div className="flex items-center space-x-1 bg-gray-100 px-2 py-1 rounded">
+            <Star className="w-4 h-4 text-yellow-500" />
+            <span className="font-medium">{concert.rating}</span>
+          </div>
+        </div>
+        
+        <div className="flex items-center space-x-4 text-sm text-gray-600">
+          <div className="flex items-center space-x-1">
+            <Calendar className="w-4 h-4" />
+            <span>{concert.date}</span>
+          </div>
+          <div className="flex items-center space-x-1">
+            <MapPin className="w-4 h-4" />
+            <span>{concert.venue}</span>
+          </div>
+        </div>
 
-  const featureCardStyle = {
-    padding: '2rem',
-    backgroundColor: 'white',
-    borderRadius: '8px',
-    boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-  };
-
-  const buttonStyle = {
-    backgroundColor: '#2563eb',
-    color: 'white',
-    padding: '0.75rem 2rem',
-    borderRadius: '8px',
-    border: 'none',
-    fontSize: '1rem',
-    cursor: 'pointer',
-  };
-
-  const footerStyle = {
-    backgroundColor: '#f3f4f6',
-    padding: '2rem',
-    textAlign: 'center',
-    marginTop: '2rem',
-  };
+        <div className="flex justify-between items-center">
+          <div className="flex space-x-2">
+            {concert.tags.map(tag => (
+              <span key={tag} className="px-2 py-1 bg-gray-100 rounded-full text-xs text-gray-600">
+                {tag}
+              </span>
+            ))}
+          </div>
+          <div className="flex items-center space-x-2">
+            <Ticket className="w-4 h-4 text-green-500" />
+            <span className="font-medium text-green-500">{concert.price}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 
   return (
-    <div>
-      {/* Hero Section */}
-      <header style={headerStyle}>
-        <div style={containerStyle}>
-          <h1 style={{ fontSize: '2.5rem', marginBottom: '1rem' }}>OnlyConcerts</h1>
-          <p style={{ fontSize: '1.25rem', marginBottom: '2rem' }}>
-            Make informed decisions about your next concert experience
-          </p>
-          
-          {/* Search Bar */}
-          <div style={searchContainerStyle}>
-            <Search style={{ color: '#9ca3af' }} />
-            <input 
-              type="text" 
-              placeholder="Search for artists, venues, or tours..." 
-              style={searchInputStyle}
-            />
-          </div>
-        </div>
-      </header>
-
-      {/* Features Section */}
-      <main style={containerStyle}>
-        <h2 style={{ textAlign: 'center', fontSize: '1.5rem', margin: '2rem 0' }}>
-          Why OnlyConcerts?
-        </h2>
-        
-        <div style={featuresContainerStyle}>
-          {/* Feature 1 */}
-          <div style={featureCardStyle}>
-            <Star style={{ width: 48, height: 48, color: '#2563eb', marginBottom: '1rem' }} />
-            <h3 style={{ fontSize: '1.25rem', marginBottom: '0.5rem' }}>Detailed Reviews</h3>
-            <p>Access comprehensive concert reviews and ratings from real attendees</p>
+    <div className="min-h-screen bg-gray-50">
+      <div className="max-w-7xl mx-auto p-6">
+        <div className="flex space-x-8">
+          {/* Left Sidebar */}
+          <div className="w-64 flex-shrink-0">
+            <SideNavigation />
           </div>
 
-          {/* Feature 2 */}
-          <div style={featureCardStyle}>
-            <Calendar style={{ width: 48, height: 48, color: '#2563eb', marginBottom: '1rem' }} />
-            <h3 style={{ fontSize: '1.25rem', marginBottom: '0.5rem' }}>Tour Information</h3>
-            <p>Get complete tour details including setlists, venues, and price ranges</p>
+          {/* Main Content */}
+          <div className="flex-1 space-y-8">
+            {/* Top Filter Bar */}
+            <div className="flex items-center justify-between">
+              <h1 className="text-2xl font-bold">Discover Concerts</h1>
+              <button className="flex items-center space-x-2 px-4 py-2 bg-white rounded-lg shadow hover:bg-gray-50">
+                <Filter className="w-4 h-4" />
+                <span>Filters</span>
+              </button>
+            </div>
+
+            {/* Featured Categories */}
+            <div className="grid grid-cols-4 gap-4">
+              {categories.map(category => (
+                <div 
+                  key={category.id}
+                  className={`relative rounded-xl overflow-hidden cursor-pointer group h-32 bg-gradient-to-br ${category.color}`}
+                >
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="text-center text-white">
+                      <category.icon className="w-8 h-8 mx-auto mb-2" />
+                      <h3 className="font-bold">{category.name}</h3>
+                    </div>
+                  </div>
+                  <div className="absolute inset-0 bg-black opacity-0 group-hover:opacity-20 transition-opacity" />
+                </div>
+              ))}
+            </div>
+
+            {/* Concert Grid */}
+            <div className="grid grid-cols-3 gap-6">
+              {concerts.map(concert => (
+                <ConcertCard key={concert.id} concert={concert} />
+              ))}
+            </div>
           </div>
-
-          {/* Feature 3 */}
-          <div style={featureCardStyle}>
-            <Ticket style={{ width: 48, height: 48, color: '#2563eb', marginBottom: '1rem' }} />
-            <h3 style={{ fontSize: '1.25rem', marginBottom: '0.5rem' }}>Historical Data</h3>
-            <p>Explore past tour performances and rating trends</p>
-          </div>
         </div>
-
-        {/* Call to Action */}
-        <div style={{ textAlign: 'center', margin: '3rem 0' }}>
-          <button style={buttonStyle}>
-            Sign Up Now
-          </button>
-        </div>
-      </main>
-
-      {/* Footer */}
-      <footer style={footerStyle}>
-        <div style={containerStyle}>
-          <p style={{ color: '#4b5563' }}>© 2025 OnlyConcerts. All rights reserved.</p>
-        </div>
-      </footer>
+      </div>
     </div>
   );
 };
