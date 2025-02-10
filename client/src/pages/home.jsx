@@ -53,33 +53,33 @@ const HomePage = () => {
   const SideNavigation = () => (
     <div className="space-y-8">
       <div className="space-y-4">
-        <h3 className="font-bold text-lg">Discover</h3>
+        <h3 className="font-bold text-lg text-white">Discover</h3>
         <ul className="space-y-2">
           {['All', 'New Tours', 'Recommended', 'Nearby', 'Following'].map(item => (
             <li 
               key={item}
-              className={`cursor-pointer flex items-center space-x-2 p-2 rounded-lg hover:bg-gray-200 transition-colors
-                ${activeGenre === item ? 'bg-gray-200 font-medium' : ''}`}
               onClick={() => setActiveGenre(item)}
+              className={`cursor-pointer flex items-center space-x-2 p-2 rounded-lg transition-colors hover:bg-gray-700
+                ${activeGenre === item ? 'bg-gray-700 font-medium' : ''}`}
             >
-              <span>{item}</span>
+              <span className="text-gray-300">{item}</span>
             </li>
           ))}
         </ul>
       </div>
 
       <div className="space-y-4">
-        <h3 className="font-bold text-lg">Genres</h3>
+        <h3 className="font-bold text-lg text-white">Genres</h3>
         <ul className="space-y-2">
           {['Pop', 'Rock', 'Hip-Hop', 'Electronic', 'Latin', 'R&B', 'Country', 'Jazz'].map(genre => (
             <li 
               key={genre}
-              className={`cursor-pointer flex items-center space-x-2 p-2 rounded-lg hover:bg-gray-200 transition-colors
-                ${activeGenre === genre ? 'bg-gray-200 font-medium' : ''}`}
               onClick={() => setActiveGenre(genre)}
+              className={`cursor-pointer flex items-center space-x-2 p-2 rounded-lg transition-colors hover:bg-gray-700
+                ${activeGenre === genre ? 'bg-gray-700 font-medium' : ''}`}
             >
-              <Music className="w-4 h-4" />
-              <span>{genre}</span>
+              <Music className="w-4 h-4 text-gray-300" />
+              <span className="text-gray-300">{genre}</span>
             </li>
           ))}
         </ul>
@@ -88,15 +88,15 @@ const HomePage = () => {
   );
 
   const ConcertCard = ({ concert }) => (
-    <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300">
+    <div className="bg-gray-800 rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300">
       <div className="relative group">
         <img src={concert.image} alt={concert.artist} className="w-full h-48 object-cover" />
         <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all duration-300 flex items-center justify-center opacity-0 group-hover:opacity-100">
           <div className="flex space-x-4">
-            <button className="p-2 bg-white rounded-full hover:bg-gray-100">
+            <button className="p-2 bg-gray-700 rounded-full hover:bg-gray-600">
               <Heart className="w-6 h-6 text-red-500" />
             </button>
-            <button className="p-2 bg-white rounded-full hover:bg-gray-100">
+            <button className="p-2 bg-gray-700 rounded-full hover:bg-gray-600">
               <Share2 className="w-6 h-6 text-blue-500" />
             </button>
           </div>
@@ -105,16 +105,16 @@ const HomePage = () => {
       <div className="p-4 space-y-3">
         <div className="flex justify-between items-start">
           <div>
-            <h3 className="font-bold text-lg">{concert.artist}</h3>
-            <p className="text-sm text-gray-600">{concert.tourName}</p>
+            <h3 className="font-bold text-lg text-white">{concert.artist}</h3>
+            <p className="text-sm text-gray-400">{concert.tourName}</p>
           </div>
-          <div className="flex items-center space-x-1 bg-gray-100 px-2 py-1 rounded">
+          <div className="flex items-center space-x-1 bg-gray-700 px-2 py-1 rounded">
             <Star className="w-4 h-4 text-yellow-500" />
-            <span className="font-medium">{concert.rating}</span>
+            <span className="font-medium text-white">{concert.rating}</span>
           </div>
         </div>
         
-        <div className="flex items-center space-x-4 text-sm text-gray-600">
+        <div className="flex items-center space-x-4 text-sm text-gray-400">
           <div className="flex items-center space-x-1">
             <Calendar className="w-4 h-4" />
             <span>{concert.date}</span>
@@ -128,7 +128,7 @@ const HomePage = () => {
         <div className="flex justify-between items-center">
           <div className="flex space-x-2">
             {concert.tags.map(tag => (
-              <span key={tag} className="px-2 py-1 bg-gray-100 rounded-full text-xs text-gray-600">
+              <span key={tag} className="px-2 py-1 bg-gray-700 rounded-full text-xs text-gray-300">
                 {tag}
               </span>
             ))}
@@ -143,7 +143,7 @@ const HomePage = () => {
   );
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-900">
       <div className="max-w-7xl mx-auto p-6">
         <div className="flex space-x-8">
           {/* Left Sidebar */}
@@ -155,8 +155,8 @@ const HomePage = () => {
           <div className="flex-1 space-y-8">
             {/* Top Filter Bar */}
             <div className="flex items-center justify-between">
-              <h1 className="text-2xl font-bold">Discover Concerts</h1>
-              <button className="flex items-center space-x-2 px-4 py-2 bg-white rounded-lg shadow hover:bg-gray-50">
+              <h1 className="text-2xl font-bold text-white">Discover Concerts</h1>
+              <button className="flex items-center space-x-2 px-4 py-2 bg-gray-800 text-white rounded-lg shadow hover:bg-gray-700">
                 <Filter className="w-4 h-4" />
                 <span>Filters</span>
               </button>
