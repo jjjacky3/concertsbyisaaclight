@@ -10,6 +10,7 @@ class Concert {
         this.reviews = []
         this.tour = tour;
 
+        tour.addConcert(this)
     }
 }
 

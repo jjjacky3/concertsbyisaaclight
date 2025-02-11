@@ -40,6 +40,15 @@ class Artist {
         const totalWeight = Object.values(this.rating).reduce((sum, value) => sum + value, 0);
 
     }
+
+    findTour(name) {
+        for (let tour in this.tours) {
+            if (tour.name == name) {
+                console.log("Tour Found!")
+                return tour.getRatings
+            }
+        }
+    }
 }
 
 export default Artist   

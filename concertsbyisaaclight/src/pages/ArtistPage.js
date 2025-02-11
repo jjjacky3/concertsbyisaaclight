@@ -56,17 +56,19 @@ const ArtistPage = () => {
 
     useEffect(() => {
         if (selectedTour === "All Tours") {
-            //console.log(typeof (selectedTour))
             setConcertsShown(artist1.concerts);
             setRatingsDisplayed(artist1.ratings)
         } else {
             setConcertsShown(artist1.concerts.filter(concert => concert.tour.name === selectedTour));
+            setRatingsDisplayed(artist1.findTour(selectedTour))
+            console.log("setRatingDisplayed Ran")
+            console.log(ratingsDisplayed)
         }
     }, [selectedTour]);
 
     const handleChange = (event) => {
-        console.log("Called Sucessfully")
         setSelectedTour(event.target.value);
+
 
     }
 
@@ -86,7 +88,7 @@ const ArtistPage = () => {
                 </div >
                 <div style={{ height: '800px', width: '800px', marginLeft: '10px' }}>
                     <div className='ratingModule'>
-                        <RatingModule artist={artist1}></RatingModule>
+                        <RatingModule ratings={ratingsDisplayed}></RatingModule>
                     </div>
                     <div className='compModule'></div>
                 </div>
