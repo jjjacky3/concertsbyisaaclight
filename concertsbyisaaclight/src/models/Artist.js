@@ -42,12 +42,16 @@ class Artist {
     }
 
     findTour(name) {
-        for (let tour in this.tours) {
+        for (let tour of this.tours) {
             if (tour.name == name) {
                 console.log("Tour Found!")
-                return tour.getRatings
+                return tour.ratings
             }
         }
+        console.log("TOUR NOT FOUND, tired finding")
+        console.log(name)
+        console.log("From")
+        console.log(this.tours)
     }
 }
 

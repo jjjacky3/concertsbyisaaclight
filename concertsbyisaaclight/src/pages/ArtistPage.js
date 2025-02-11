@@ -63,6 +63,8 @@ const ArtistPage = () => {
             setRatingsDisplayed(artist1.findTour(selectedTour))
             console.log("setRatingDisplayed Ran")
             console.log(ratingsDisplayed)
+            console.log("SelectedTour Is;")
+            console.log(artist1.findTour(selectedTour))
         }
     }, [selectedTour]);
 
