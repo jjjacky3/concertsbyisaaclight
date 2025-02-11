@@ -2,19 +2,13 @@ import './ArtistBanner.css';
 import React, { useState } from "react";
 import Artist from '../models/Artist';
 
-const ArtistBanner = ({ artist }) => {
+const ArtistBanner = ({ artist, selectedTour, changeTourFunc }) => {
 
     let artistImage = artist.image;
-    let artistRating = artist.rating;
+    let artistRating = artist.avgRating()
     let artistName = artist.name;
     let goAgain = artist.goAgain + '%';
 
-    // Dropdown State
-    const [selectedValue, setSelectedValue] = useState("All Tours");
-
-    const handleChange = (event) => {
-        setSelectedValue(event.target.value);
-    }
 
 
 
@@ -30,11 +24,10 @@ const ArtistBanner = ({ artist }) => {
                     <span style={{ fontSize: '20px' }}>Would go Again</span>
                 </div>
                 <div style={{ width: '1px', height: '100px', border: '1px solid white', left: '200px', background: 'white', position: 'absolute' }}></div>
-                <select className='AllToursSelection' value={selectedValue} onChange={handleChange}>
-                    <option value="">All Tours</option> {/* Default empty option */}
-                    <option value="option1">Option 1</option>
-                    <option value="option2">Option 2</option>
-                    <option value="option3">Option 3</option>
+                <select className='AllToursSelection' value={selectedTour} onChange={changeTourFunc}>
+                    {artist.tours.map((tour, index) => (
+                        <option key={index} value={tour}>{tour}</option>
+                    ))}
                 </select>
             </div>
 

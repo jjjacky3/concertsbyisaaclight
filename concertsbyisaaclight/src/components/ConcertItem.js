@@ -1,35 +1,41 @@
 import './ConcertItem.css';
 import { useState } from "react";
 
-const ConcertItem = ({ tourTitle, tourDate, tourDes, tourRate, concertPrice }) => {
+const ConcertItem = ({ concert }) => {
 
     const [borderWeight, setBorderWeight] = useState(0);
 
-    tourTitle = "Tour, City"
-    tourDate = "Jan 25"
-    tourDes = "don13ofrh13iurf13pourh19i23[rhn132ioprn12oirn12oirhn12[irh12irhoui12rnpo1u2rn12purb1pu2br9pu12rh1892rh129rh891r1298rh128rh1280rh812"
-    tourRate = 4.5
-    concertPrice = "$90"
+    let concertTitle = concert.name
+    let concertCity = concert.city
+    let concertDate = concert.date
+    let concertDes = concert.desc
+    let concertRate = concert.rating
+    let concertPrice = "$" + concert.price
+    let concertTour = concert.tour
 
     return (
-        <button
+        <div
             className='ConcertDisplayBox'
             style={{ position: "relative", left: "10px", padding: "20px", border: `${borderWeight}px solid black`, cursor: "pointer" }}
             onClick={() => setBorderWeight(borderWeight === 0 ? 2 : 0)}
         >
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px' }}>
-                <p className='TourLabel' style={{ margin: 0 }}>{tourTitle}</p>
-                <p className='DateLabel' style={{ margin: 0 }}>{tourDate}</p>
+                <p className='TourLabel' style={{ margin: 0 }}>{concertTitle + ', ' + concertCity}</p>
+                <p className='DateLabel' style={{ margin: 0 }}>{concertDate}</p>
             </div>
+            <div className='ConcertTour'>{concertTour}</div>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px' }}>
-                <p className='TourDes' style={{ marginTop: '10px' }}>{tourDes}</p>
-                <div className='ConcertRatingBox'>{tourRate}</div>
+                <p className='TourDes' style={{ marginTop: '10px' }}>{concertDes}</p>
+                <div className='ConcertRatingBox'>{concertRate}</div>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: '20px', marginTop: '20px' }}>
                 <p className='ConcertPriceBox'>{concertPrice}</p>
-                <button className='FullDetailsButton'>Full Details</button>
+                <button className='FullDetailsButton' onClick={(e) => {
+                    e.stopPropagation();
+                    console.log(console.log(concert));
+                }}>Full Details</button>
             </div>
-        </button>
+        </div>
 
 
     )

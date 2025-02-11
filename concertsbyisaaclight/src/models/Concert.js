@@ -1,5 +1,5 @@
 class Concert {
-    constructor(artist, name, date, city, rating, desc, price) {
+    constructor(artist, name, date, city, rating, desc, price, tour) {
         this.artist = artist;
         this.name = name;
         this.date = date;
@@ -8,6 +8,7 @@ class Concert {
         this.desc = desc;
         this.price = price;
         this.reviews = []
+        this.tour = tour;
 
     }
 }
