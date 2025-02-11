@@ -1,3 +1,5 @@
+import Tour from "./Tour";
+
 class Artist {
     /**
      * @param name: String
@@ -11,7 +13,7 @@ class Artist {
         this.image = image;
         this.goAgain = goAgain;
         this.concerts = [];
-        this.tours = ['All Tours'];
+        this.tours = [];
     }
 
     /**
@@ -21,7 +23,9 @@ class Artist {
     addConcert(concert) {
         this.concerts.push(concert)
         if (!this.tours.includes(concert.tour)) {
+            console.log("Adding")
             this.tours.push(concert.tour)
+            console.log("Tour Added To Tour List")
         }
     }
 
@@ -29,7 +33,7 @@ class Artist {
         const weightedSum = Object.entries(this.ratings).reduce((sum, [key, value]) => sum + key * value, 0);
         const totalWeight = Object.values(this.ratings).reduce((sum, value) => sum + value, 0);
 
-        return totalWeight !== 0 ? weightedSum / totalWeight : 0;
+        return Math.round(totalWeight !== 0 ? weightedSum / totalWeight * 10 : 0) / 10;
     }
 
     noralisedRatings() {

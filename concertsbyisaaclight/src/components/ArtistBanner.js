@@ -8,8 +8,7 @@ const ArtistBanner = ({ artist, selectedTour, changeTourFunc }) => {
     let artistRating = artist.avgRating()
     let artistName = artist.name;
     let goAgain = artist.goAgain + '%';
-
-
+    console.log(typeof (selectedTour))
 
 
     return (
@@ -25,8 +24,9 @@ const ArtistBanner = ({ artist, selectedTour, changeTourFunc }) => {
                 </div>
                 <div style={{ width: '1px', height: '100px', border: '1px solid white', left: '200px', background: 'white', position: 'absolute' }}></div>
                 <select className='AllToursSelection' value={selectedTour} onChange={changeTourFunc}>
+                    <option value="All Tours">All Tours</option>
                     {artist.tours.map((tour, index) => (
-                        <option key={index} value={tour}>{tour}</option>
+                        <option key={index} value={tour.name}>{tour.name}</option>
                     ))}
                 </select>
             </div>

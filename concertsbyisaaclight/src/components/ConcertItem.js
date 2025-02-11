@@ -23,7 +23,7 @@ const ConcertItem = ({ concert }) => {
                 <p className='TourLabel' style={{ margin: 0 }}>{concertTitle + ', ' + concertCity}</p>
                 <p className='DateLabel' style={{ margin: 0 }}>{concertDate}</p>
             </div>
-            <div className='ConcertTour'>{concertTour}</div>
+            <div className='ConcertTour'>{concertTour.name}</div>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px' }}>
                 <p className='TourDes' style={{ marginTop: '10px' }}>{concertDes}</p>
                 <div className='ConcertRatingBox'>{concertRate}</div>
