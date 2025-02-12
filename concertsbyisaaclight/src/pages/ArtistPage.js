@@ -8,6 +8,7 @@ import Concert from '../models/Concert';
 import React, { useState, useEffect } from "react";
 import RatingModule from '../components/RatingModule';
 import Tour from '../models/Tour';
+import CompareModule from '../components/CompareModule';
 
 const ArtistPage = ({ artist }) => {
 
@@ -15,6 +16,8 @@ const ArtistPage = ({ artist }) => {
     const [selectedTour, setSelectedTour] = useState("All Tours");
     const [concertsShown, setConcertsShown] = useState([]);
     const [ratingsDisplayed, setRatingsDisplayed] = useState(artist.ratings);
+    const [compartedConcertOne, setComparedConcertOne] = useState(null)
+    const [compartedConcertTwo, setComparedConcertTwo] = useState(null)
 
     useEffect(() => {
         if (selectedTour === "All Tours") {
@@ -30,11 +33,29 @@ const ArtistPage = ({ artist }) => {
         }
     }, [selectedTour, ratingsDisplayed]);
 
+    useEffect(() => {
+        console.log("Updated Compared Concerts:");
+        console.log("Concert 1:", compartedConcertOne?.name);
+        console.log("Concert 2:", compartedConcertTwo?.name);
+    }, [compartedConcertOne, compartedConcertTwo]);
+
     const handleChange = (event) => {
         setSelectedTour(event.target.value);
-
-
     }
+
+    const concertItemClicked = (concert) => {
+        if (!compartedConcertOne) {
+            setComparedConcertOne(concert);
+            console.log("Concert 1 Updated")
+        } else if (!compartedConcertTwo) {
+            setComparedConcertTwo(concert);
+            console.log("Concert 2 Updated")
+        } else {
+            setComparedConcertOne(concert);
+            setComparedConcertTwo(null);
+        }
+    };
+
 
 
 
@@ -46,7 +67,7 @@ const ArtistPage = ({ artist }) => {
                 <div className='concertList'>
                     {
                         concertsShown.map((concert, index) => (
-                            <ConcertItem key={index} concert={concert} />
+                            <ConcertItem key={index} concert={concert} clickItemFunc={concertItemClicked} />
                         ))
                     }
                 </div >
@@ -54,7 +75,9 @@ const ArtistPage = ({ artist }) => {
                     <div className='ratingModule'>
                         <RatingModule ratings={ratingsDisplayed}></RatingModule>
                     </div>
-                    <div className='compModule'></div>
+                    <div className='compModule'>
+                        <CompareModule concert1={compartedConcertOne} concert2={compartedConcertTwo}></CompareModule>
+                    </div>
                 </div>
             </div>
         </div >

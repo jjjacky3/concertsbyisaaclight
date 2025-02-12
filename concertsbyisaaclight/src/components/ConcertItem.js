@@ -1,7 +1,7 @@
 import './ConcertItem.css';
 import { useState } from "react";
 
-const ConcertItem = ({ concert }) => {
+const ConcertItem = ({ concert, clickItemFunc }) => {
 
     const [borderWeight, setBorderWeight] = useState(0);
 
@@ -13,11 +13,16 @@ const ConcertItem = ({ concert }) => {
     let concertPrice = "$" + concert.price
     let concertTour = concert.tour
 
+    const clicked = () => {
+        clickItemFunc(concert)
+        setBorderWeight(borderWeight === 0 ? 5 : 0)
+    }
+
     return (
         <div
             className='ConcertDisplayBox'
             style={{ position: "relative", left: "10px", padding: "20px", border: `${borderWeight}px solid black`, cursor: "pointer" }}
-            onClick={() => setBorderWeight(borderWeight === 0 ? 5 : 0)}
+            onClick={clicked}
         >
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px' }}>
                 <p className='TourLabel' style={{ margin: 0 }}>{concertTitle + ', ' + concertCity}</p>
