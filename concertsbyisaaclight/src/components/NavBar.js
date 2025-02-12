@@ -1,5 +1,10 @@
 import './NavBar.css';
+import { useNavigate } from 'react-router-dom';
+
+
 const NavBar = ({ goFunc }) => {
+
+
     return (
         <div style={{ width: "100%", height: 70, position: 'relative' }}>
             <div className="NavBarBackground"></div>

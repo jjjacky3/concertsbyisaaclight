@@ -17,6 +17,7 @@ const LoginPage = () => {
                 <div style={{ width: 250, height: 61, textAlign: 'center', color: 'black', fontSize: 32, fontFamily: 'Inter', fontWeight: '700', wordWrap: 'break-word', position: 'absolute', left: '25%', top: '50%' }}>Password</div>
                 <input style={{ width: 455, height: 60, borderRadius: 20, position: 'absolute', left: "20px", top: '100px' }}></input>
                 <input style={{ width: 455, height: 60, borderRadius: 20, position: 'absolute', left: "20px", top: '350px' }}></input>
+                <button style={{ width: '200px', height: '50px', left: '25%', position: 'absolute', top: '425px' }}>Submit</button>
             </div>
         </div>
 
