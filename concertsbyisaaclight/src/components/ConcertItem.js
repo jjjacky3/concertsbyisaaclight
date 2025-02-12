@@ -1,7 +1,7 @@
 import './ConcertItem.css';
 import { useState } from "react";
 
-const ConcertItem = ({ concert, clickItemFunc }) => {
+const ConcertItem = ({ concert, clickItemFunc, isSelected }) => {
 
     const [borderWeight, setBorderWeight] = useState(0);
 
@@ -15,13 +15,12 @@ const ConcertItem = ({ concert, clickItemFunc }) => {
 
     const clicked = () => {
         clickItemFunc(concert)
-        setBorderWeight(borderWeight === 0 ? 5 : 0)
     }
 
     return (
         <div
             className='ConcertDisplayBox'
-            style={{ position: "relative", left: "10px", padding: "20px", border: `${borderWeight}px solid black`, cursor: "pointer" }}
+            style={{ position: "relative", left: "10px", padding: "20px", border: isSelected ? "5px solid black" : "none", cursor: "pointer" }}
             onClick={clicked}
         >
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px' }}>

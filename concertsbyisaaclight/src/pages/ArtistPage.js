@@ -44,7 +44,13 @@ const ArtistPage = ({ artist }) => {
     }
 
     const concertItemClicked = (concert) => {
-        if (!compartedConcertOne) {
+
+        if (concert == compartedConcertOne || concert == compartedConcertTwo) {
+            setComparedConcertOne(null);
+            setComparedConcertTwo(null);
+        }
+
+        else if (!compartedConcertOne) {
             setComparedConcertOne(concert);
             console.log("Concert 1 Updated")
         } else if (!compartedConcertTwo) {
@@ -67,7 +73,7 @@ const ArtistPage = ({ artist }) => {
                 <div className='concertList'>
                     {
                         concertsShown.map((concert, index) => (
-                            <ConcertItem key={index} concert={concert} clickItemFunc={concertItemClicked} />
+                            <ConcertItem key={index} concert={concert} clickItemFunc={concertItemClicked} isSelected={concert === compartedConcertOne || concert === compartedConcertTwo} />
                         ))
                     }
                 </div >

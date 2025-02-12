@@ -34,12 +34,13 @@
 }
 
 .compareItem {
-    background-color: #1A252F;
-    width: 100px;
+    background-color: #2C3E50;
+    width: 200px;
     height: 40px;
     justify-content: center;
     align-items: center;
     display: flex;
+    border-radius: 20px;
 
 
 }
