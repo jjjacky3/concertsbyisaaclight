@@ -8,8 +8,6 @@ import beyonceImage from './homeimages/carter.jpeg'
 import thuyImage from './homeimages/thuy.jpg'
 import duaImage from './homeimages/dua.jpg'
 
-
-
 const Home = () => {
   const [activeGenre, setActiveGenre] = useState('All');
   const [searchTerm, setSearchTerm] = useState('');
@@ -17,6 +15,13 @@ const Home = () => {
   const [showSidebar, setShowSidebar] = useState(false);
   const [selectedConcert, setSelectedConcert] = useState(null);
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
+  const [activeFilters, setActiveFilters] = useState({
+    priceRange: [0, 1000],
+    distance: 50,
+    minRating: 0,
+    dateRange: 'all',
+    venueTypes: []
+  });
 
   // Use an effect to add or remove the "dark" class on the document's root element.
   useEffect(() => {
@@ -42,7 +47,7 @@ const Home = () => {
       tourName: 'Cowboy Carter Tour',
       venue: 'Mercedes‑Benz Stadium',
       date: 'Jul 10–11',
-      price: '$210+',
+      price: '210',
       rating: 4.9,
       reviews: 2453,
       image: beyonceImage,
@@ -54,7 +59,7 @@ const Home = () => {
       tourName: 'Future Nostalgia Tour',
       venue: 'State Farm Arena',
       date: 'Sept 13–14',
-      price: '$211+',
+      price: '211',
       rating: 4.7,
       reviews: 1829,
       image: duaImage,
@@ -66,7 +71,7 @@ const Home = () => {
       tourName: 'THUY Live',
       venue: 'Center Stage Atlanta',
       date: 'Feb 12',
-      price: '$60',
+      price: '60',
       rating: 4.6,
       reviews: 1100,
       image: thuyImage,
@@ -74,14 +79,35 @@ const Home = () => {
     }
   ];
 
-  // Filter concerts based on the search term and selected genre.
+  // Handle applying filters
+  const handleApplyFilters = (filters) => {
+    setActiveFilters(filters);
+    setIsFilterModalOpen(false);
+  };
+
+  // Filter concerts based on all criteria
   const filteredConcerts = concerts.filter(concert => {
+    // Search term filter
     const matchesSearch =
       concert.artist.toLowerCase().includes(searchTerm.toLowerCase()) ||
       concert.tourName.toLowerCase().includes(searchTerm.toLowerCase());
+
+    // Genre filter
     const isGenreFilter = ['Pop', 'Rock', 'Hip-Hop', 'Electronic', 'Latin', 'R&B', 'Country', 'Jazz'].includes(activeGenre);
     const matchesGenre = isGenreFilter ? concert.tags.includes(activeGenre) : true;
-    return matchesSearch && matchesGenre;
+
+    // Price filter - extract numeric value from price string
+    const price = parseFloat(concert.price);
+    const matchesPrice = price >= activeFilters.priceRange[0] && price <= activeFilters.priceRange[1];
+
+    // Rating filter
+    const matchesRating = concert.rating >= activeFilters.minRating;
+
+    // Venue type filter
+    const matchesVenueType = activeFilters.venueTypes.length === 0 || 
+      concert.tags.some(tag => activeFilters.venueTypes.includes(tag.toLowerCase()));
+
+    return matchesSearch && matchesGenre && matchesPrice && matchesRating && matchesVenueType;
   });
 
   return (
@@ -183,7 +209,12 @@ const Home = () => {
       )}
 
       {/* Filter Modal */}
-      {isFilterModalOpen && <FilterModal onClose={() => setIsFilterModalOpen(false)} />}
+      {isFilterModalOpen && (
+        <FilterModal 
+          onClose={() => setIsFilterModalOpen(false)}
+          onApplyFilters={handleApplyFilters}
+        />
+      )}
     </div>
   );
 };
