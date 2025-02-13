@@ -23,3 +23,12 @@ app.use("/", indexroute);
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
+
+// Use the MongoDB URI from the .env file
+const mongoose = require('mongoose');
+const mongoURI = process.env.MONGO_URI; 
+
+mongoose.connect(mongoURI)
+  .then(() => console.log("Connected to MongoDB"))
+  .catch(err => console.error("MongoDB connection error:", err));
+
