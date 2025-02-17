@@ -1,5 +1,13 @@
 import React, { useState } from 'react';
-import { X, Upload, Music, MapPin, Calendar, DollarSign, Star } from 'lucide-react';
+import { 
+  X, 
+  Upload, 
+  Music, 
+  MapPin, 
+  Calendar, 
+  DollarSign, 
+  Star 
+} from 'lucide-react';
 
 // Predefined tag options
 const GENRE_TAGS = ['Pop', 'Rock', 'Hip-Hop', 'Electronic', 'Latin', 'R&B', 'Country', 'Jazz'];
@@ -16,6 +24,7 @@ const UploadConcertModal = ({ isOpen, onClose, onSuccess }) => {
     tags: [],
     rating: 0
   });
+  const [hoverRating, setHoverRating] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -31,6 +40,7 @@ const UploadConcertModal = ({ isOpen, onClose, onSuccess }) => {
       rating: 0
     });
     setError('');
+    setHoverRating(0);
   };
 
   const handleChange = (e) => {
@@ -98,7 +108,7 @@ const UploadConcertModal = ({ isOpen, onClose, onSuccess }) => {
         },
         body: JSON.stringify({
           ...formData,
-          reviews: 0 // Keep reviews at 0 initially
+          reviews: 0 
         })
       });
 
@@ -121,45 +131,48 @@ const UploadConcertModal = ({ isOpen, onClose, onSuccess }) => {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm">
-      <div className="relative w-full max-w-sm md:max-w-md mx-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-xl p-6 max-h-[80vh] overflow-y-auto">
+      <div className="relative w-full max-w-sm md:max-w-md mx-4 bg-gray-900 dark:bg-gray-800 border border-gray-700 rounded-xl shadow-xl p-6 max-h-[80vh] overflow-y-auto">
         
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200"
+          className="absolute top-4 right-4 p-2 rounded-full hover:bg-gray-700 dark:hover:bg-gray-700 transition-colors duration-200"
         >
-          <X className="w-5 h-5 text-gray-500 dark:text-gray-400" />
+          <X className="w-5 h-5 text-gray-400" />
         </button>
 
-        <h2 className="text-2xl font-bold mb-4 text-blue-700 dark:text-blue-300">
+        <h2 className="text-2xl font-bold mb-4 text-blue-400">
           Upload Concert
         </h2>
 
         {error && (
-          <div className="mb-4 p-3 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 rounded-lg">
+          <div className="mb-4 p-3 bg-red-500/20 text-red-300 rounded-lg">
             {error}
           </div>
         )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
+
+          {/* Artist Name */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            <label className="block text-sm font-medium text-pink-400 mb-1">
               Artist Name
             </label>
             <div className="relative">
-              <Music className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+              <Music className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
               <input
                 type="text"
                 name="artist"
                 value={formData.artist}
                 onChange={handleChange}
-                className="pl-10 w-full p-3 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent"
+                className="pl-10 w-full p-3 bg-gray-800 border border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-100"
                 required
               />
             </div>
           </div>
 
+          {/* Tour Name */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            <label className="block text-sm font-medium text-indigo-400 mb-1">
               Tour Name
             </label>
             <input
@@ -167,57 +180,60 @@ const UploadConcertModal = ({ isOpen, onClose, onSuccess }) => {
               name="tourName"
               value={formData.tourName}
               onChange={handleChange}
-              className="w-full p-3 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent"
+              className="w-full p-3 bg-gray-800 border border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-100"
               required
             />
           </div>
 
+          {/* Venue */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            <label className="block text-sm font-medium text-teal-400 mb-1">
               Venue
             </label>
             <div className="relative">
-              <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+              <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
               <input
                 type="text"
                 name="venue"
                 value={formData.venue}
                 onChange={handleChange}
-                className="pl-10 w-full p-3 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent"
+                className="pl-10 w-full p-3 bg-gray-800 border border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-100"
                 required
               />
             </div>
           </div>
 
+          {/* Date */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            <label className="block text-sm font-medium text-green-400 mb-1">
               Date
             </label>
             <div className="relative">
-              <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+              <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
               <input
                 type="date"
                 name="date"
                 value={formData.date}
                 onChange={handleChange}
-                className="pl-10 w-full p-3 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent"
+                className="pl-10 w-full p-3 bg-gray-800 border border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-100"
                 required
               />
             </div>
           </div>
 
+          {/* Price */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            <label className="block text-sm font-medium text-orange-400 mb-1">
               Price
             </label>
             <div className="relative">
-              <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+              <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
               <input
                 type="number"
                 name="price"
                 value={formData.price}
                 onChange={handleChange}
-                className="pl-10 w-full p-3 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent"
+                className="pl-10 w-full p-3 bg-gray-800 border border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-100"
                 placeholder="e.g., 150"
                 min="0"
                 required
@@ -227,47 +243,55 @@ const UploadConcertModal = ({ isOpen, onClose, onSuccess }) => {
 
           {/* Rating Section */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            <label className="block text-sm font-medium text-yellow-400 mb-1">
               Rating (Optional)
             </label>
             <div className="flex items-center space-x-1">
-              {[1, 2, 3, 4, 5].map((value) => (
-                <Star
-                  key={value}
-                  onClick={() => handleStarClick(value)}
-                  className={`w-6 h-6 cursor-pointer ${
-                    formData.rating >= value
-                      ? 'text-yellow-400'
-                      : 'text-gray-300 dark:text-gray-600'
-                  }`}
-                />
-              ))}
+              {[1, 2, 3, 4, 5].map((value) => {
+                // Decide star color based on hover vs. actual rating
+                const fillColor =
+                  hoverRating >= value
+                    ? 'text-yellow-300'     // Lighter gold on hover
+                    : formData.rating >= value
+                    ? 'text-yellow-400'     // Clicked (selected)
+                    : 'text-gray-600';      // Unselected
+                return (
+                  <Star
+                    key={value}
+                    onMouseEnter={() => setHoverRating(value)}
+                    onMouseLeave={() => setHoverRating(0)}
+                    onClick={() => handleStarClick(value)}
+                    className={`w-6 h-6 cursor-pointer transition-colors ${fillColor}`}
+                  />
+                );
+              })}
             </div>
           </div>
 
+          {/* Concert Image */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            <label className="block text-sm font-medium text-purple-400 mb-1">
               Concert Image
             </label>
             <input
               type="file"
               accept="image/*"
               onChange={handleImageUpload}
-              className="w-full p-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent"
+              className="w-full p-2 bg-gray-800 border border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-100"
               required
             />
           </div>
 
-          {/* Tags Section */}
+          {/* Genre */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            <label className="block text-sm font-medium text-fuchsia-400 mb-1">
               Genre (Required)
             </label>
             <select
               onChange={(e) => {
                 if (e.target.value) addTag(e.target.value);
               }}
-              className="w-full p-3 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent"
+              className="w-full p-3 bg-gray-800 border border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-100"
               defaultValue=""
               required
             >
@@ -278,15 +302,16 @@ const UploadConcertModal = ({ isOpen, onClose, onSuccess }) => {
             </select>
           </div>
 
+          {/* Venue Type */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            <label className="block text-sm font-medium text-cyan-400 mb-1">
               Venue Type (Required)
             </label>
             <select
               onChange={(e) => {
                 if (e.target.value) addTag(e.target.value);
               }}
-              className="w-full p-3 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent"
+              className="w-full p-3 bg-gray-800 border border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-100"
               defaultValue=""
               required
             >
@@ -302,13 +327,13 @@ const UploadConcertModal = ({ isOpen, onClose, onSuccess }) => {
             {formData.tags.map(tag => (
               <span
                 key={tag}
-                className="px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded-full text-sm flex items-center"
+                className="px-2 py-1 bg-blue-700 text-blue-100 rounded-full text-sm flex items-center"
               >
                 {tag}
                 <button
                   type="button"
                   onClick={() => removeTag(tag)}
-                  className="ml-1 hover:text-blue-600 dark:hover:text-blue-400"
+                  className="ml-1 hover:text-blue-300"
                 >
                   ×
                 </button>
@@ -316,10 +341,11 @@ const UploadConcertModal = ({ isOpen, onClose, onSuccess }) => {
             ))}
           </div>
 
+          {/* Submit */}
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 px-4 rounded-lg transition-colors duration-200 flex items-center justify-center space-x-2"
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 px-4 rounded-lg transition-colors duration-200 flex items-center justify-center space-x-2 mt-4"
           >
             <Upload className="w-5 h-5" />
             <span>{isLoading ? 'Uploading...' : 'Upload Concert'}</span>
