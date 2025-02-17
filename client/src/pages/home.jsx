@@ -3,7 +3,8 @@ import SideNavigation from '../components/SideNavigation';
 import ConcertCard from '../components/ConcertCard';
 import ConcertModal from '../components/ConcertModal';
 import FilterModal from '../components/FilterModal';
-import { Filter, Menu, Sun, Moon, Timer, TrendingUp, Users, MapPin } from 'lucide-react';
+import AuthModal from '../components/AuthModal';
+import { Filter, Menu, Sun, Moon, Timer, TrendingUp, Users, MapPin, LogIn, LogOut } from 'lucide-react';
 import beyonceImage from './homeimages/carter.jpeg'
 import thuyImage from './homeimages/thuy.jpg'
 import duaImage from './homeimages/dua.jpg'
@@ -15,6 +16,8 @@ const Home = () => {
   const [showSidebar, setShowSidebar] = useState(false);
   const [selectedConcert, setSelectedConcert] = useState(null);
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [user, setUser] = useState(null);
   const [activeFilters, setActiveFilters] = useState({
     priceRange: [0, 1000],
     distance: 50,
@@ -23,7 +26,15 @@ const Home = () => {
     venueTypes: []
   });
 
-  // Use an effect to add or remove the "dark" class on the document's root element.
+  // Check for existing user session
+  useEffect(() => {
+    const storedUser = localStorage.getItem('user');
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+    }
+  }, []);
+
+  // Dark mode effect
   useEffect(() => {
     if (isDarkMode) {
       document.documentElement.classList.add('dark');
@@ -32,6 +43,13 @@ const Home = () => {
     }
   }, [isDarkMode]);
 
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    setUser(null);
+  };
+
+  // Rest of your existing constants (categories, concerts)
   const categories = [
     { id: 1, name: 'Live Tonight', icon: Timer, color: 'from-red-500 to-orange-500' },
     { id: 2, name: 'Trending Tours', icon: TrendingUp, color: 'from-purple-500 to-pink-500' },
@@ -39,8 +57,8 @@ const Home = () => {
     { id: 4, name: 'Local Venues', icon: MapPin, color: 'from-blue-500 to-indigo-500' }
   ];
 
-  // Updated concerts array with six entries, replacing Dream Theater with THUY.
   const concerts = [
+    // Your existing concerts array
     {
       id: 1,
       artist: 'Beyoncé',
@@ -79,31 +97,26 @@ const Home = () => {
     }
   ];
 
-  // Handle applying filters
+  // Your existing filter functions
   const handleApplyFilters = (filters) => {
     setActiveFilters(filters);
     setIsFilterModalOpen(false);
   };
 
-  // Filter concerts based on all criteria
   const filteredConcerts = concerts.filter(concert => {
-    // Search term filter
+    // Your existing filter logic
     const matchesSearch =
       concert.artist.toLowerCase().includes(searchTerm.toLowerCase()) ||
       concert.tourName.toLowerCase().includes(searchTerm.toLowerCase());
 
-    // Genre filter
     const isGenreFilter = ['Pop', 'Rock', 'Hip-Hop', 'Electronic', 'Latin', 'R&B', 'Country', 'Jazz'].includes(activeGenre);
     const matchesGenre = isGenreFilter ? concert.tags.includes(activeGenre) : true;
 
-    // Price filter - extract numeric value from price string
     const price = parseFloat(concert.price);
     const matchesPrice = price >= activeFilters.priceRange[0] && price <= activeFilters.priceRange[1];
 
-    // Rating filter
     const matchesRating = concert.rating >= activeFilters.minRating;
 
-    // Venue type filter
     const matchesVenueType = activeFilters.venueTypes.length === 0 || 
       concert.tags.some(tag => activeFilters.venueTypes.includes(tag.toLowerCase()));
 
@@ -115,7 +128,6 @@ const Home = () => {
       {/* Header */}
       <header className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
         <div className="flex items-center space-x-4">
-          {/* Hamburger menu (mobile only) */}
           <button
             className="md:hidden p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
             onClick={() => setShowSidebar(true)}
@@ -126,7 +138,6 @@ const Home = () => {
           <h1 className="text-2xl font-bold">OnlyConcerts</h1>
         </div>
         <div className="flex items-center space-x-4">
-          {/* Search input */}
           <input
             type="text"
             placeholder="Search concerts..."
@@ -135,7 +146,6 @@ const Home = () => {
             className="px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
             aria-label="Search concerts"
           />
-          {/* Filter button */}
           <button
             onClick={() => setIsFilterModalOpen(true)}
             className="flex items-center space-x-2 px-4 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded-lg shadow hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
@@ -143,7 +153,26 @@ const Home = () => {
             <Filter className="w-4 h-4" />
             <span>Filters</span>
           </button>
-          {/* Dark mode toggle */}
+          
+          {/* Auth Button */}
+          {user ? (
+            <button
+              onClick={handleLogout}
+              className="flex items-center space-x-2 px-4 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded-lg shadow hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            >
+              <LogOut className="w-4 h-4" />
+              <span className="hidden sm:inline">Logout</span>
+            </button>
+          ) : (
+            <button
+              onClick={() => setIsAuthModalOpen(true)}
+              className="flex items-center space-x-2 px-4 py-2 bg-indigo-600 text-white rounded-lg shadow hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            >
+              <LogIn className="w-4 h-4" />
+              <span className="hidden sm:inline">Login</span>
+            </button>
+          )}
+          
           <button
             onClick={() => setIsDarkMode(!isDarkMode)}
             className="p-2 rounded-full bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-indigo-500"
@@ -154,13 +183,12 @@ const Home = () => {
         </div>
       </header>
 
+      {/* Rest of your existing JSX */}
       <div className="flex">
-        {/* Sidebar for desktop */}
         <aside className="w-64 flex-shrink-0 hidden md:block p-4">
           <SideNavigation activeGenre={activeGenre} setActiveGenre={setActiveGenre} />
         </aside>
 
-        {/* Mobile Sidebar Modal */}
         {showSidebar && (
           <div className="fixed inset-0 z-40 flex">
             <div className="w-64 bg-white dark:bg-gray-800 p-4">
@@ -170,9 +198,7 @@ const Home = () => {
           </div>
         )}
 
-        {/* Main Content */}
         <main className="flex-1 p-4 space-y-8">
-          {/* Featured Categories */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
             {categories.map(category => (
               <div
@@ -190,7 +216,6 @@ const Home = () => {
             ))}
           </div>
 
-          {/* Concert Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
             {filteredConcerts.map(concert => (
               <ConcertCard
@@ -203,18 +228,22 @@ const Home = () => {
         </main>
       </div>
 
-      {/* Concert Detail Modal */}
+      {/* Modals */}
       {selectedConcert && (
         <ConcertModal concert={selectedConcert} onClose={() => setSelectedConcert(null)} />
       )}
 
-      {/* Filter Modal */}
       {isFilterModalOpen && (
         <FilterModal 
           onClose={() => setIsFilterModalOpen(false)}
           onApplyFilters={handleApplyFilters}
         />
       )}
+
+      <AuthModal 
+        isOpen={isAuthModalOpen} 
+        onClose={() => setIsAuthModalOpen(false)}
+      />
     </div>
   );
 };
