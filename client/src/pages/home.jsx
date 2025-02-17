@@ -4,10 +4,8 @@ import ConcertCard from '../components/ConcertCard';
 import ConcertModal from '../components/ConcertModal';
 import FilterModal from '../components/FilterModal';
 import AuthModal from '../components/AuthModal';
-import { Filter, Menu, Sun, Moon, Timer, TrendingUp, Users, MapPin, LogIn, LogOut } from 'lucide-react';
-import beyonceImage from './homeimages/carter.jpeg'
-import thuyImage from './homeimages/thuy.jpg'
-import duaImage from './homeimages/dua.jpg'
+import UploadConcertModal from '../components/UploadConcertModal';
+import { Filter, Menu, Sun, Moon, Timer, TrendingUp, Users, MapPin, LogIn, LogOut, Upload } from 'lucide-react';
 
 const Home = () => {
   const [activeGenre, setActiveGenre] = useState('All');
@@ -17,7 +15,9 @@ const Home = () => {
   const [selectedConcert, setSelectedConcert] = useState(null);
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const [user, setUser] = useState(null);
+  const [concerts, setConcerts] = useState([]);
   const [activeFilters, setActiveFilters] = useState({
     priceRange: [0, 1000],
     distance: 50,
@@ -26,12 +26,31 @@ const Home = () => {
     venueTypes: []
   });
 
+  const fetchConcerts = async () => {
+    try {
+      const response = await fetch('http://localhost:3000/api/concerts');
+      if (!response.ok) {
+        throw new Error('Failed to fetch concerts');
+      }
+      const data = await response.json();
+      console.log('Fetched concerts:', data);
+      setConcerts(data);
+    } catch (error) {
+      console.error('Error fetching concerts:', error);
+    }
+  };
+
   // Check for existing user session
   useEffect(() => {
     const storedUser = localStorage.getItem('user');
     if (storedUser) {
       setUser(JSON.parse(storedUser));
     }
+  }, []);
+
+  // Fetch concerts
+  useEffect(() => {
+    fetchConcerts();
   }, []);
 
   // Dark mode effect
@@ -49,7 +68,11 @@ const Home = () => {
     setUser(null);
   };
 
-  // Rest of your existing constants (categories, concerts)
+  const handleUploadSuccess = () => {
+    fetchConcerts();
+    setIsUploadModalOpen(false);
+  };
+
   const categories = [
     { id: 1, name: 'Live Tonight', icon: Timer, color: 'from-red-500 to-orange-500' },
     { id: 2, name: 'Trending Tours', icon: TrendingUp, color: 'from-purple-500 to-pink-500' },
@@ -57,54 +80,12 @@ const Home = () => {
     { id: 4, name: 'Local Venues', icon: MapPin, color: 'from-blue-500 to-indigo-500' }
   ];
 
-  const concerts = [
-    // Your existing concerts array
-    {
-      id: 1,
-      artist: 'Beyoncé',
-      tourName: 'Cowboy Carter Tour',
-      venue: 'Mercedes‑Benz Stadium',
-      date: 'Jul 10–11',
-      price: '210',
-      rating: 4.9,
-      reviews: 2453,
-      image: beyonceImage,
-      tags: ['Pop', 'Stadium Show']
-    },
-    {
-      id: 2,
-      artist: 'Dua Lipa',
-      tourName: 'Future Nostalgia Tour',
-      venue: 'State Farm Arena',
-      date: 'Sept 13–14',
-      price: '211',
-      rating: 4.7,
-      reviews: 1829,
-      image: duaImage,
-      tags: ['Pop', 'Arena Show']
-    },
-    {
-      id: 3,
-      artist: 'THUY',
-      tourName: 'THUY Live',
-      venue: 'Center Stage Atlanta',
-      date: 'Feb 12',
-      price: '60',
-      rating: 4.6,
-      reviews: 1100,
-      image: thuyImage,
-      tags: ['Pop', 'Indie', 'R&B']
-    }
-  ];
-
-  // Your existing filter functions
   const handleApplyFilters = (filters) => {
     setActiveFilters(filters);
     setIsFilterModalOpen(false);
   };
 
   const filteredConcerts = concerts.filter(concert => {
-    // Your existing filter logic
     const matchesSearch =
       concert.artist.toLowerCase().includes(searchTerm.toLowerCase()) ||
       concert.tourName.toLowerCase().includes(searchTerm.toLowerCase());
@@ -154,6 +135,17 @@ const Home = () => {
             <span>Filters</span>
           </button>
           
+          {/* Upload Button - Only shown when user is logged in */}
+          {user && (
+            <button
+              onClick={() => setIsUploadModalOpen(true)}
+              className="flex items-center space-x-2 px-4 py-2 bg-indigo-600 text-white rounded-lg shadow hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            >
+              <Upload className="w-4 h-4" />
+              <span className="hidden sm:inline">Upload</span>
+            </button>
+          )}
+          
           {/* Auth Button */}
           {user ? (
             <button
@@ -183,7 +175,6 @@ const Home = () => {
         </div>
       </header>
 
-      {/* Rest of your existing JSX */}
       <div className="flex">
         <aside className="w-64 flex-shrink-0 hidden md:block p-4">
           <SideNavigation activeGenre={activeGenre} setActiveGenre={setActiveGenre} />
@@ -219,7 +210,7 @@ const Home = () => {
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
             {filteredConcerts.map(concert => (
               <ConcertCard
-                key={concert.id}
+                key={concert._id || concert.id}
                 concert={concert}
                 onClick={(concert) => setSelectedConcert(concert)}
               />
@@ -243,6 +234,12 @@ const Home = () => {
       <AuthModal 
         isOpen={isAuthModalOpen} 
         onClose={() => setIsAuthModalOpen(false)}
+      />
+
+      <UploadConcertModal
+        isOpen={isUploadModalOpen}
+        onClose={() => setIsUploadModalOpen(false)}
+        onSuccess={handleUploadSuccess}
       />
     </div>
   );

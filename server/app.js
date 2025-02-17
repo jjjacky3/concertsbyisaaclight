@@ -5,9 +5,10 @@ require("dotenv").config();
 const bodyParser = require("body-parser");
 const indexroute = require("./routes/index");
 const authRoutes = require("./routes/auth");
-const concertRoutes = require("./routes/concerts"); // Add this line
+const concertRoutes = require("./routes/concerts");
 
 const PORT = process.env.PORT || 3000;
+
 const corsOptions = {
   origin: "http://localhost:5173",
   credentials: true,
@@ -17,13 +18,16 @@ const corsOptions = {
 app.use(cors(corsOptions));
 
 app.set("view engine", "ejs");
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(express.json());
+
+// Updated body-parser configuration with increased limits
+app.use(bodyParser.json({ limit: '50mb' }));
+app.use(bodyParser.urlencoded({ extended: true, limit: '50mb' }));
+app.use(express.json({ limit: '50mb' }));
 
 // Routes
 app.use("/", indexroute);
 app.use("/api/auth", authRoutes);
-app.use("/api/concerts", concertRoutes); // Add this line
+app.use("/api/concerts", concertRoutes);
 
 // MongoDB connection
 const mongoose = require('mongoose');
