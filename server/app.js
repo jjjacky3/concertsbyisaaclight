@@ -4,7 +4,8 @@ const cors = require("cors");
 require("dotenv").config();
 const bodyParser = require("body-parser");
 const indexroute = require("./routes/index");
-const authRoutes = require("./routes/auth"); // Add this line
+const authRoutes = require("./routes/auth");
+const concertRoutes = require("./routes/concerts"); // Add this line
 
 const PORT = process.env.PORT || 3000;
 const corsOptions = {
@@ -21,7 +22,8 @@ app.use(express.json());
 
 // Routes
 app.use("/", indexroute);
-app.use("/api/auth", authRoutes); // Add this line
+app.use("/api/auth", authRoutes);
+app.use("/api/concerts", concertRoutes); // Add this line
 
 // MongoDB connection
 const mongoose = require('mongoose');
