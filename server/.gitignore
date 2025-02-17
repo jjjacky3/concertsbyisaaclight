@@ -1,0 +1,65 @@
+# Node.js dependencies
+node_modules/
+npm-debug.log*
+yarn-error.log
+
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# System files
+.DS_Store
+Thumbs.db
+
+# IDE and editor settings
+.vscode/
+.idea/
+*.swp
+*.swo
+*.swn
+
+# Dependency directories
+.bower_components/
+jspm_packages/
+
+# Build files
+dist/
+build/
+.cache/
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Database and ORM files
+*.sqlite
+*.sqlite-journal
+*.db
+*.db-shm
+*.db-wal
+pgdata/
+
+# Docker files (if applicable)
+docker-compose.override.yml
+.dockerignore
+
+# Miscellaneous
+coverage/
+*.pid
+*.seed
+*.seedpeers
+*.log
+public/uploads/
