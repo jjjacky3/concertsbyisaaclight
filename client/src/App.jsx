@@ -106,6 +106,7 @@ function App() {
 
   return (
     <>
+      <HomePage></HomePage>
       <ArtistPage artist={AlecBenjamin} />
     </>
   )
