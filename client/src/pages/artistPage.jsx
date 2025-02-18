@@ -4,6 +4,10 @@ import Tour from "../../../server/models/Tour"
 import Concert from "../../../server/models/DamienConcert"
 import React, { useState, useEffect } from "react";
 import '../pages/pagestyling/ArtistPage.css'
+import NavBar from '../components/NavBar'
+import ConcertItem from "../components/ConcertItem";
+import RatingModule from "../components/RatingModule";
+import CompareModule from "../components/CompareModule";
 
 const ArtistPage = ({ artist }) => {
 
@@ -57,12 +61,33 @@ const ArtistPage = ({ artist }) => {
         }
     };
 
+    const goToHome = () => {
+        console.log("Go Home Button Clicked")
+    }
+
 
     return (
-        <div>
-            <div>test</div>
+        <div className='ArtistPage'>
+            <NavBar goFunc={goToHome} />
             <ArtistBanner artist={artist} selectedTour={selectedTour} changeTourFunc={handleChange} />
-        </div>
+            <div style={{ display: 'flex', position: 'relative', }}>
+                <div className='concertList'>
+                    {
+                        concertsShown.map((concert, index) => (
+                            <ConcertItem key={index} concert={concert} clickItemFunc={concertItemClicked} isSelected={concert === compartedConcertOne || concert === compartedConcertTwo} />
+                        ))
+                    }
+                </div >
+                <div style={{ height: '800px', width: '750px', marginLeft: '10px' }}>
+                    <div className='ratingModule'>
+                        <RatingModule ratings={ratingsDisplayed}></RatingModule>
+                    </div>
+                    <div className='compModule'>
+                        <CompareModule concert1={compartedConcertOne} concert2={compartedConcertTwo}></CompareModule>
+                    </div>
+                </div>
+            </div>
+        </div >
 
     )
 

@@ -5,6 +5,8 @@ import ArtistPage from './pages/artistPage.jsx'
 import Artist from '../../server/models/Artist.js'
 import Tour from '../../server/models/Tour.js'
 import Concert from '../../server/models/DamienConcert.js'
+
+
 function App() {
 
   // Create Alec Benjamin artist instance
