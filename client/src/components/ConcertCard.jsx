@@ -6,7 +6,7 @@ const ConcertCard = ({ concert, onClick }) => {
   const formatDate = (isoDate) => {
     if (!isoDate) return '';
     const date = new Date(isoDate);
-    return date.toLocaleDateString('en-lUS', { 
+    return date.toLocaleDateString('en-US', { 
       month: 'short', 
       day: 'numeric',
       year: 'numeric'
