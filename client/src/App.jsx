@@ -11,7 +11,7 @@ function App() {
   const AlecBenjamin = new Artist(
     'Alec Benjamin',
     { 1: 1, 2: 1, 3: 1, 4: 2, 5: 10 },
-    `url('../../../server/models/ArtistBannerImages/AlecBenjaminBannerImage.jpg')`,
+    `url('../src/components/ArtistBannerImages/AlecBenjaminBannerImage.jpg')`,
     90
   );
 

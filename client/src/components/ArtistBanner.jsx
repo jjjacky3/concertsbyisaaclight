@@ -1,3 +1,5 @@
+import './ComponentStyling/ArtistBanner.css'
+
 const ArtistBanner = ({ artist, selectedTour, changeTourFunc }) => {
 
     let artistImage = artist.image;
@@ -19,15 +21,13 @@ const ArtistBanner = ({ artist, selectedTour, changeTourFunc }) => {
                     <span style={{ fontSize: '20px' }}>Would go Again</span>
                 </div>
                 <div style={{ width: '1px', height: '100px', border: '1px solid white', left: '200px', background: 'white', position: 'absolute' }}></div>
-                {/*<select className='AllToursSelection' value={selectedTour} onChange={changeTourFunc}>
+                <select className='AllToursSelection' value={selectedTour} onChange={changeTourFunc}>
                     <option value="All Tours">All Tours</option>
-                    <option value="Tour1"></option>
-                    
                     {artist.tours.map((tour, index) => (
                         <option key={index} value={tour.name}>{tour.name}</option>
                     ))}
-                    
-                </select>*/}
+
+                </select>
             </div>
 
 

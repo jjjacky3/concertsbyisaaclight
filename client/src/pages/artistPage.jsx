@@ -3,6 +3,7 @@ import Artist from "../../../server/models/Artist"
 import Tour from "../../../server/models/Tour"
 import Concert from "../../../server/models/DamienConcert"
 import React, { useState, useEffect } from "react";
+import '../pages/pagestyling/ArtistPage.css'
 
 const ArtistPage = ({ artist }) => {
 
