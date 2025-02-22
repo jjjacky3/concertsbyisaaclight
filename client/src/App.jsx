@@ -5,6 +5,15 @@ import ArtistPage from './pages/artistPage.jsx'
 import Artist from '../../server/models/Artist.js'
 import Tour from '../../server/models/Tour.js'
 import Concert from '../../server/models/DamienConcert.js'
+import AlecBenjaminBanner from '/Users/damienlo/Desktop/University/CS 370/concertsbyisaaclight/client/src/components/ArtistBannerImages/AlecBenjaminBannerImage.jpg';
+
+const AlecBenjamin = new Artist(
+  'Alec Benjamin',
+  { 1: 1, 2: 1, 3: 1, 4: 2, 5: 10 },
+  AlecBenjaminBanner, // Use the imported image directly
+  90
+);
+
 
 
 function App() {
@@ -13,7 +22,7 @@ function App() {
   const AlecBenjamin = new Artist(
     'Alec Benjamin',
     { 1: 1, 2: 1, 3: 1, 4: 2, 5: 10 },
-    `url('../src/components/ArtistBannerImages/AlecBenjaminBannerImage.jpg')`,
+    AlecBenjaminBanner,
     90
   );
 

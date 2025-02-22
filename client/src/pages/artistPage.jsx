@@ -67,29 +67,43 @@ const ArtistPage = ({ artist }) => {
 
 
     return (
-        <div className='ArtistPage'>
+        <div className="min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white">
+            {/* Navbar */}
             <NavBar goFunc={goToHome} />
+
+            {/* Artist Banner */}
             <ArtistBanner artist={artist} selectedTour={selectedTour} changeTourFunc={handleChange} />
-            <div style={{ display: 'flex', position: 'relative', }}>
-                <div className='concertList'>
-                    {
-                        concertsShown.map((concert, index) => (
-                            <ConcertItem key={index} concert={concert} clickItemFunc={concertItemClicked} isSelected={concert === compartedConcertOne || concert === compartedConcertTwo} />
-                        ))
-                    }
-                </div >
-                <div style={{ height: '800px', width: '750px', marginLeft: '10px' }}>
-                    <div className='ratingModule'>
-                        <RatingModule ratings={ratingsDisplayed}></RatingModule>
+
+            {/* Page Layout */}
+            <div className="flex justify-center space-x-6 p-6">
+                {/* Concert List Container */}
+                <div className="w-[700px] h-[800px] bg-gray-800 rounded-lg shadow-lg overflow-y-auto p-4 space-y-4">
+                    {concertsShown.map((concert, index) => (
+                        <ConcertItem
+                            key={index}
+                            concert={concert}
+                            clickItemFunc={concertItemClicked}
+                            isSelected={concert === compartedConcertOne || concert === compartedConcertTwo}
+                        />
+                    ))}
+                </div>
+
+                {/* Right Side Content (Ratings & Comparison) */}
+                <div className="w-[750px] flex flex-col space-y-6">
+                    {/* Rating Module */}
+                    <div className="h-[400px] bg-gray-800 rounded-3xl shadow-lg p-6 transition-transform transform hover:scale-[1.005] hover:shadow-xl">
+                        <RatingModule ratings={ratingsDisplayed} />
                     </div>
-                    <div className='compModule'>
-                        <CompareModule concert1={compartedConcertOne} concert2={compartedConcertTwo}></CompareModule>
+
+                    {/* Compare Module */}
+                    <div className="h-[380px] bg-gray-800 rounded-3xl shadow-lg p-6 transition-transform transform hover:scale-[1.005] hover:shadow-xl">
+                        <CompareModule concert1={compartedConcertOne} concert2={compartedConcertTwo} />
                     </div>
                 </div>
             </div>
-        </div >
+        </div>
+    );
 
-    )
 
 }
 
