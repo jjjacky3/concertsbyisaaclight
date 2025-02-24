@@ -1,4 +1,5 @@
 const express = require("express");
+const pool = require('./db'); // connect to psql
 const app = express();
 const cors = require("cors");
 require("dotenv").config();
@@ -19,6 +20,19 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.json());
 
 app.use("/", indexroute);
+
+async function getAllArtists() {
+    try {
+        const result = await pool.query('SELECT * FROM artist;');
+        console.log('Artists:', result.rows);
+    } catch (err) {
+        console.error('Error fetching artists:', err);
+    } finally {
+        pool.end(); // Close the database connection
+    }
+}
+
+getAllArtists();
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
