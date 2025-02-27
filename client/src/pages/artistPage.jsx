@@ -111,7 +111,7 @@ const ArtistPage = ({ artist }) => {
 
                     {/* Compare Module */}
                     <div className="h-[380px] bg-gray-800 rounded-3xl shadow-lg p-6 transition-transform transform hover:scale-[1.005] hover:shadow-xl">
-                        <CompareModule concert1={compartedConcertOne} concert2={compartedConcertTwo} onDropConcert={handleConcertDrop} />
+                        <CompareModule concert1={compartedConcertOne} concert2={compartedConcertTwo} onDropConcert={handleConcertDrop} setConcertOne={setComparedConcertOne} setConcertTwo={setComparedConcertTwo} />
                     </div>
                 </div>
             </div>

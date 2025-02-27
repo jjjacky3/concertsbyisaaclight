@@ -2,7 +2,7 @@ import { FlipHorizontal } from "lucide-react";
 import { parse } from "flatted";
 
 
-const CompareModule = ({ concert1, concert2, onDropConcert }) => {
+const CompareModule = ({ concert1, concert2, onDropConcert, setConcertOne, setConcertTwo }) => {
 
     const handleDragOver = (e) => {
         e.preventDefault(); // Required to allow dropping
@@ -12,6 +12,16 @@ const CompareModule = ({ concert1, concert2, onDropConcert }) => {
         e.preventDefault();
         const concertData = parse(e.dataTransfer.getData("concertData"));
         onDropConcert(concertData, side);
+    };
+
+    const handleDragStart = (e, side) => {
+        if (side == 'left') {
+            setConcertOne(null)
+        }
+        else if (side == 'right') {
+            setConcertTwo(null)
+        }
+
     };
 
 
@@ -35,7 +45,7 @@ const CompareModule = ({ concert1, concert2, onDropConcert }) => {
             <div className="w-full h-[250px] flex items-center justify-center">
 
                 {/* Row Titles - Now Aligned Correctly */}
-                <div className="w-[130px] flex flex-col justify-between text-lg font-semibold italic space-y-[22px] text-right">
+                <div className="w-[140px] flex flex-col justify-between text-lg font-semibold italic space-y-[22px] text-right pr-6">
                     <div>Rating</div>
                     <div>Cost</div>
                     <div>Set List</div>
@@ -48,9 +58,13 @@ const CompareModule = ({ concert1, concert2, onDropConcert }) => {
 
                     {/* Left Concert */}
                     <div
+                        draggable
+                        onDragStart={(e) => handleDragStart(e, 'left')}
                         onDragOver={handleDragOver}
                         onDrop={(e) => handleDrop(e, "left")}
-                        className="w-[180px] flex flex-col justify-between items-center space-y-[16px]">
+                        className={`w-[250px] h-[220px] flex flex-col justify-between items-center space-y-[10px] p-4 rounded-lg transition-all
+        ${concert1 ? "border-2 border-yellow-500 bg-gray-800 shadow-lg" : "bg-transparent"}`}
+                    >
                         <div className="text-lg font-bold">{concert1?.name || "-"}</div>
                         <div className="compareItem">{concert1?.rating || "-"}</div>
                         <div className="compareItem">${concert1?.price || "-"}</div>
@@ -64,9 +78,13 @@ const CompareModule = ({ concert1, concert2, onDropConcert }) => {
 
                     {/* Right Concert */}
                     <div
+                        draggable
+                        onDragStart={(e) => handleDragStart(e, 'right')}
                         onDragOver={handleDragOver}
                         onDrop={(e) => handleDrop(e, "right")}
-                        className="w-[180px] flex flex-col justify-between items-center space-y-[16px]">
+                        className={`w-[250px] h-[220px] flex flex-col justify-between items-center space-y-[10px] p-4 rounded-lg transition-all
+        ${concert2 ? "border-2 border-yellow-500 bg-gray-800 shadow-lg" : "bg-transparent"}`}
+                    >
                         <div className="text-lg font-bold">{concert2?.name || "-"}</div>
                         <div className="compareItem">{concert2?.rating || "-"}</div>
                         <div className="compareItem">${concert2?.price || "-"}</div>
@@ -75,6 +93,8 @@ const CompareModule = ({ concert1, concert2, onDropConcert }) => {
                         <div className="compareItem">{concert2?.city || "-"}</div>
                     </div>
                 </div>
+
+
             </div>
         </div>
     );
