@@ -7,6 +7,7 @@ import NavBar from '../components/NavBar'
 import ConcertItem from "../components/ConcertItem";
 import RatingModule from "../components/RatingModule";
 import CompareModule from "../components/CompareModule";
+import ConcertExpandedView from "../components/ConcertExpandView";
 
 const ArtistPage = ({ artist }) => {
 
@@ -16,6 +17,7 @@ const ArtistPage = ({ artist }) => {
     const [ratingsDisplayed, setRatingsDisplayed] = useState(artist.ratings);
     const [compartedConcertOne, setComparedConcertOne] = useState(null)
     const [compartedConcertTwo, setComparedConcertTwo] = useState(null)
+    const [selectedConcert, setSelectedConcert] = useState(null)
 
     useEffect(() => {
         if (selectedTour === "All Tours") {
@@ -42,24 +44,12 @@ const ArtistPage = ({ artist }) => {
     }
 
     const concertItemClicked = (concert) => {
-        console.log("Concert Item Clicked")
-
-        // if (concert == compartedConcertOne || concert == compartedConcertTwo) {
-        //     setComparedConcertOne(null);
-        //     setComparedConcertTwo(null);
-        // }
-
-        // else if (!compartedConcertOne) {
-        //     setComparedConcertOne(concert);
-        //     console.log("Concert 1 Updated")
-        // } else if (!compartedConcertTwo) {
-        //     setComparedConcertTwo(concert);
-        //     console.log("Concert 2 Updated")
-        // } else {
-        //     setComparedConcertOne(concert);
-        //     setComparedConcertTwo(null);
-        // }
+        setSelectedConcert(concert)
     };
+
+    const closeOverlay = () => {
+        setSelectedConcert(null)
+    }
 
     const handleConcertDrop = (concert, side) => {
         console.log("Dropped Concert:", concert);
@@ -79,7 +69,7 @@ const ArtistPage = ({ artist }) => {
 
 
     return (
-        <div className="min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white">
+        <div className="min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white relative">
             {/* Navbar */}
             <NavBar />
 
@@ -87,7 +77,7 @@ const ArtistPage = ({ artist }) => {
             <ArtistBanner artist={artist} selectedTour={selectedTour} changeTourFunc={handleChange} />
 
             {/* Page Layout */}
-            <div className="flex justify-center space-x-6 p-6">
+            <div className="flex justify-center space-x-6 p-6 relative">
                 {/* Concert List Container */}
                 <div className="w-[700px] h-[800px] bg-gray-800 rounded-lg shadow-lg overflow-y-auto p-4 
                 grid grid-cols-2 gap-4">
@@ -101,6 +91,15 @@ const ArtistPage = ({ artist }) => {
                         />
                     ))}
                 </div>
+
+                {/* Overlay Panel */}
+                {selectedConcert && (
+                    <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
+                        <div className="bg-gray-800 p-6 rounded-lg shadow-lg w-[600px] h-[400px] flex flex-col items-center justify-center">
+                            <ConcertExpandedView concert={selectedConcert} closeOverlay={closeOverlay} />
+                        </div>
+                    </div>
+                )}
 
                 {/* Right Side Content (Ratings & Comparison) */}
                 <div className="w-[750px] flex flex-col space-y-6">
