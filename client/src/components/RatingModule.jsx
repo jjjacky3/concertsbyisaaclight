@@ -1,6 +1,6 @@
 import { Star } from "lucide-react";
 
-const RatingModule = ({ ratings }) => {
+const RatingModule = ({ ratings, onDropConcert }) => {
     if (!ratings) {
         console.error("Received undefined ratings in RatingModule");
         return <div className="text-red-500">Error: Ratings data is missing</div>;
@@ -11,7 +11,7 @@ const RatingModule = ({ ratings }) => {
     let maxValue = Math.max(...Object.values(ratings));
 
     // Compute normalized bar widths for each rating (1-5)
-    const ratingWidths = [1, 2, 3, 4, 5].map(rating => (ratings[rating] / maxValue) * 100);
+    const ratingWidths = [5, 4, 3, 2, 1].map(rating => (ratings[rating] / maxValue) * 100);
 
     return (
         <div className="relative w-full max-w-[700px] bg-gray-700/70 text-white rounded-3xl shadow-2xl p-6 transition-transform transform hover:scale-[1.02] hover:shadow-[0px_10px_30px_rgba(0,0,0,0.3)] mx-auto">
@@ -23,7 +23,7 @@ const RatingModule = ({ ratings }) => {
 
             {/* Rating Bars */}
             <div className="flex flex-col space-y-4 items-center">
-                {[1, 2, 3, 4, 5].map((rating, index) => (
+                {[5, 4, 3, 2, 1].map((rating, index) => (
                     <div key={rating} className="flex items-center justify-between w-full">
                         {/* Rating Number */}
                         <div className="text-2xl font-bold w-6 text-right">{rating}</div>

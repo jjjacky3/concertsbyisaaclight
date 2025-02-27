@@ -3,7 +3,6 @@ import Artist from "../../../server/models/Artist"
 import Tour from "../../../server/models/Tour"
 import Concert from "../../../server/models/DamienConcert"
 import React, { useState, useEffect } from "react";
-import '../pages/pagestyling/ArtistPage.css'
 import NavBar from '../components/NavBar'
 import ConcertItem from "../components/ConcertItem";
 import RatingModule from "../components/RatingModule";
@@ -43,33 +42,46 @@ const ArtistPage = ({ artist }) => {
     }
 
     const concertItemClicked = (concert) => {
+        console.log("Concert Item Clicked")
 
-        if (concert == compartedConcertOne || concert == compartedConcertTwo) {
-            setComparedConcertOne(null);
-            setComparedConcertTwo(null);
-        }
+        // if (concert == compartedConcertOne || concert == compartedConcertTwo) {
+        //     setComparedConcertOne(null);
+        //     setComparedConcertTwo(null);
+        // }
 
-        else if (!compartedConcertOne) {
+        // else if (!compartedConcertOne) {
+        //     setComparedConcertOne(concert);
+        //     console.log("Concert 1 Updated")
+        // } else if (!compartedConcertTwo) {
+        //     setComparedConcertTwo(concert);
+        //     console.log("Concert 2 Updated")
+        // } else {
+        //     setComparedConcertOne(concert);
+        //     setComparedConcertTwo(null);
+        // }
+    };
+
+    const handleConcertDrop = (concert, side) => {
+        console.log("Dropped Concert:", concert);
+
+        if (side == 'left') {
             setComparedConcertOne(concert);
             console.log("Concert 1 Updated")
-        } else if (!compartedConcertTwo) {
+        }
+        else if (side == 'right') {
             setComparedConcertTwo(concert);
             console.log("Concert 2 Updated")
-        } else {
-            setComparedConcertOne(concert);
-            setComparedConcertTwo(null);
+        }
+        else {
         }
     };
 
-    const goToHome = () => {
-        console.log("Go Home Button Clicked")
-    }
 
 
     return (
         <div className="min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white">
             {/* Navbar */}
-            <NavBar goFunc={goToHome} />
+            <NavBar />
 
             {/* Artist Banner */}
             <ArtistBanner artist={artist} selectedTour={selectedTour} changeTourFunc={handleChange} />
@@ -77,7 +89,9 @@ const ArtistPage = ({ artist }) => {
             {/* Page Layout */}
             <div className="flex justify-center space-x-6 p-6">
                 {/* Concert List Container */}
-                <div className="w-[700px] h-[800px] bg-gray-800 rounded-lg shadow-lg overflow-y-auto p-4 space-y-4">
+                <div className="w-[700px] h-[800px] bg-gray-800 rounded-lg shadow-lg overflow-y-auto p-4 
+                grid grid-cols-2 gap-4">
+                    {/* <div className="w-[700px] h-[800px] bg-gray-800 rounded-lg shadow-lg overflow-y-auto p-4 space-y-4"> */}
                     {concertsShown.map((concert, index) => (
                         <ConcertItem
                             key={index}
@@ -97,11 +111,11 @@ const ArtistPage = ({ artist }) => {
 
                     {/* Compare Module */}
                     <div className="h-[380px] bg-gray-800 rounded-3xl shadow-lg p-6 transition-transform transform hover:scale-[1.005] hover:shadow-xl">
-                        <CompareModule concert1={compartedConcertOne} concert2={compartedConcertTwo} />
+                        <CompareModule concert1={compartedConcertOne} concert2={compartedConcertTwo} onDropConcert={handleConcertDrop} />
                     </div>
                 </div>
             </div>
-        </div>
+        </div >
     );
 
 

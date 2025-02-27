@@ -1,7 +1,24 @@
 import { FlipHorizontal } from "lucide-react";
+import { parse } from "flatted";
 
 
-const CompareModule = ({ concert1, concert2 }) => {
+const CompareModule = ({ concert1, concert2, onDropConcert }) => {
+
+    const handleDragOver = (e) => {
+        e.preventDefault(); // Required to allow dropping
+    };
+
+    const handleDrop = (e, side) => {
+        e.preventDefault();
+        const concertData = parse(e.dataTransfer.getData("concertData"));
+        onDropConcert(concertData, side);
+    };
+
+
+
+
+
+
     return (
         <div className="w-[700px] h-[330px] bg-gray-700/70 text-white rounded-3xl shadow-2xl p-6 transition-transform transform hover:scale-[1.02] hover:shadow-[0px_10px_30px_rgba(0,0,0,0.3)] flex flex-col items-center">
 
@@ -30,7 +47,10 @@ const CompareModule = ({ concert1, concert2 }) => {
                 <div className="w-[500px] h-full flex items-center justify-center">
 
                     {/* Left Concert */}
-                    <div className="w-[180px] flex flex-col justify-between items-center space-y-[16px]">
+                    <div
+                        onDragOver={handleDragOver}
+                        onDrop={(e) => handleDrop(e, "left")}
+                        className="w-[180px] flex flex-col justify-between items-center space-y-[16px]">
                         <div className="text-lg font-bold">{concert1?.name || "-"}</div>
                         <div className="compareItem">{concert1?.rating || "-"}</div>
                         <div className="compareItem">${concert1?.price || "-"}</div>
@@ -43,7 +63,10 @@ const CompareModule = ({ concert1, concert2 }) => {
                     <div className="border-l border-white h-[220px] mx-3"></div>
 
                     {/* Right Concert */}
-                    <div className="w-[180px] flex flex-col justify-between items-center space-y-[16px]">
+                    <div
+                        onDragOver={handleDragOver}
+                        onDrop={(e) => handleDrop(e, "right")}
+                        className="w-[180px] flex flex-col justify-between items-center space-y-[16px]">
                         <div className="text-lg font-bold">{concert2?.name || "-"}</div>
                         <div className="compareItem">{concert2?.rating || "-"}</div>
                         <div className="compareItem">${concert2?.price || "-"}</div>

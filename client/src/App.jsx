@@ -6,10 +6,11 @@ import Artist from '../../server/models/Artist.js'
 import Tour from '../../server/models/Tour.js'
 import Concert from '../../server/models/DamienConcert.js'
 import AlecBenjaminBanner from '/Users/damienlo/Desktop/University/CS 370/concertsbyisaaclight/client/src/components/ArtistBannerImages/AlecBenjaminBannerImage.jpg';
+import UserPage from './pages/UserPage.jsx'
 
 const AlecBenjamin = new Artist(
   'Alec Benjamin',
-  { 1: 1, 2: 1, 3: 1, 4: 2, 5: 10 },
+  { 5: 10, 4: 2, 3: 1, 2: 1, 1: 1 },
   AlecBenjaminBanner, // Use the imported image directly
   90
 );
@@ -113,10 +114,13 @@ function App() {
 
 
 
+
+
   return (
     <>
       <HomePage></HomePage>
       <ArtistPage artist={AlecBenjamin} />
+      <UserPage></UserPage>
     </>
   )
 }
