@@ -1,69 +1,51 @@
-import "../components/ComponentStyling/RatingModule.css"
+import { Star } from "lucide-react";
 
-const RatingModule = ({ ratings }) => {
-
+const RatingModule = ({ ratings, onDropConcert }) => {
     if (!ratings) {
         console.error("Received undefined ratings in RatingModule");
-        return <div>Error: Ratings data is missing</div>;
+        return <div className="text-red-500">Error: Ratings data is missing</div>;
     }
 
-    console.log("Ratings Input for modlue ius")
-    console.log(ratings)
-    let maxValue = Math.max(...Object.values(ratings))
+    console.log("Ratings Input for module is:", ratings);
 
+    let maxValue = Math.max(...Object.values(ratings));
 
-    let oneLength = ratings[1] / maxValue * 100
-    let twoLength = ratings[2] / maxValue * 100
-    let threeLength = ratings[3] / maxValue * 100
-    let fourLength = ratings[4] / maxValue * 100
-    let fiveLength = ratings[5] / maxValue * 100
-
-
-
+    // Compute normalized bar widths for each rating (1-5)
+    const ratingWidths = [5, 4, 3, 2, 1].map(rating => (ratings[rating] / maxValue) * 100);
 
     return (
-        <div style={{ position: 'relative' }}>
-            <div className='Header'>Ratings</div>
-
-            <div style={{ display: 'flex', alignItems: 'center', marginLeft: '40px', marginTop: '20px', justifyContent: 'left', color: 'white' }}>
-                <div style={{ fontSize: '20pt', fontWeight: 'bold' }}>1</div>
-                <div style={{ marginLeft: '60px', height: '40px', width: '500px', marginRight: '40px', border: 'white solid 2px', borderRadius: '10px', display: 'flex', alignItems: 'center' }}>
-                    <div className='Bar' style={{ width: (oneLength + '%') }}></div>
-                </div>
-                <div style={{ fontSize: '10pt', fontWeight: 'bold' }}>{(ratings[1] + ' reviews')}</div>
-            </div>
-            <div style={{ display: 'flex', alignItems: 'center', marginLeft: '40px', marginTop: '20px', justifyContent: 'left', color: 'white' }}>
-                <div style={{ fontSize: '20pt', fontWeight: 'bold' }}>2</div>
-                <div style={{ marginLeft: '60px', height: '40px', width: '500px', marginRight: '40px', border: 'white solid 2px', borderRadius: '10px', display: 'flex', alignItems: 'center' }}>
-                    <div className='Bar' style={{ width: (twoLength + '%') }}></div>
-                </div>
-                <div style={{ fontSize: '10pt', fontWeight: 'bold' }}>{(ratings[2] + ' reviews')}</div>
-            </div>
-            <div style={{ display: 'flex', alignItems: 'center', marginLeft: '40px', marginTop: '20px', justifyContent: 'left', color: 'white' }}>
-                <div style={{ fontSize: '20pt', fontWeight: 'bold' }}>3</div>
-                <div style={{ marginLeft: '60px', height: '40px', width: '500px', marginRight: '40px', border: 'white solid 2px', borderRadius: '10px', display: 'flex', alignItems: 'center' }}>
-                    <div className='Bar' style={{ width: (threeLength + '%') }}></div>
-                </div>
-                <div style={{ fontSize: '10pt', fontWeight: 'bold' }}>{(ratings[3] + ' reviews')}</div>
-            </div>
-            <div style={{ display: 'flex', alignItems: 'center', marginLeft: '40px', marginTop: '20px', justifyContent: 'left', color: 'white' }}>
-                <div style={{ fontSize: '20pt', fontWeight: 'bold' }}>4</div>
-                <div style={{ marginLeft: '60px', height: '40px', width: '500px', marginRight: '40px', border: 'white solid 2px', borderRadius: '10px', display: 'flex', alignItems: 'center' }}>
-                    <div className='Bar' style={{ width: (fourLength + '%') }}></div>
-                </div>
-                <div style={{ fontSize: '10pt', fontWeight: 'bold' }}>{(ratings[4] + ' reviews')}</div>
-            </div>
-            <div style={{ display: 'flex', alignItems: 'center', marginLeft: '40px', marginTop: '20px', justifyContent: 'left', color: 'white' }}>
-                <div style={{ fontSize: '20pt', fontWeight: 'bold' }}>5</div>
-                <div style={{ marginLeft: '60px', height: '40px', width: '500px', marginRight: '40px', border: 'white solid 2px', borderRadius: '10px', display: 'flex', alignItems: 'center' }}>
-                    <div className='Bar' style={{ width: (fiveLength + '%') }}></div>
-                </div>
-                <div style={{ fontSize: '10pt', fontWeight: 'bold' }}>{(ratings[5] + ' reviews')}</div>
+        <div className="relative w-full max-w-[700px] bg-gray-700/70 text-white rounded-3xl shadow-2xl p-6 transition-transform transform hover:scale-[1.02] hover:shadow-[0px_10px_30px_rgba(0,0,0,0.3)] mx-auto">
+            {/* Header with Star Icon */}
+            <div className="text-3xl font-bold text-center flex items-center justify-center gap-2 pb-4">
+                <Star className="w-6 h-6 text-yellow-500" />
+                <span>Ratings</span>
             </div>
 
-        </div >
-    )
+            {/* Rating Bars */}
+            <div className="flex flex-col space-y-4 items-center">
+                {[5, 4, 3, 2, 1].map((rating, index) => (
+                    <div key={rating} className="flex items-center justify-between w-full">
+                        {/* Rating Number */}
+                        <div className="text-2xl font-bold w-6 text-right">{rating}</div>
 
-}
+                        {/* Progress Bar Container */}
+                        <div className="flex-grow h-10 border-2 border-white rounded-lg flex items-center overflow-hidden mx-4">
+                            {/* Filled Bar */}
+                            <div
+                                className="h-full bg-white rounded-lg transition-all duration-300"
+                                style={{ width: `${ratingWidths[index]}%` }}
+                            ></div>
+                        </div>
 
-export default RatingModule
+                        {/* Review Count - Always in One Line */}
+                        <div className="text-sm font-bold w-20 text-left whitespace-nowrap">
+                            {ratings[rating]} reviews
+                        </div>
+                    </div>
+                ))}
+            </div>
+        </div>
+    );
+};
+
+export default RatingModule;

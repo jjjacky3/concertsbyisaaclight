@@ -1,4 +1,4 @@
-import './ComponentStyling/ArtistBanner.css'
+
 
 const ArtistBanner = ({ artist, selectedTour, changeTourFunc }) => {
 
@@ -10,30 +10,47 @@ const ArtistBanner = ({ artist, selectedTour, changeTourFunc }) => {
 
 
     return (
-        <div className='ArtistBanner' style={{ backgroundImage: artistImage, position: 'relative' }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px', height: '120px', position: 'relative' }}>
-                <div className='BannerRatingBox'>{artistRating}</div>
-                <div className='ArtistName'>{artistName}</div>
-            </div>
-            <div style={{ width: '500px', top: '150px', height: '120px', left: '30px', position: 'absolute', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <div className='GoAgain'>
-                    <strong>{goAgain}</strong>
-                    <span style={{ fontSize: '20px' }}>Would go Again</span>
+        <div
+            className="relative w-full h-[300px] bg-cover bg-center text-white p-6 flex flex-col justify-between "
+            style={{ backgroundImage: `url(${artistImage})` }}
+        >
+            {/* Top Section: Rating Box + Artist Name */}
+            <div className="flex items-center justify-between h-[120px] relative">
+                {/* ⭐ Larger Rating Box */}
+                <div className="w-[100px] h-[100px] flex items-center justify-center text-center text-white text-5xl font-bold border-4 border-white rounded-2xl shadow-md ml-6 mt-5">
+                    {artistRating}
                 </div>
-                <div style={{ width: '1px', height: '100px', border: '1px solid white', left: '200px', background: 'white', position: 'absolute' }}></div>
-                <select className='AllToursSelection' value={selectedTour} onChange={changeTourFunc}>
+
+                {/* 🎤 Artist Name */}
+                <h1 className="absolute left-[150px] text-5xl font-bold mt-5">{artistName}</h1>
+            </div>
+
+            {/* Bottom Section: Go Again + Divider + Tour Selection */}
+            <div className="absolute top-[150px] left-[30px] w-[500px] flex items-center justify-between">
+                {/* 🎶 Would Go Again */}
+                <div className="flex flex-col items-center text-center text-white text-3xl font-semibold">
+                    <strong>{goAgain}</strong>
+                    <span className="text-lg">Would go Again</span>
+                </div>
+
+                {/* Vertical Divider */}
+                <div className="border-l-2 border-white h-[100px]"></div>
+
+                {/* 🔽 Tour Selection Dropdown */}
+                <select
+                    className="w-[250px] h-[50px] bg-white bg-opacity-50 text-white text-lg rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-white shadow-md"
+                    value={selectedTour}
+                    onChange={changeTourFunc}
+                >
                     <option value="All Tours">All Tours</option>
                     {artist.tours.map((tour, index) => (
                         <option key={index} value={tour.name}>{tour.name}</option>
                     ))}
-
                 </select>
             </div>
+        </div>
+    );
 
-
-        </div >
-
-    )
 
 }
 

@@ -1,9 +1,8 @@
-import "../components/ComponentStyling/ConcertItem.css"
 import { useState } from "react";
+import { Calendar, MapPin, Star, Ticket, Heart, Share2 } from 'lucide-react';
+import { stringify } from "flatted";
 
 const ConcertItem = ({ concert, clickItemFunc, isSelected }) => {
-
-    const [borderWeight, setBorderWeight] = useState(0);
 
     let concertTitle = concert.name
     let concertCity = concert.city
@@ -17,31 +16,70 @@ const ConcertItem = ({ concert, clickItemFunc, isSelected }) => {
         clickItemFunc(concert)
     }
 
+    const handleDragStart = (e) => {
+        e.dataTransfer.setData("concertData", stringify(concert));
+        console.log(e)
+    };
+
     return (
         <div
-            className='ConcertDisplayBox'
-            style={{ position: "relative", left: "10px", padding: "20px", border: isSelected ? "5px solid black" : "none", cursor: "pointer" }}
+            draggable
+            onDragStart={handleDragStart}
+            className="w-[300px] h-[200px] bg-gray-700/70 text-white rounded-xl shadow-2xl border border-gray-600/50 p-5 mt-2 transform transition-transform duration-300 hover:scale-[1.02] hover:shadow-[0px_10px_30px_rgba(0,0,0,0.3)] cursor-pointer"
+            // className="w-[650px] h-[275px] bg-gray-700/70 text-white rounded-xl shadow-2xl border border-gray-600/50 p-5 mt-2 transform transition-transform duration-300 hover:scale-[1.02] hover:shadow-[0px_10px_30px_rgba(0,0,0,0.3)] cursor-pointer"
             onClick={clicked}
         >
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px' }}>
-                <p className='TourLabel' style={{ margin: 0 }}>{concertTitle + ', ' + concertCity}</p>
-                <p className='DateLabel' style={{ margin: 0 }}>{concertDate}</p>
+            {/* Top Section: Artist Name + Rating */}
+            <div className="flex justify-between items-center">
+                <h3 className="text-2xl font-bold">{concertTitle}</h3>
+                {/* ⭐ Fixed Rating Box - Positioned in the Top-Right */}
+                <div className="absolute bottom-3 right-3 flex items-center space-x-2 bg-gray-700 px-5 py-3 rounded-lg text-lg shadow-md">
+                    <Star className="w-6 h-6 text-yellow-500" />
+                    <span className="font-semibold">{concertRate}</span>
+                </div>
             </div>
-            <div className='ConcertTour'>{concertTour.name}</div>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px' }}>
-                <p className='TourDes' style={{ marginTop: '10px' }}>{concertDes}</p>
-                <div className='ConcertRatingBox'>{concertRate}</div>
+
+            {/* Tour Name */}
+            <p className="text-gray-400">{concertTour.name}</p>
+
+            {/* Date & Location */}
+            <div className="flex items-center space-x-4 text-gray-300 text-sm mt-2">
+                <div className="flex items-center space-x-1">
+                    <Calendar className="w-4 h-4" />
+                    <span>{concertDate}</span>
+                </div>
+                <div className="flex items-center space-x-1">
+                    <MapPin className="w-4 h-4" />
+                    <span>{concertCity}</span>
+                </div>
             </div>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: '20px', marginTop: '20px' }}>
-                <p className='ConcertPriceBox'>{concertPrice}</p>
-                <button className='FullDetailsButton' onClick={(e) => {
-                    e.stopPropagation();
-                    console.log(console.log(concert));
-                }}>Full Details</button>
-            </div>
-        </div>
 
 
+            {/* Description Section */}
+            {/* <p className="text-sm text-gray-300 mt-3 break-words">{concertDes}</p> */}
+
+            {/* Tags and Price Section */}
+            <div className="flex justify-between items-center mt-4">
+                {/*{/* Tags
+                <div className="flex flex-wrap gap-2">
+                    {concertTags && concertTags.map(tag => (
+                        <span
+                            key={tag}
+                            className="px-2 py-1 bg-gray-700 rounded-full text-xs text-gray-300"
+                        >
+                            {tag}
+                        </span>
+                    ))}
+                </div>*/}
+
+                {/* Price */}
+                <div className="flex items-center space-x-2 absolute bottom-5 left-3">
+                    <Ticket className="w-4 h-4 text-green-500" />
+                    <span className="font-medium text-green-500">{concertPrice}+</span>
+                </div>
+            </div>
+
+        </div >
     )
 }
 
