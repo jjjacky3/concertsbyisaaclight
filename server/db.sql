@@ -45,19 +45,9 @@ CREATE TABLE Review (
     rID SERIAL PRIMARY KEY,
     uID INT NOT NULL,
     cID INT NOT NULL,
+    rating INT NOT NULL,
     reviewDate DATE NOT NULL,
     reviewText TEXT,
-    FOREIGN KEY (uID) REFERENCES "User"(uID) ON DELETE CASCADE,
-    FOREIGN KEY (cID) REFERENCES Concert(cID) ON DELETE CASCADE,
-    CONSTRAINT review_attended_constraint 
-        CHECK ((uID, cID) IN (SELECT uID, cID FROM Attended))  -- Ensures only attendees can review
-);
-
--- Create the Attended table
-CREATE TABLE Attended (
-    uID INT NOT NULL,
-    cID INT NOT NULL,
-    PRIMARY KEY (uID, cID),
     FOREIGN KEY (uID) REFERENCES "User"(uID) ON DELETE CASCADE,
     FOREIGN KEY (cID) REFERENCES Concert(cID) ON DELETE CASCADE
 );

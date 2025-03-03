@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { 
   X, 
   Upload, 
@@ -27,6 +27,24 @@ const UploadConcertModal = ({ isOpen, onClose, onSuccess }) => {
   const [hoverRating, setHoverRating] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+
+  const modalRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (modalRef.current && !modalRef.current.contains(event.target)) {
+        onClose(); // Close the modal
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isOpen, onClose]);
 
   const resetForm = () => {
     setFormData({
@@ -131,7 +149,7 @@ const UploadConcertModal = ({ isOpen, onClose, onSuccess }) => {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm">
-      <div className="relative w-full max-w-sm md:max-w-md mx-4 bg-gray-900 dark:bg-gray-800 border border-gray-700 rounded-xl shadow-xl p-6 max-h-[80vh] overflow-y-auto">
+      <div ref = {modalRef} className="relative w-full max-w-sm md:max-w-md mx-4 bg-gray-900 dark:bg-gray-800 border border-gray-700 rounded-xl shadow-xl p-6 max-h-[80vh] overflow-y-auto">
         
         <button
           onClick={onClose}
