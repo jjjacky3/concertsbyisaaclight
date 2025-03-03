@@ -1,13 +1,7 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import { Calendar, MapPin, Star, Ticket, Heart, Share2 } from 'lucide-react';
-import { NavigationContext } from '../App'; // Import the navigation context
-import Artist from '../../../server/models/Artist';
-import Tour from '../../../server/models/Tour';
 
 const ConcertCard = ({ concert, onClick }) => {
-  // Access the navigation context
-  const { navigateToArtistPage } = useContext(NavigationContext);
-  
   // Format the date from ISO to display format
   const formatDate = (isoDate) => {
     if (!isoDate) return '';
@@ -26,60 +20,18 @@ const ConcertCard = ({ concert, onClick }) => {
     return image;
   };
 
-  // Handle card click - either show details or navigate to artist page based on the click type
-  const handleCardClick = (e) => {
-    if (e.target.closest('.artist-link')) {
-      // If clicking on the artist name, navigate to artist page
-      e.stopPropagation();
-      
-      // Create a new Artist instance for the clicked artist if it's not AlecBenjamin
-      if (concert.artist !== 'Alec Benjamin') {
-        // Create a default artist with minimal data
-        const newArtist = new Artist(
-          concert.artist,
-          { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 }, // Empty ratings
-          "https://source.unsplash.com/random/1200x400/?concert", // Default image
-          0 // Default go-again percentage
-        );
-        
-        // Create a default tour
-        const defaultTour = new Tour(newArtist, "Upcoming Shows");
-        
-        // Navigate to the artist page with this artist
-        navigateToArtistPage(newArtist);
-      } else {
-        // For Alec Benjamin, just navigate to the artist page with default artist
-        navigateToArtistPage();
-      }
-    } else {
-      // For clicks elsewhere on the card, show the concert details modal
-      onClick(concert);
-    }
-  };
-
-  // Handle direct navigation to artist page
+  // Function to navigate to artist page
   const navigateToArtist = (e) => {
     e.stopPropagation();
     
-    // Similar logic to above, but in a separate function for the direct click
-    if (concert.artist !== 'Alec Benjamin') {
-      const newArtist = new Artist(
-        concert.artist,
-        { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 },
-        "https://source.unsplash.com/random/1200x400/?concert",
-        0
-      );
-      
-      const defaultTour = new Tour(newArtist, "Upcoming Shows");
-      navigateToArtistPage(newArtist);
-    } else {
-      navigateToArtistPage();
-    }
+    // Generate an artist ID from the artist name (in a real app, you'd use the actual artist ID)
+    const artistId = concert.artist.toLowerCase().replace(/\s+/g, '-');
+    window.location.href = `/artist/${artistId}`;
   };
 
   return (
     <div
-      onClick={handleCardClick}
+      onClick={() => onClick(concert)}
       className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden transform hover:scale-105 transition-transform duration-300 cursor-pointer"
     >
       <div className="relative group">
@@ -112,7 +64,7 @@ const ConcertCard = ({ concert, onClick }) => {
         <div className="flex justify-between items-start">
           <div>
             <h3 
-              className="font-bold text-lg artist-link hover:text-indigo-500 dark:hover:text-indigo-400 cursor-pointer"
+              className="font-bold text-lg hover:text-blue-500 cursor-pointer"
               onClick={navigateToArtist}
             >
               {concert.artist}
