@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import HomePage from './pages/home.jsx'
 import './index.css'
 import ArtistPage from './pages/artistPage.jsx'
@@ -8,16 +8,14 @@ import Concert from '../../server/models/DamienConcert.js'
 import AlecBenjaminBanner from '/Users/yam/Downloads/concertsbyisaaclight/client/src/components/ArtistBannerImages/AlecBenjaminBannerImage.jpg';
 import UserPage from './pages/UserPage.jsx'
 
-const AlecBenjamin = new Artist(
-  'Alec Benjamin',
-  { 5: 10, 4: 2, 3: 1, 2: 1, 1: 1 },
-  AlecBenjaminBanner, // Use the imported image directly
-  90
-);
-
-
+// Create a context to share the navigation state and functions
+export const NavigationContext = React.createContext();
 
 function App() {
+  // State to control which page is displayed
+  const [currentPage, setCurrentPage] = useState('home');
+  // State to store the currently selected artist
+  const [currentArtist, setCurrentArtist] = useState(null);
 
   // Create Alec Benjamin artist instance
   const AlecBenjamin = new Artist(
@@ -49,7 +47,7 @@ function App() {
       'March 15',
       'Los Angeles',
       4.8,
-      'Step into a world of vivid storytelling and heartfelt melodies with Alec Benjamin’s "The Lyricist’s Journey Tour." This one-night-only experience will immerse fans in his signature acoustic sound, raw emotions, and captivating narratives. From beloved classics to new, soul-stirring tracks, this concert promises to be a night to remember.',
+      'Step into a world of vivid storytelling and heartfelt melodies with Alec Benjamins "The Lyricists Journey Tour." This one-night-only experience will immerse fans in his signature acoustic sound, raw emotions, and captivating narratives. From beloved classics to new, soul-stirring tracks, this concert promises to be a night to remember.',
       79,
       tour2
     ),
@@ -59,7 +57,7 @@ function App() {
       'June 22',
       'Chicago',
       4.3,
-      'Lose yourself in the poetic storytelling and hauntingly beautiful melodies of Alec Benjamin’s "Reflections in Sound Tour." This intimate performance will take audiences on an emotional journey through music, blending heartfelt lyrics with captivating instrumentals. Featuring a mix of chart-topping hits and exclusive new material, this concert is a must-see for fans who love music that tells a story.',
+      'Lose yourself in the poetic storytelling and hauntingly beautiful melodies of Alec Benjamins "Reflections in Sound Tour." This intimate performance will take audiences on an emotional journey through music, blending heartfelt lyrics with captivating instrumentals. Featuring a mix of chart-topping hits and exclusive new material, this concert is a must-see for fans who love music that tells a story.',
       50,
       tour1
     ),
@@ -73,7 +71,6 @@ function App() {
       95,
       tour2
     ),
-
     new Concert(
       'Alec Benjamin',
       'Melodies & Memories',
@@ -84,18 +81,16 @@ function App() {
       85,
       tour2
     ),
-
     new Concert(
       'Alec Benjamin',
       'Unplugged & Raw',
       'July 12',
       'Seattle',
       4.7,
-      'Join Alec Benjamin for a stripped-down, acoustic night where he shares the raw emotions behind his songs. This special performance offers fans a closer, more personal connection to Alec’s music, featuring deep cuts and new material never performed live before.',
+      'Join Alec Benjamin for a stripped-down, acoustic night where he shares the raw emotions behind his songs. This special eprformance offers fans a closer, more personal connection to Alecs music, featuring deep cuts and new material never performed live before.',
       75,
       tour1
     ),
-
     new Concert(
       'Alec Benjamin',
       'The Echoes Tour',
@@ -111,18 +106,47 @@ function App() {
   // Add concerts to artist
   concerts.forEach(concert => AlecBenjamin.addConcert(concert));
 
+  // Navigation functions
+  const navigateToHome = () => {
+    setCurrentPage('home');
+  };
 
+  const navigateToArtistPage = (artist) => {
+    setCurrentArtist(artist || AlecBenjamin); // Use the provided artist or default to AlecBenjamin
+    setCurrentPage('artist');
+  };
 
+  const navigateToUserPage = () => {
+    setCurrentPage('user');
+  };
 
+  // Create context value
+  const navigationContext = {
+    navigateToHome,
+    navigateToArtistPage,
+    navigateToUserPage,
+    currentArtist
+  };
 
+  // Render the current page based on state
+  const renderCurrentPage = () => {
+    switch (currentPage) {
+      case 'home':
+        return <HomePage />;
+      case 'artist':
+        return <ArtistPage artist={currentArtist || AlecBenjamin} />;
+      case 'user':
+        return <UserPage />;
+      default:
+        return <HomePage />;
+    }
+  };
 
   return (
-    <>
-      <HomePage></HomePage>
-      <ArtistPage artist={AlecBenjamin} />
-      <UserPage></UserPage>
-    </>
-  )
+    <NavigationContext.Provider value={navigationContext}>
+      {renderCurrentPage()}
+    </NavigationContext.Provider>
+  );
 }
 
 export default App;
