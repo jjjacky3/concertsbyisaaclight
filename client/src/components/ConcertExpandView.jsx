@@ -1,8 +1,7 @@
 import { useState } from "react";
-import { Calendar, MapPin, Star, Ticket, Heart, Share2, X } from 'lucide-react';
+import { Calendar, MapPin, Star, Ticket, Heart, Share2, X, User } from 'lucide-react';
 
-const ConcertExpandedView = ({ concert, closeOverlay }) => {
-
+const ConcertExpandedView = ({ concert, closeOverlay, navigateToArtist }) => {
     if (!concert) return null;
 
     let concertTitle = concert.name
@@ -12,12 +11,17 @@ const ConcertExpandedView = ({ concert, closeOverlay }) => {
     let concertRate = concert.rating
     let concertPrice = "$" + concert.price
     let concertTour = concert.tour
+    let artistName = concert.artist || 'Alec Benjamin' // Default to Alec Benjamin if missing
 
-    const clicked = () => {
-        clickItemFunc(concert)
+    const handleViewArtist = () => {
+        // Close the overlay first
+        closeOverlay();
+        
+        // Navigate to the artist page with the artist info
+        if (navigateToArtist) {
+            navigateToArtist(artistName);
+        }
     }
-
-
 
     return (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
@@ -58,6 +62,14 @@ const ConcertExpandedView = ({ concert, closeOverlay }) => {
                     </button>
                     <button className="px-4 py-2 bg-blue-600 rounded-lg shadow-md hover:bg-blue-500">
                         <Share2 size={18} className="inline-block mr-2" /> Share
+                    </button>
+                    
+                    {/* New "View Artist" Button */}
+                    <button 
+                        onClick={handleViewArtist}
+                        className="px-4 py-2 bg-purple-600 rounded-lg shadow-md hover:bg-purple-500"
+                    >
+                        <User size={18} className="inline-block mr-2" /> View Artist
                     </button>
                 </div>
             </div>

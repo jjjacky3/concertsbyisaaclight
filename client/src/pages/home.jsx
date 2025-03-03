@@ -7,7 +7,7 @@ import AuthModal from '../components/AuthModal';
 import UploadConcertModal from '../components/UploadConcertModal';
 import { Filter, Menu, Sun, Moon, Timer, TrendingUp, Users, MapPin, LogIn, LogOut, Upload } from 'lucide-react';
 
-const Home = () => {
+const Home = ({ navigateToArtist }) => {
   const [activeGenre, setActiveGenre] = useState('All');
   const [searchTerm, setSearchTerm] = useState('');
   const [isDarkMode, setIsDarkMode] = useState(true);
@@ -88,10 +88,10 @@ const Home = () => {
   const filteredConcerts = concerts.filter(concert => {
     const matchesSearch =
       concert.artist.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      concert.tourName.toLowerCase().includes(searchTerm.toLowerCase());
+      concert.tourName?.toLowerCase().includes(searchTerm.toLowerCase());
 
     const isGenreFilter = ['Pop', 'Rock', 'Hip-Hop', 'Electronic', 'Latin', 'R&B', 'Country', 'Jazz'].includes(activeGenre);
-    const matchesGenre = isGenreFilter ? concert.tags.includes(activeGenre) : true;
+    const matchesGenre = isGenreFilter ? (concert.tags && concert.tags.includes(activeGenre)) : true;
 
     const price = parseFloat(concert.price);
     const matchesPrice = price >= activeFilters.priceRange[0] && price <= activeFilters.priceRange[1];
@@ -99,7 +99,7 @@ const Home = () => {
     const matchesRating = concert.rating >= activeFilters.minRating;
 
     const matchesVenueType = activeFilters.venueTypes.length === 0 || 
-      concert.tags.some(tag => activeFilters.venueTypes.includes(tag.toLowerCase()));
+      (concert.tags && concert.tags.some(tag => activeFilters.venueTypes.includes(tag.toLowerCase())));
 
     return matchesSearch && matchesGenre && matchesPrice && matchesRating && matchesVenueType;
   });
@@ -221,7 +221,11 @@ const Home = () => {
 
       {/* Modals */}
       {selectedConcert && (
-        <ConcertModal concert={selectedConcert} onClose={() => setSelectedConcert(null)} />
+        <ConcertModal 
+          concert={selectedConcert} 
+          onClose={() => setSelectedConcert(null)} 
+          navigateToArtist={navigateToArtist} 
+        />
       )}
 
       {isFilterModalOpen && (
