@@ -66,6 +66,9 @@ const AuthModal = ({ isOpen, onClose }) => {
       localStorage.setItem('user', JSON.stringify(data.user));
       resetForm();
       onClose();
+      
+      // Keep the page reload but add a small flag to help with router initialization
+      localStorage.setItem('justLoggedIn', 'true'); 
       window.location.reload();
 
     } catch (err) {
