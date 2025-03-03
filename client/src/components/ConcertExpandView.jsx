@@ -1,7 +1,10 @@
 import { useState } from "react";
-import { Calendar, MapPin, Star, Ticket, Heart, Share2, X, User } from 'lucide-react';
+import { useNavigate } from "react-router-dom";
+import { Calendar, MapPin, Star, Ticket, Heart, Share2, X, User, ExternalLink } from 'lucide-react';
 
 const ConcertExpandedView = ({ concert, closeOverlay }) => {
+    const navigate = useNavigate();
+    
     if (!concert) return null;
 
     let concertTitle = concert.name;
@@ -16,7 +19,7 @@ const ConcertExpandedView = ({ concert, closeOverlay }) => {
     // Navigate to artist page
     const goToArtistPage = () => {
         const artistId = artistName.toLowerCase().replace(/\s+/g, '-');
-        window.location.href = `/artist/${artistId}`;
+        navigate(`/artist/${artistId}`);
         closeOverlay();
     };
 
@@ -34,16 +37,18 @@ const ConcertExpandedView = ({ concert, closeOverlay }) => {
                 {/* Concert Info */}
                 <h2 className="text-2xl font-bold mb-2">{concertTitle}</h2>
                 
-                {/* Artist Link */}
+                {/* Featured Artist Link - Make this more prominent */}
                 <div 
-                    className="flex items-center space-x-2 text-blue-400 hover:text-blue-300 cursor-pointer mb-2"
+                    className="flex items-center space-x-2 text-blue-400 hover:text-blue-300 cursor-pointer mb-2 
+                    transform hover:scale-105 transition-transform p-1"
                     onClick={goToArtistPage}
                 >
-                    <User size={16} />
-                    <span className="underline">{artistName}</span>
+                    <User size={18} />
+                    <span className="underline font-medium">Artist: {artistName}</span>
+                    <ExternalLink size={14} />
                 </div>
                 
-                <p className="text-gray-400">{concert.tour.name}</p>
+                <p className="text-gray-400">{concert.tour?.name}</p>
                 
                 <div className="flex items-center space-x-3 mt-2">
                     <Calendar size={18} />
@@ -63,7 +68,7 @@ const ConcertExpandedView = ({ concert, closeOverlay }) => {
                 </div>
                 <p className="mt-4">{concertDes}</p>
 
-                {/* Action Buttons */}
+                {/* Action Buttons - Prominent Artist View Button */}
                 <div className="flex space-x-4 mt-6">
                     <button className="px-4 py-2 bg-yellow-500 rounded-lg shadow-md hover:bg-yellow-400">
                         <Heart size={18} className="inline-block mr-2" /> Favorite
@@ -71,12 +76,21 @@ const ConcertExpandedView = ({ concert, closeOverlay }) => {
                     <button className="px-4 py-2 bg-blue-600 rounded-lg shadow-md hover:bg-blue-500">
                         <Share2 size={18} className="inline-block mr-2" /> Share
                     </button>
+                    {/* Make the artist button more prominent */}
                     <button 
-                        className="px-4 py-2 bg-purple-600 rounded-lg shadow-md hover:bg-purple-500"
+                        className="px-4 py-2 bg-purple-600 rounded-lg shadow-md hover:bg-purple-500 transform 
+                        hover:scale-105 transition-transform flex-grow flex items-center justify-center"
                         onClick={goToArtistPage}
                     >
-                        <User size={18} className="inline-block mr-2" /> View Artist
+                        <User size={18} className="inline-block mr-2" /> 
+                        View Artist Page
+                        <ExternalLink size={16} className="ml-2" />
                     </button>
+                </div>
+                
+                {/* Add an additional text hint */}
+                <div className="text-center mt-3 text-gray-400 text-sm">
+                    Click on artist name or button to view all concerts by this artist
                 </div>
             </div>
         </div>
