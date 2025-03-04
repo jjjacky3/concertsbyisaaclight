@@ -3,6 +3,7 @@ import HomePage from './pages/home.jsx'
 import './index.css'
 import ArtistPage from './pages/artistPage.jsx'
 import UserPage from './pages/UserPage.jsx'
+import PostgreSQLTestForm from './pages/TestForm.jsx'
 
 function App() {
   // Simple routing based on current path
@@ -16,6 +17,8 @@ function App() {
       return <ArtistPage />;
     } else if (path === '/user') {
       return <UserPage />;
+    } else if (path === '/test') {
+      return <PostgreSQLTestForm />;
     } else {
       // Default to home if no match
       window.location.href = '/';

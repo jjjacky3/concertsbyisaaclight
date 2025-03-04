@@ -6,7 +6,8 @@ const bodyParser = require("body-parser");
 const indexroute = require("./routes/index");
 const authRoutes = require("./routes/auth");
 const concertRoutes = require("./routes/concerts");
-const pool = require('./db'); // Add this line to import PostgreSQL pool
+const postgresRoutes = require("./routes/postgres"); // Add this line
+const pool = require('./db');
 
 const PORT = process.env.PORT || 3000;
 
@@ -29,6 +30,7 @@ app.use(express.json({ limit: '50mb' }));
 app.use("/", indexroute);
 app.use("/api/auth", authRoutes);
 app.use("/api/concerts", concertRoutes);
+app.use("/api/postgres", postgresRoutes); // Add this line
 
 // MongoDB connection
 const mongoose = require('mongoose');
@@ -37,6 +39,15 @@ const mongoURI = process.env.MONGO_URI;
 mongoose.connect(mongoURI)
   .then(() => console.log("Connected to MongoDB"))
   .catch(err => console.error("MongoDB connection error:", err));
+
+// Test PostgreSQL connection
+pool.query('SELECT NOW()', (err, res) => {
+  if (err) {
+    console.error('PostgreSQL connection error:', err);
+  } else {
+    console.log('Connected to PostgreSQL:', res.rows[0]);
+  }
+});
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
