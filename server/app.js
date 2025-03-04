@@ -6,6 +6,7 @@ const bodyParser = require("body-parser");
 const indexroute = require("./routes/index");
 const authRoutes = require("./routes/auth");
 const concertRoutes = require("./routes/concerts");
+const pool = require('./db'); // Add this line to import PostgreSQL pool
 
 const PORT = process.env.PORT || 3000;
 

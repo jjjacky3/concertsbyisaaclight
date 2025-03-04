@@ -13,5 +13,17 @@ pool.on('connect', () => {
   console.log('Connected to PostgreSQL');
 });
 
-module.exports = pool;
+pool.on('error', (err) => {
+  console.error('PostgreSQL connection error:', err);
+});
 
+// Test the connection immediately
+pool.query('SELECT NOW()', (err, res) => {
+  if (err) {
+    console.error('PostgreSQL connection test failed:', err);
+  } else {
+    console.log('PostgreSQL connection test successful:', res.rows[0]);
+  }
+});
+
+module.exports = pool;
