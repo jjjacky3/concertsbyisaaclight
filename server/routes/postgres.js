@@ -211,7 +211,7 @@ router.post('/complete-concert', validateConcert, handleValidationErrors, async 
 // Get user's concerts
 router.get('/user-concerts', auth, async (req, res) => {
   try {
-    // Get user's concerts from the database
+    const userId = req.user.uid;
     const result = await pool.query(`
       SELECT 
         c.cid,
@@ -221,22 +221,172 @@ router.get('/user-concerts', auth, async (req, res) => {
         a.fname || ' ' || a.lname as artist_name,
         t.name as tour_name,
         v.name as venue_name,
-        v.city
+        v.city,
+        r.rating,
+        r.review_text,
+        CASE WHEN f.uid IS NOT NULL THEN true ELSE false END as favorite
       FROM Concert c
       JOIN Artist a ON c.aid = a.aid
       JOIN Tour t ON c.tid = t.tid
       JOIN Venue v ON c.vid = v.vid
+      LEFT JOIN Review r ON c.cid = r.cid AND r.uid = $1
+      LEFT JOIN Favorite f ON c.cid = f.cid AND f.uid = $1
       ORDER BY c.date DESC, c.time DESC
       LIMIT 50
-    `);
+    `, [userId]);
     
-    res.json(result.rows);
+    // Transform the data to match the frontend expectations
+    const concerts = result.rows.map(concert => ({
+      ...concert,
+      review: concert.rating ? {
+        rating: concert.rating,
+        text: concert.review_text
+      } : null,
+      favorite: concert.favorite
+    }));
+
+    res.json(concerts);
   } catch (error) {
     console.error('Error fetching user concerts:', error);
     res.status(500).json({ 
       message: 'Server error', 
       error: process.env.NODE_ENV === 'development' ? error.message : undefined 
     });
+  }
+});
+
+// Rate a concert
+router.post('/concerts/:id/rate', auth, async (req, res) => {
+  const client = await pool.connect();
+  try {
+    const { id } = req.params;
+    const { rating } = req.body;
+    const userId = req.user.uid;
+
+    if (!rating || rating < 1 || rating > 5) {
+      return res.status(400).json({ message: 'Rating must be between 1 and 5' });
+    }
+
+    await client.query('BEGIN');
+
+    // Check if review exists
+    const existingReview = await client.query(
+      'SELECT * FROM Review WHERE uID = $1 AND cID = $2',
+      [userId, id]
+    );
+
+    let result;
+    if (existingReview.rows.length > 0) {
+      // Update existing review
+      result = await client.query(
+        'UPDATE Review SET rating = $1, updated_at = CURRENT_TIMESTAMP WHERE uID = $2 AND cID = $3 RETURNING *',
+        [rating, userId, id]
+      );
+    } else {
+      // Create new review
+      result = await client.query(
+        'INSERT INTO Review (uID, cID, rating) VALUES ($1, $2, $3) RETURNING *',
+        [userId, id, rating]
+      );
+    }
+
+    await client.query('COMMIT');
+    res.json(result.rows[0]);
+
+  } catch (error) {
+    await client.query('ROLLBACK');
+    console.error('Error rating concert:', error);
+    res.status(500).json({ 
+      message: 'Server error', 
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined 
+    });
+  } finally {
+    client.release();
+  }
+});
+
+// Update review text
+router.post('/concerts/:id/review', auth, async (req, res) => {
+  const client = await pool.connect();
+  try {
+    const { id } = req.params;
+    const { text } = req.body;
+    const userId = req.user.uid;
+
+    await client.query('BEGIN');
+
+    // Check if review exists
+    const existingReview = await client.query(
+      'SELECT * FROM Review WHERE uID = $1 AND cID = $2',
+      [userId, id]
+    );
+
+    let result;
+    if (existingReview.rows.length > 0) {
+      // Update existing review
+      result = await client.query(
+        'UPDATE Review SET review_text = $1, updated_at = CURRENT_TIMESTAMP WHERE uID = $2 AND cID = $3 RETURNING *',
+        [text, userId, id]
+      );
+    } else {
+      // Create new review with null rating
+      result = await client.query(
+        'INSERT INTO Review (uID, cID, rating, review_text) VALUES ($1, $2, NULL, $3) RETURNING *',
+        [userId, id, text]
+      );
+    }
+
+    await client.query('COMMIT');
+    res.json(result.rows[0]);
+
+  } catch (error) {
+    await client.query('ROLLBACK');
+    console.error('Error updating review:', error);
+    res.status(500).json({ 
+      message: 'Server error', 
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined 
+    });
+  } finally {
+    client.release();
+  }
+});
+
+// Toggle favorite status
+router.post('/concerts/:id/favorite', auth, async (req, res) => {
+  const client = await pool.connect();
+  try {
+    const { id } = req.params;
+    const { favorite } = req.body;
+    const userId = req.user.uid;
+
+    await client.query('BEGIN');
+
+    if (favorite) {
+      // Add to favorites
+      await client.query(
+        'INSERT INTO Favorite (uID, cID) VALUES ($1, $2) ON CONFLICT (uID, cID) DO NOTHING',
+        [userId, id]
+      );
+    } else {
+      // Remove from favorites
+      await client.query(
+        'DELETE FROM Favorite WHERE uID = $1 AND cID = $2',
+        [userId, id]
+      );
+    }
+
+    await client.query('COMMIT');
+    res.json({ success: true, favorite });
+
+  } catch (error) {
+    await client.query('ROLLBACK');
+    console.error('Error updating favorite status:', error);
+    res.status(500).json({ 
+      message: 'Server error', 
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined 
+    });
+  } finally {
+    client.release();
   }
 });
 

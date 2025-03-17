@@ -63,12 +63,23 @@ CREATE TABLE Review (
     uID INT NOT NULL,
     cID INT NOT NULL,
     rating INT NOT NULL CHECK (rating BETWEEN 1 AND 5),
-    reviewDate DATE NOT NULL,
-    reviewText TEXT,
+    review_text TEXT,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (uID) REFERENCES "User"(uID) ON DELETE CASCADE,
-    FOREIGN KEY (cID) REFERENCES Concert(cID) ON DELETE CASCADE
+    FOREIGN KEY (cID) REFERENCES Concert(cID) ON DELETE CASCADE,
+    UNIQUE(uID, cID)
+);
+
+-- Create the Favorite table
+CREATE TABLE Favorite (
+    fID SERIAL PRIMARY KEY,
+    uID INT NOT NULL,
+    cID INT NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (uID) REFERENCES "User"(uID) ON DELETE CASCADE,
+    FOREIGN KEY (cID) REFERENCES Concert(cID) ON DELETE CASCADE,
+    UNIQUE(uID, cID)
 );
 
 -- Create indexes for frequently queried columns
@@ -77,6 +88,10 @@ CREATE INDEX idx_venue_city ON Venue(city);
 CREATE INDEX idx_concert_date ON Concert(date);
 CREATE INDEX idx_review_rating ON Review(rating);
 CREATE INDEX idx_user_email ON "User"(email);
+CREATE INDEX idx_review_user ON Review(uID);
+CREATE INDEX idx_review_concert ON Review(cID);
+CREATE INDEX idx_favorite_user ON Favorite(uID);
+CREATE INDEX idx_favorite_concert ON Favorite(cID);
 
 -- Create function to update updated_at timestamp
 CREATE OR REPLACE FUNCTION update_updated_at_column()

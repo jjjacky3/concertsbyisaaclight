@@ -16,7 +16,11 @@ const UserPage = () => {
         const storedUser = localStorage.getItem('user');
         const token = localStorage.getItem('token');
         
+        console.log('Stored user:', storedUser);
+        console.log('Token exists:', !!token);
+        
         if (!storedUser || !token) {
+            console.log('No user or token found, redirecting to home');
             navigate('/');
             return;
         }
@@ -27,19 +31,26 @@ const UserPage = () => {
 
     const fetchUserConcerts = async (token) => {
         try {
+            console.log('Fetching concerts with token:', token);
             const response = await fetch('http://localhost:3000/api/postgres/user-concerts', {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json'
-                }
+                },
+                credentials: 'include'
             });
+
+            console.log('Response status:', response.status);
+            const responseText = await response.text();
+            console.log('Response text:', responseText);
 
             if (!response.ok) {
                 throw new Error('Failed to fetch user concerts');
             }
 
-            const data = await response.json();
+            const data = JSON.parse(responseText);
+            console.log('Fetched concerts:', data);
             setUserConcerts(data);
         } catch (err) {
             console.error('Error fetching concerts:', err);
@@ -53,6 +64,93 @@ const UserPage = () => {
         localStorage.removeItem('user');
         localStorage.removeItem('token');
         navigate('/');
+    };
+
+    const handleRating = async (concertId, rating) => {
+        try {
+            const token = localStorage.getItem('token');
+            const response = await fetch(`http://localhost:3000/api/postgres/concerts/${concertId}/rate`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ rating })
+            });
+
+            if (!response.ok) throw new Error('Failed to update rating');
+
+            // Update local state
+            setUserConcerts(concerts => 
+                concerts.map(c => 
+                    c.cid === concertId 
+                        ? { ...c, review: { ...c.review, rating } }
+                        : c
+                )
+            );
+        } catch (err) {
+            console.error('Error updating rating:', err);
+            // You might want to show an error toast here
+        }
+    };
+
+    const handleToggleFavorite = async (concertId) => {
+        try {
+            const token = localStorage.getItem('token');
+            const concert = userConcerts.find(c => c.cid === concertId);
+            const newFavoriteStatus = !concert.favorite;
+
+            const response = await fetch(`http://localhost:3000/api/postgres/concerts/${concertId}/favorite`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ favorite: newFavoriteStatus })
+            });
+
+            if (!response.ok) throw new Error('Failed to update favorite status');
+
+            // Update local state
+            setUserConcerts(concerts =>
+                concerts.map(c =>
+                    c.cid === concertId
+                        ? { ...c, favorite: newFavoriteStatus }
+                        : c
+                )
+            );
+        } catch (err) {
+            console.error('Error updating favorite status:', err);
+            // You might want to show an error toast here
+        }
+    };
+
+    const handleReviewText = async (concertId, text) => {
+        try {
+            const token = localStorage.getItem('token');
+            const response = await fetch(`http://localhost:3000/api/postgres/concerts/${concertId}/review`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ text })
+            });
+
+            if (!response.ok) throw new Error('Failed to update review');
+
+            // Update local state
+            setUserConcerts(concerts =>
+                concerts.map(c =>
+                    c.cid === concertId
+                        ? { ...c, review: { ...c.review, text } }
+                        : c
+                )
+            );
+        } catch (err) {
+            console.error('Error updating review:', err);
+            // You might want to show an error toast here
+        }
     };
 
     if (loading) {
@@ -148,25 +246,73 @@ const UserPage = () => {
                         {userConcerts.map((concert, index) => (
                             <div 
                                 key={index} 
-                                className="border-b border-gray-700 pb-4 hover:bg-gray-700 p-4 rounded-lg transition-colors"
+                                className="bg-gray-700/50 rounded-lg p-4 hover:bg-gray-700 transition-colors"
                             >
                                 <div className="flex justify-between items-start">
-                                    <div>
-                                        <h3 className="font-semibold text-purple-400">{concert.artist_name}</h3>
-                                        <p className="text-gray-400">{concert.venue_name}</p>
-                                        <p className="text-sm text-gray-500">
-                                            {new Date(concert.date).toLocaleDateString()}
-                                        </p>
-                                    </div>
-                                    {concert.review && (
-                                        <div className="flex items-center space-x-1">
-                                            <Star className="w-4 h-4 text-yellow-500" />
-                                            <span>{concert.review.rating}</span>
+                                    <div className="flex-grow">
+                                        <h3 className="font-semibold text-purple-400 text-lg">{concert.artist_name}</h3>
+                                        <p className="text-gray-300">{concert.venue_name}, {concert.city}</p>
+                                        <div className="flex items-center space-x-4 mt-1 text-gray-400">
+                                            <p>{new Date(concert.date).toLocaleDateString()}</p>
+                                            <p>{concert.time}</p>
+                                            <p className="text-green-400">${concert.price}</p>
                                         </div>
-                                    )}
+                                    </div>
+                                    <div className="flex items-center space-x-4">
+                                        {/* Rating Section */}
+                                        <div className="flex items-center space-x-1">
+                                            {[1, 2, 3, 4, 5].map((star) => (
+                                                <button
+                                                    key={star}
+                                                    onClick={() => handleRating(concert.cid, star)}
+                                                    className={`focus:outline-none transition-colors ${
+                                                        (concert.review?.rating || 0) >= star 
+                                                            ? 'text-yellow-500' 
+                                                            : 'text-gray-600 hover:text-yellow-400'
+                                                    }`}
+                                                >
+                                                    <Star className="w-5 h-5" fill={concert.review?.rating >= star ? "currentColor" : "none"} />
+                                                </button>
+                                            ))}
+                                        </div>
+                                        
+                                        {/* Favorite Button */}
+                                        <button
+                                            onClick={() => handleToggleFavorite(concert.cid)}
+                                            className={`focus:outline-none transition-colors ${
+                                                concert.favorite ? 'text-red-500' : 'text-gray-600 hover:text-red-400'
+                                            }`}
+                                        >
+                                            <Heart 
+                                                className="w-6 h-6" 
+                                                fill={concert.favorite ? "currentColor" : "none"} 
+                                            />
+                                        </button>
+                                    </div>
                                 </div>
+                                
+                                {/* Review Text Area - Only show if rated */}
+                                {concert.review?.rating > 0 && (
+                                    <div className="mt-3">
+                                        <textarea
+                                            placeholder="Add your thoughts about this concert..."
+                                            value={concert.review?.text || ''}
+                                            onChange={(e) => handleReviewText(concert.cid, e.target.value)}
+                                            className="w-full bg-gray-800 text-white rounded-lg p-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                            rows="2"
+                                        />
+                                    </div>
+                                )}
                             </div>
                         ))}
+                        
+                        {userConcerts.length === 0 && (
+                            <div className="text-center py-8 text-gray-400">
+                                <Calendar className="w-16 h-16 mx-auto mb-4 opacity-50" />
+                                <p className="text-lg">No concerts in your history yet</p>
+                                <p className="text-sm">Concerts you attend will appear here</p>
+                            </div>
+                        )}
                     </div>
                 </div>
 
