@@ -6,6 +6,8 @@ import ConcertItem from "../components/ConcertItem";
 import RatingModule from "../components/RatingModule";
 import CompareModule from "../components/CompareModule";
 import ConcertExpandedView from "../components/ConcertExpandView";
+import PostgreSQLTestForm from "./TestForm";
+import { X, Loader2 } from "lucide-react";
 
 const ArtistPage = () => {
     // Extract artistId from URL path manually instead of using useParams
@@ -14,6 +16,8 @@ const ArtistPage = () => {
     const [artist, setArtist] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [showTestForm, setShowTestForm] = useState(false);
+    const [isDarkMode, setIsDarkMode] = useState(true);
     
     const [selectedTour, setSelectedTour] = useState("All Tours");
     const [concertsShown, setConcertsShown] = useState([]);
@@ -21,6 +25,15 @@ const ArtistPage = () => {
     const [comparedConcertOne, setComparedConcertOne] = useState(null);
     const [comparedConcertTwo, setComparedConcertTwo] = useState(null);
     const [selectedConcert, setSelectedConcert] = useState(null);
+
+    // Dark mode effect
+    useEffect(() => {
+        if (isDarkMode) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+    }, [isDarkMode]);
 
     // Fetch artist data based on artistId
     useEffect(() => {
@@ -132,9 +145,15 @@ const ArtistPage = () => {
     // Show loading state
     if (loading) {
         return (
-            <div className="min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white flex items-center justify-center">
-                <NavBar />
-                <div className="text-xl">Loading artist information...</div>
+            <div className="min-h-screen bg-gray-900 text-white">
+                <NavBar isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode} onTestDBClick={() => setShowTestForm(true)} />
+                <div className="flex flex-col items-center justify-center h-[calc(100vh-64px)]">
+                    <div className="flex flex-col items-center space-y-4">
+                        <Loader2 className="w-12 h-12 animate-spin text-purple-500" />
+                        <div className="text-xl">Loading artist information...</div>
+                        <div className="text-gray-400">Please wait while we fetch the data</div>
+                    </div>
+                </div>
             </div>
         );
     }
@@ -142,11 +161,19 @@ const ArtistPage = () => {
     // Show error state
     if (error) {
         return (
-            <div className="min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white">
-                <NavBar />
+            <div className="min-h-screen bg-gray-900 text-white">
+                <NavBar isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode} onTestDBClick={() => setShowTestForm(true)} />
                 <div className="flex flex-col items-center justify-center h-[calc(100vh-64px)]">
-                    <h2 className="text-2xl font-bold mb-4">Artist Not Found</h2>
-                    <p>{error}</p>
+                    <div className="text-center space-y-4">
+                        <h2 className="text-2xl font-bold text-red-500">Error Loading Artist</h2>
+                        <p className="text-gray-400">{error}</p>
+                        <button 
+                            onClick={() => window.location.reload()}
+                            className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+                        >
+                            Try Again
+                        </button>
+                    </div>
                 </div>
             </div>
         );
@@ -154,9 +181,9 @@ const ArtistPage = () => {
 
     // Show artist page if data is loaded
     return (
-        <div className="min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white relative">
+        <div className="min-h-screen bg-gray-900 text-white relative">
             {/* Navbar */}
-            <NavBar />
+            <NavBar isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode} onTestDBClick={() => setShowTestForm(true)} />
 
             {/* Artist Banner */}
             <ArtistBanner artist={artist} selectedTour={selectedTour} changeTourFunc={handleChange} />
@@ -203,6 +230,21 @@ const ArtistPage = () => {
                     </div>
                 </div>
             </div>
+
+            {/* PostgreSQL Test Form Modal */}
+            {showTestForm && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+                    <div className="bg-gray-800 p-6 rounded-lg w-full max-w-5xl max-h-[90vh] overflow-y-auto relative">
+                        <button 
+                            onClick={() => setShowTestForm(false)}
+                            className="absolute top-4 right-4 p-2 rounded-full hover:bg-gray-700"
+                        >
+                            <X className="w-5 h-5 text-white" />
+                        </button>
+                        <PostgreSQLTestForm />
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

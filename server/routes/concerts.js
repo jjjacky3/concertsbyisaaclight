@@ -2,6 +2,7 @@
 const express = require('express');
 const router = express.Router();
 const Concert = require('../models/Concert');
+const concertService = require('../services/concertService');
 
 // GET all concerts
 router.get('/', async (req, res) => {
@@ -65,6 +66,43 @@ router.delete('/:id', async (req, res) => {
   } catch (error) {
     res.status(500).json({ message: 'Error deleting concert', error: error.message });
   }
+});
+
+// Sync mock concerts to database
+router.post('/sync', async (req, res) => {
+    try {
+        const result = await concertService.syncMockConcertsToDatabase();
+        res.json(result);
+    } catch (error) {
+        console.error('Error syncing concerts:', error);
+        res.status(500).json({ 
+            message: 'Failed to sync concerts',
+            error: process.env.NODE_ENV === 'development' ? error.message : undefined
+        });
+    }
+});
+
+// Search concerts with filters
+router.get('/search', async (req, res) => {
+    try {
+        const params = {
+            keyword: req.query.keyword,
+            city: req.query.city,
+            startDate: req.query.startDate,
+            endDate: req.query.endDate,
+            limit: parseInt(req.query.limit) || 20,
+            offset: parseInt(req.query.offset) || 0
+        };
+        
+        const concerts = await concertService.searchConcerts(params);
+        res.json(concerts);
+    } catch (error) {
+        console.error('Error searching concerts:', error);
+        res.status(500).json({ 
+            message: 'Failed to search concerts',
+            error: process.env.NODE_ENV === 'development' ? error.message : undefined
+        });
+    }
 });
 
 module.exports = router;

@@ -1,94 +1,128 @@
 // routes/auth.js
 const express = require('express');
 const router = express.Router();
+const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const User = require('../models/User');
+const pool = require('../db');
+const { body, validationResult } = require('express-validator');
 
-// Register new user
-router.post('/register', async (req, res) => {
+// Validation middleware
+const validateLogin = [
+  body('email').isEmail().withMessage('Please enter a valid email'),
+  body('password').notEmpty().withMessage('Password is required')
+];
+
+const validateRegistration = [
+  body('email').isEmail().withMessage('Please enter a valid email'),
+  body('password').isLength({ min: 8 }).withMessage('Password must be at least 8 characters long'),
+  body('username').notEmpty().withMessage('Username is required')
+];
+
+// Login endpoint
+router.post('/login', validateLogin, async (req, res) => {
   try {
-    const { username, email, password } = req.body;
-
-    // Check if user already exists
-    const existingUser = await User.findOne({ 
-      $or: [{ email }, { username }] 
-    });
-
-    if (existingUser) {
-      return res.status(400).json({ 
-        message: 'User with this email or username already exists' 
-      });
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
     }
 
-    // Create new user
-    const user = new User({
-      username,
-      email,
-      password
-    });
-
-    await user.save();
-
-    // Create JWT token
-    const token = jwt.sign(
-      { userId: user._id },
-      process.env.JWT_SECRET,
-      { expiresIn: '24h' }
-    );
-
-    res.status(201).json({
-      message: 'User registered successfully',
-      token,
-      user: {
-        id: user._id,
-        username: user.username,
-        email: user.email
-      }
-    });
-
-  } catch (error) {
-    console.error('Registration error:', error);
-    res.status(500).json({ message: 'Error registering user' });
-  }
-});
-
-// Login user
-router.post('/login', async (req, res) => {
-  try {
     const { email, password } = req.body;
 
-    // Find user by email
-    const user = await User.findOne({ email });
-    if (!user) {
+    // Check if user exists
+    const userResult = await pool.query(
+      'SELECT * FROM "User" WHERE email = $1',
+      [email]
+    );
+
+    if (userResult.rows.length === 0) {
       return res.status(401).json({ message: 'Invalid credentials' });
     }
 
-    // Check password
-    const isMatch = await user.comparePassword(password);
-    if (!isMatch) {
+    const user = userResult.rows[0];
+
+    // Verify password
+    const isValidPassword = await bcrypt.compare(password, user.password_hash);
+    if (!isValidPassword) {
       return res.status(401).json({ message: 'Invalid credentials' });
     }
 
-    // Create JWT token
+    // Generate JWT token
     const token = jwt.sign(
-      { userId: user._id },
-      process.env.JWT_SECRET,
+      { userId: user.uid },
+      process.env.JWT_SECRET || 'your-secret-key',
       { expiresIn: '24h' }
     );
 
+    // Return user info and token
     res.json({
-      message: 'Login successful',
       token,
       user: {
-        id: user._id,
-        username: user.username,
-        email: user.email
+        uid: user.uid,
+        email: user.email,
+        fname: user.fname,
+        lname: user.lname
       }
     });
 
   } catch (error) {
     console.error('Login error:', error);
-    res.status(500).json({ message: 'Error logging in' });
+    res.status(500).json({ message: 'Server error during login' });
+  }
+});
+
+// Registration endpoint
+router.post('/register', validateRegistration, async (req, res) => {
+  try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
+    const { email, password, username } = req.body;
+
+    // Check if user already exists
+    const existingUser = await pool.query(
+      'SELECT * FROM "User" WHERE email = $1',
+      [email]
+    );
+
+    if (existingUser.rows.length > 0) {
+      return res.status(400).json({ message: 'User already exists' });
+    }
+
+    // Hash password
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+
+    // Create new user
+    const result = await pool.query(
+      'INSERT INTO "User" (fname, lname, email, password_hash) VALUES ($1, $2, $3, $4) RETURNING uid, email, fname, lname',
+      [username, username, email, hashedPassword]
+    );
+
+    const newUser = result.rows[0];
+
+    // Generate JWT token
+    const token = jwt.sign(
+      { userId: newUser.uid },
+      process.env.JWT_SECRET || 'your-secret-key',
+      { expiresIn: '24h' }
+    );
+
+    // Return user info and token
+    res.status(201).json({
+      token,
+      user: {
+        uid: newUser.uid,
+        email: newUser.email,
+        fname: newUser.fname,
+        lname: newUser.lname
+      }
+    });
+
+  } catch (error) {
+    console.error('Registration error:', error);
+    res.status(500).json({ message: 'Server error during registration' });
   }
 });
 

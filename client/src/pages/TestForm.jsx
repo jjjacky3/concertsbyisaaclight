@@ -8,7 +8,8 @@ const PostgresTestForm = () => {
     venueCity: '',
     tourName: '',
     concertDate: '',
-    concertTime: ''
+    concertTime: '',
+    price: ''
   });
   
   const [message, setMessage] = useState('');
@@ -16,6 +17,7 @@ const PostgresTestForm = () => {
   const [artists, setArtists] = useState([]);
   const [venues, setVenues] = useState([]);
   const [concerts, setConcerts] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
   
   // Fetch data on component mount
   useEffect(() => {
@@ -24,22 +26,31 @@ const PostgresTestForm = () => {
    
   const fetchData = async () => {
     try {
+      setIsLoading(true);
+      setError('');
+      
       // Fetch artists
       const artistsRes = await fetch('http://localhost:3000/api/postgres/artists');
+      if (!artistsRes.ok) throw new Error('Failed to fetch artists');
       const artistsData = await artistsRes.json();
-      setArtists(artistsData);
+      setArtists(artistsData || []);
       
       // Fetch venues
       const venuesRes = await fetch('http://localhost:3000/api/postgres/venues');
+      if (!venuesRes.ok) throw new Error('Failed to fetch venues');
       const venuesData = await venuesRes.json();
-      setVenues(venuesData);
+      setVenues(venuesData || []);
       
       // Fetch concerts
       const concertsRes = await fetch('http://localhost:3000/api/postgres/concert-details');
+      if (!concertsRes.ok) throw new Error('Failed to fetch concerts');
       const concertsData = await concertsRes.json();
-      setConcerts(concertsData);
+      setConcerts(concertsData || []);
     } catch (err) {
       setError('Error fetching data: ' + err.message);
+      console.error('Error fetching data:', err);
+    } finally {
+      setIsLoading(false);
     }
   };
   
@@ -80,15 +91,33 @@ const PostgresTestForm = () => {
         venueCity: '',
         tourName: '',
         concertDate: '',
-        concertTime: ''
+        concertTime: '',
+        price: ''
       });
       
       // Refresh data
       fetchData();
     } catch (err) {
       setError('Error: ' + err.message);
+      console.error('Error creating concert:', err);
     }
   };
+  
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center p-8">
+        <div className="text-white">Loading data...</div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="p-4 bg-red-500 text-white rounded-lg">
+        {error}
+      </div>
+    );
+  }
   
   return (
     <div className="max-w-4xl mx-auto p-6 bg-gray-800 rounded-lg shadow-lg">
@@ -97,12 +126,6 @@ const PostgresTestForm = () => {
       {message && (
         <div className="bg-green-500 text-white p-3 rounded-lg mb-4">
           {message}
-        </div>
-      )}
-      
-      {error && (
-        <div className="bg-red-500 text-white p-3 rounded-lg mb-4">
-          {error}
         </div>
       )}
       
@@ -194,6 +217,20 @@ const PostgresTestForm = () => {
           </div>
         </div>
         
+        <div>
+          <label className="block text-gray-300 mb-1">Price</label>
+          <input
+            type="number"
+            name="price"
+            value={formData.price}
+            onChange={handleChange}
+            min="0"
+            step="0.01"
+            className="w-full p-2 bg-gray-700 border border-gray-600 rounded text-white"
+            required
+          />
+        </div>
+        
         <button
           type="submit"
           className="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded"
@@ -215,7 +252,7 @@ const PostgresTestForm = () => {
                 </tr>
               </thead>
               <tbody>
-                {artists.map(artist => (
+                {Array.isArray(artists) && artists.map(artist => (
                   <tr key={artist.aid} className="border-t border-gray-600">
                     <td className="p-2 text-gray-300">{artist.aid}</td>
                     <td className="p-2 text-gray-300">{artist.fname}</td>
@@ -239,7 +276,7 @@ const PostgresTestForm = () => {
                 </tr>
               </thead>
               <tbody>
-                {venues.map(venue => (
+                {Array.isArray(venues) && venues.map(venue => (
                   <tr key={venue.vid} className="border-t border-gray-600">
                     <td className="p-2 text-gray-300">{venue.vid}</td>
                     <td className="p-2 text-gray-300">{venue.name}</td>
@@ -264,10 +301,11 @@ const PostgresTestForm = () => {
                   <th className="p-2 text-left text-gray-300">City</th>
                   <th className="p-2 text-left text-gray-300">Date</th>
                   <th className="p-2 text-left text-gray-300">Time</th>
+                  <th className="p-2 text-left text-gray-300">Price</th>
                 </tr>
               </thead>
               <tbody>
-                {concerts.map(concert => (
+                {Array.isArray(concerts) && concerts.map(concert => (
                   <tr key={concert.cid} className="border-t border-gray-600">
                     <td className="p-2 text-gray-300">{concert.cid}</td>
                     <td className="p-2 text-gray-300">{concert.artist_name}</td>
@@ -276,6 +314,7 @@ const PostgresTestForm = () => {
                     <td className="p-2 text-gray-300">{concert.city}</td>
                     <td className="p-2 text-gray-300">{new Date(concert.date).toLocaleDateString()}</td>
                     <td className="p-2 text-gray-300">{concert.time}</td>
+                    <td className="p-2 text-gray-300">${concert.price}</td>
                   </tr>
                 ))}
               </tbody>
