@@ -1,4 +1,4 @@
-import { Menu, Upload, LogIn, LogOut, Sun, Moon, Database } from "lucide-react";
+import { Menu, Upload, LogIn, LogOut, Sun, Moon, Database, User } from "lucide-react";
 import { useState } from "react";
 import PostgreSQLTestForm from "../pages/TestForm.jsx";
 import { X } from "lucide-react";
@@ -45,14 +45,14 @@ const NavBar = ({ isDarkMode, setIsDarkMode, user, onLogout, onLogin }) => {
                         <span className="hidden sm:inline">Test DB</span>
                     </button>
 
-                    {/* Upload Button (Only shown if user is logged in) */}
+                    {/* Account Button (Only shown if user is logged in) */}
                     {user && (
                         <button 
                             onClick={navigateToUser}
                             className="flex items-center space-x-2 px-4 py-2 bg-indigo-600 text-white rounded-lg shadow-md hover:bg-indigo-700"
                         >
-                            <Upload className="w-4 h-4" />
-                            <span className="hidden sm:inline">Upload</span>
+                            <User className="w-4 h-4" />
+                            <span className="hidden sm:inline">Account</span>
                         </button>
                     )}
 
