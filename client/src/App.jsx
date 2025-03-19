@@ -5,7 +5,7 @@ import ArtistPage from './pages/artistPage.jsx'
 import Artist from '../../server/models/Artist.js'
 import Tour from '../../server/models/Tour.js'
 import Concert from '../../server/models/DamienConcert.js'
-import AlecBenjaminBanner from '/Users/damienlo/Desktop/University/CS 370/concertsbyisaaclight/client/src/components/ArtistBannerImages/AlecBenjaminBannerImage.jpg';
+import AlecBenjaminBanner from '/Users/yam/Downloads/concertsbyisaaclight/client/src/components/ArtistBannerImages/AlecBenjaminBannerImage.jpg';
 import UserPage from './pages/UserPage.jsx'
 
 const AlecBenjamin = new Artist(
