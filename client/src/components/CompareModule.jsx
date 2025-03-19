@@ -35,7 +35,7 @@ const CompareModule = ({ concert1, concert2, onDropConcert, setConcertOne, setCo
             {/* Title - Now Matches the Ratings Module */}
             <div className="flex items-center justify-center text-3xl font-bold pb-4 gap-2">
                 <FlipHorizontal className="w-7 h-7 text-yellow-500 relative top-[1px]" />
-                <span className="leading-none">Compare</span>
+                <span className="leading-none">Drag and Compare</span>
             </div>
 
 

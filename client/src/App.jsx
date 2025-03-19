@@ -120,7 +120,7 @@ function App() {
     <>
       <HomePage></HomePage>
       <ArtistPage artist={AlecBenjamin} />
-      <UserPage></UserPage>
+      <UserPage artist={AlecBenjamin}></UserPage>
     </>
   )
 }

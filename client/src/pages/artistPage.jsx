@@ -79,9 +79,8 @@ const ArtistPage = ({ artist }) => {
             {/* Page Layout */}
             <div className="flex justify-center space-x-6 p-6 relative">
                 {/* Concert List Container */}
-                <div className="w-[700px] h-[800px] bg-gray-800 rounded-lg shadow-lg overflow-y-auto p-4 
-                grid grid-cols-2 gap-4">
-                    {/* <div className="w-[700px] h-[800px] bg-gray-800 rounded-lg shadow-lg overflow-y-auto p-4 space-y-4"> */}
+                <div className="transition-transform transform hover:scale-[1.01] hover:shadow-[0px_10px_30px_rgba(0,0,0,0.3)] w-[700px] h-[800px] bg-gray-800 rounded-lg shadow-lg overflow-y-auto p-4 
+                grid grid-cols-2 gap-x-4 gap-y-4">
                     {concertsShown.map((concert, index) => (
                         <ConcertItem
                             key={index}
