@@ -2,6 +2,7 @@
 
 const ArtistBanner = ({ artist, selectedTour, changeTourFunc }) => {
 
+
     let artistImage = artist.image;
     let artistRating = artist.avgRating()
     let artistName = artist.name;

@@ -11,6 +11,7 @@ const ConcertItem = ({ concert, clickItemFunc, isSelected }) => {
     let concertRate = concert.rating
     let concertPrice = "$" + concert.price
     let concertTour = concert.tour
+    let concertImage = concert.iamge
 
     const clicked = () => {
         clickItemFunc(concert)

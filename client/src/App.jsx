@@ -7,6 +7,8 @@ import Tour from '../../server/models/Tour.js'
 import Concert from '../../server/models/DamienConcert.js'
 import AlecBenjaminBanner from '../src/components/ArtistBannerImages/AlecBenjaminBannerImage.jpg'
 import UserPage from './pages/UserPage.jsx'
+import WishListBubble from './components/WishListBubble.jsx'
+import AlecBenjaminTour1Image from './components/ArtistTourImages/AlecBenjaminTour1Image.jpg'
 
 const AlecBenjamin = new Artist(
   'Alec Benjamin',
@@ -41,7 +43,8 @@ function App() {
       4.6,
       'Join Alec Benjamin for an unforgettable evening of storytelling and music on the "Narrated by Heart Tour." Experience his raw, heartfelt lyrics and intimate melodies live as he takes you on a journey through songs like never before. With a setlist featuring fan favorites and exclusive unreleased tracks, this concert promises an emotional and mesmerizing performance that will leave you captivated.',
       90,
-      tour1
+      tour1,
+      AlecBenjaminTour1Image
     ),
     new Concert(
       'Alec Benjamin',
@@ -51,7 +54,8 @@ function App() {
       4.8,
       'Step into a world of vivid storytelling and heartfelt melodies with Alec Benjamin’s "The Lyricist’s Journey Tour." This one-night-only experience will immerse fans in his signature acoustic sound, raw emotions, and captivating narratives. From beloved classics to new, soul-stirring tracks, this concert promises to be a night to remember.',
       79,
-      tour2
+      tour2,
+      AlecBenjaminTour1Image
     ),
     new Concert(
       'Alec Benjamin',
@@ -61,7 +65,8 @@ function App() {
       4.3,
       'Lose yourself in the poetic storytelling and hauntingly beautiful melodies of Alec Benjamin’s "Reflections in Sound Tour." This intimate performance will take audiences on an emotional journey through music, blending heartfelt lyrics with captivating instrumentals. Featuring a mix of chart-topping hits and exclusive new material, this concert is a must-see for fans who love music that tells a story.',
       50,
-      tour1
+      tour1,
+      AlecBenjaminTour1Image
     ),
     new Concert(
       'Alec Benjamin',
@@ -71,7 +76,8 @@ function App() {
       4.7,
       'Join Alec Benjamin for an intimate evening on "The Heartstrings Tour," where his deeply personal lyrics and storytelling take center stage. This show will feature stripped-down acoustic performances of fan-favorite songs, as well as brand-new tracks that capture the raw essence of his songwriting. A truly special night for those who connect with music on an emotional level.',
       95,
-      tour2
+      tour2,
+      AlecBenjaminTour1Image
     ),
 
     new Concert(
@@ -82,7 +88,8 @@ function App() {
       4.5,
       'Experience an evening of nostalgia and emotion as Alec Benjamin takes you on a journey through his most touching and heartfelt songs. "Melodies & Memories" blends acoustic storytelling with beautifully crafted lyrics, creating an intimate and unforgettable concert experience.',
       85,
-      tour2
+      tour2,
+      AlecBenjaminTour1Image
     ),
 
     new Concert(
@@ -93,7 +100,8 @@ function App() {
       4.7,
       'Join Alec Benjamin for a stripped-down, acoustic night where he shares the raw emotions behind his songs. This special performance offers fans a closer, more personal connection to Alec’s music, featuring deep cuts and new material never performed live before.',
       75,
-      tour1
+      tour1,
+      AlecBenjaminTour1Image
     ),
 
     new Concert(
@@ -104,7 +112,8 @@ function App() {
       4.8,
       'Feel the echoes of emotion as Alec Benjamin delivers a setlist filled with fan-favorites and new releases. With an immersive atmosphere and deeply personal storytelling, "The Echoes Tour" is a must-attend experience for those who love lyrical depth and captivating melodies.',
       100,
-      tour2
+      tour2,
+      AlecBenjaminTour1Image
     )
   ];
 

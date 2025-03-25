@@ -7,11 +7,35 @@ import NavBar from '../components/NavBar'
 import ConcertItem from "../components/ConcertItem";
 import RatingModule from "../components/RatingModule";
 import CompareModule from "../components/CompareModule";
+import ConcertExpandedView from "../components/ConcertExpandView";
+import WishListBubble from "../components/WishListBubble";
 
 const UserPage = ({ artist }) => {
 
+    const wishListBubbleLayoutKey = {
+        0: [1.8, '280px', '200px'],
+        1: [1.24, '45px', '183px'],
+        2: [1.24, '470px', '340px'],
+        3: [1.24, '380px', '40px'],
+        4: [1, '170px', '30px'],
+        5: [1, '-10px', '0px'],
+        6: [1, '90px', '330px'],
+        7: [1, '90px', '330px'],
+        8: [1, '280px', '370px'],
+        9: [1, '520px', '190px'],
+        10: [1, '550px', '20px']
+    };
     const concertList = artist.concerts
-    const [wishList, setWishList] = useState([])
+    const testConcert = concertList[1]
+    const [wishList, setWishList] = useState([]);
+    const [selectedConcert, setSelectedConcert] = useState(null)
+    console.log("TestConcert:")
+    console.log(testConcert)
+
+    // useEffect(() => {
+    //     setWishList([testConcert])
+    //     console.log(wishList)
+    // }, [testConcert]);
 
     const handleDragOver = (e) => {
         e.preventDefault(); // Required to allow dropping
@@ -19,14 +43,37 @@ const UserPage = ({ artist }) => {
 
     const handleDrop = (e) => {
         e.preventDefault();
-        setWishList(wishList.push(e))
+        try {
+            const concertData = JSON.parse(e.dataTransfer.getData("concertData"));
+            setWishList((prevList) => [...prevList, concertData]);
+            console.log("WishList:", [...wishList, concertData]);
+        } catch (err) {
+            console.error("Failed to parse concertData", err);
+        }
     };
+
+    const concertItemClicked = (concert) => {
+        setSelectedConcert(concert)
+    };
+
+    const closeOverlay = () => {
+        setSelectedConcert(null)
+    }
 
 
     return (
         <div className="min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white">
             {/* Navbar */}
             <NavBar />
+
+            {/* Overlay Panel */}
+            {selectedConcert && (
+                <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
+                    <div className="bg-gray-800 p-6 rounded-lg shadow-lg w-[600px] h-[400px] flex flex-col items-center justify-center">
+                        <ConcertExpandedView concert={selectedConcert} closeOverlay={closeOverlay} />
+                    </div>
+                </div>
+            )}
 
             <div className="flex justify-center space-x-6 p-6 relative">
                 <div className="w-[750px] flex flex-col space-y-6">
@@ -105,16 +152,17 @@ const UserPage = ({ artist }) => {
                         onDrop={(e) => handleDrop(e)}>
                         <div className="text-2xl font-bold">Wish List</div>
                         <div className=" w-[650px] h-[450px] relative">
-                            <div className="w-[180px] h-[180px] left-[239px] top-[159px] absolute bg-white rounded-full"></div>
-                            <div className="w-[124px] h-[124px] left-[49px] top-[183px] absolute bg-white rounded-full"></div>
-                            <div className="w-[80px] h-[80px] left-[280px] top-[370px] absolute bg-white rounded-full"></div>
-                            <div className="w-[97px] h-[97px] left-[486px] top-[197px] absolute bg-white rounded-full"></div>
-                            <div className="w-[97px] h-[97px] left-[550px] top-[39px] absolute bg-white rounded-full"></div>
-                            <div className="w-[124px] h-[124px] left-[360px] top-[25px] absolute bg-white rounded-full"></div>
-                            <div className="w-[124px] h-[124px] left-[459px] top-[326px] absolute bg-white rounded-full"></div>
-                            <div className="w-[89px] h-[89px] left-[84px] top-[344px] absolute bg-white rounded-full"></div>
-                            <div className="w-[89px] h-[89px] left-[173px] top-[60px] absolute bg-white rounded-full"></div>
-                            <div className="w-[89px] h-[89px] left-[39px] top-[32px] absolute bg-white rounded-full"></div>
+                            {wishList.map((concertdata, index) => (
+                                <WishListBubble
+                                    key={index}
+                                    concertdata={concertdata}
+                                    clickItemFunc={concertItemClicked}
+                                    isSelected={true}
+                                    scale={wishListBubbleLayoutKey[index][0]}
+                                    left={`${wishListBubbleLayoutKey[index][1]}`}
+                                    top={`${wishListBubbleLayoutKey[index][2]}`}
+                                />
+                            ))}
                         </div>
                     </div>
                 </div>
