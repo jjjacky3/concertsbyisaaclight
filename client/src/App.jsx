@@ -36,6 +36,7 @@ function App() {
   // Create Concerts and Add to Artist
   const concerts = [
     new Concert(
+      0,
       'Alec Benjamin',
       "The Storyteller's Night",
       'Jan 20',
@@ -47,6 +48,7 @@ function App() {
       AlecBenjaminTour1Image
     ),
     new Concert(
+      1,
       'Alec Benjamin',
       'Poetry in Motion',
       'March 15',
@@ -58,6 +60,7 @@ function App() {
       AlecBenjaminTour1Image
     ),
     new Concert(
+      2,
       'Alec Benjamin',
       'Verses & Echoes',
       'June 22',
@@ -69,6 +72,7 @@ function App() {
       AlecBenjaminTour1Image
     ),
     new Concert(
+      3,
       'Alec Benjamin',
       'The Heartstrings Tour',
       'Sept 10',
@@ -81,6 +85,7 @@ function App() {
     ),
 
     new Concert(
+      4,
       'Alec Benjamin',
       'Melodies & Memories',
       'May 5',
@@ -93,6 +98,7 @@ function App() {
     ),
 
     new Concert(
+      5,
       'Alec Benjamin',
       'Unplugged & Raw',
       'July 12',
@@ -105,6 +111,7 @@ function App() {
     ),
 
     new Concert(
+      6,
       'Alec Benjamin',
       'The Echoes Tour',
       'Oct 18',

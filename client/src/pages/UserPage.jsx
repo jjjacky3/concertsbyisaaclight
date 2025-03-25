@@ -9,6 +9,7 @@ import RatingModule from "../components/RatingModule";
 import CompareModule from "../components/CompareModule";
 import ConcertExpandedView from "../components/ConcertExpandView";
 import WishListBubble from "../components/WishListBubble";
+import { parse } from 'flatted';
 
 const UserPage = ({ artist }) => {
 
@@ -44,9 +45,22 @@ const UserPage = ({ artist }) => {
     const handleDrop = (e) => {
         e.preventDefault();
         try {
-            const concertData = JSON.parse(e.dataTransfer.getData("concertData"));
-            setWishList((prevList) => [...prevList, concertData]);
-            console.log("WishList:", [...wishList, concertData]);
+            const concertData = parse(e.dataTransfer.getData("concertData"));
+            const inWishList = wishList.some(item => item.id === concertData.id);
+            if (!inWishList) {
+                console.log("Data:")
+                console.log(concertData)
+                setWishList((prevList) => {
+                    const updatedList = [...prevList, concertData];
+                    const sortedList = updatedList.sort((a, b) => new Date(a.date) - new Date(b.date));
+
+                    return sortedList;
+                });
+
+            }
+            else {
+                console.log("Already there")
+            }
         } catch (err) {
             console.error("Failed to parse concertData", err);
         }
