@@ -1,4 +1,5 @@
 // components/AuthModal.jsx
+//testing commit feature...
 import React, { useState } from 'react';
 import { X, Mail, Lock, User, Eye, EyeOff } from 'lucide-react';
 
