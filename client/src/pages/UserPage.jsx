@@ -13,6 +13,10 @@ import { parse } from 'flatted';
 
 const UserPage = ({ artist }) => {
 
+    const testfunc = () => {
+        console.log(wishList)
+    }
+
     const wishListBubbleLayoutKey = {
         0: [1.8, '280px', '200px'],
         1: [1.24, '45px', '183px'],
@@ -42,24 +46,38 @@ const UserPage = ({ artist }) => {
         e.preventDefault(); // Required to allow dropping
     };
 
+    const editWishList = (command, concertData) => {
+        if (command === "isIn") {
+            return wishList.some(item => item.id === concertData.id);
+        }
+
+        if (command === "add") {
+            setWishList(prevList => {
+                const alreadyIn = prevList.some(item => item.id === concertData.id);
+                if (alreadyIn) return prevList;
+                const updatedList = [...prevList, concertData].sort((a, b) => new Date(a.date) - new Date(b.date));
+                return updatedList;
+            });
+            return true;
+        }
+
+        if (command === "remove") {
+            setWishList(prevList => prevList.filter(item => item.id !== concertData.id));
+            return true;
+        }
+
+        return false;
+    };
+
+
     const handleDrop = (e) => {
         e.preventDefault();
         try {
             const concertData = parse(e.dataTransfer.getData("concertData"));
-            const inWishList = wishList.some(item => item.id === concertData.id);
-            if (!inWishList) {
-                console.log("Data:")
-                console.log(concertData)
-                setWishList((prevList) => {
-                    const updatedList = [...prevList, concertData];
-                    const sortedList = updatedList.sort((a, b) => new Date(a.date) - new Date(b.date));
-
-                    return sortedList;
-                });
-
-            }
-            else {
-                console.log("Already there")
+            if (!editWishList("isIn", concertData)) {
+                editWishList("add", concertData);
+            } else {
+                console.log("Concert already in wishlist.");
             }
         } catch (err) {
             console.error("Failed to parse concertData", err);
@@ -79,12 +97,13 @@ const UserPage = ({ artist }) => {
         <div className="min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white">
             {/* Navbar */}
             <NavBar />
+            <button onClick={testfunc}>Test</button>
 
             {/* Overlay Panel */}
             {selectedConcert && (
                 <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
                     <div className="bg-gray-800 p-6 rounded-lg shadow-lg w-[600px] h-[400px] flex flex-col items-center justify-center">
-                        <ConcertExpandedView concert={selectedConcert} closeOverlay={closeOverlay} />
+                        <ConcertExpandedView concert={selectedConcert} closeOverlay={closeOverlay} editWishList={editWishList} wishList={wishList} />
                     </div>
                 </div>
             )}
@@ -137,6 +156,7 @@ const UserPage = ({ artist }) => {
                                     <ConcertItem
                                         key={index}
                                         concert={concert}
+                                        clickItemFunc={concertItemClicked}
                                     />
                                 ))}
                             </div>
@@ -154,6 +174,7 @@ const UserPage = ({ artist }) => {
                                     <ConcertItem
                                         key={index}
                                         concert={concert}
+                                        clickItemFunc={concertItemClicked}
                                     />
                                 ))}
                             </div>
