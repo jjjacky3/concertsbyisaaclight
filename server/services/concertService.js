@@ -61,32 +61,42 @@ class ConcertService {
             let allEvents = [];
 
             for (const city of cities) {
-                const url = `https://api.seatgeek.com/2/events?venue.city=${encodeURIComponent(city)}&taxonomies.name=concert&client_id=${this.clientId}`;
-                const response = await axios.get(url);
-                
-                const events = response.data.events.map(event => {
-                    const performer = event.performers[0] || {};
-                    const [fname, ...lnameParts] = (performer.name || '').split(' ');
-                    const lname = lnameParts.join(' ');
-                    
-                    return {
-                        artist: {
-                            fname: fname || '',
-                            lname: lname || ''
-                        },
-                        venue: {
-                            name: event.venue.name,
-                            city: event.venue.city
-                        },
-                        tourName: event.title,
-                        date: event.datetime_local.split('T')[0],
-                        time: event.datetime_local.split('T')[1].substring(0, 8),
-                        price: event.stats.average_price || faker.number.float({ min: 30, max: 300, precision: 2 }),
-                        image_url: performer.image || null
-                    };
-                });
+                let page = 1;
+                let totalPages = 1;
+                while (page<=totalPages) {
+                    // const url = `https://api.seatgeek.com/2/events?venue.city=${encodeURIComponent(city)}&taxonomies.name=concert&client_id=${this.clientId}`;
+                    const url = `https://api.seatgeek.com/2/events?venue.city=${encodeURIComponent(city)}&per_page=20&page=${page}&taxonomies.name=concert&client_id=${this.clientId}`;
+                    const response = await axios.get(url);
 
-                allEvents = allEvents.concat(events);
+                    const meta = response.data.meta;
+                    totalPages = meta.total > 0 ? Math.ceil(meta.total / 20) : 0;
+                    
+                    const events = response.data.events.map(event => {
+                        const performer = event.performers[0] || {};
+                        const [fname, ...lnameParts] = (performer.name || '').split(' ');
+                        const lname = lnameParts.join(' ');
+                        
+                        return {
+                            artist: {
+                                fname: fname || '',
+                                lname: lname || ''
+                            },
+                            venue: {
+                                name: event.venue.name,
+                                city: event.venue.city
+                            },
+                            tourName: event.title,
+                            date: event.datetime_local.split('T')[0],
+                            time: event.datetime_local.split('T')[1].substring(0, 8),
+                            price: event.stats.average_price || faker.number.float({ min: 30, max: 300, precision: 2 }),
+                            image_url: performer.image || null
+                        };
+                    });
+
+                    allEvents = allEvents.concat(events);
+
+                    page+=1;
+                }
             }
 
             if (allEvents.length === 0) {
