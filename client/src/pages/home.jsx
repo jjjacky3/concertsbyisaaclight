@@ -251,6 +251,7 @@ const Home = ({ navigateToArtist }) => {
                   id: concert.cid,
                   artist: concert.artist_name,
                   tourName: concert.tour_name,
+                  image_url: concert.image_url,
                   venue: concert.venue_name,
                   city: concert.city,
                   date: concert.date,
