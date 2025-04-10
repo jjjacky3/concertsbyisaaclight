@@ -2,22 +2,45 @@ import React, { useState, useEffect } from "react";
 import NavBar from '../components/NavBar';
 import { useNavigate } from 'react-router-dom';
 import { User, Calendar, Star, Heart, Settings, LogOut, Loader2 } from 'lucide-react';
+<<<<<<< HEAD
 import ConcertItem from "../components/ConcertItem";
 import ConcertCard from "../components/ConcertCard";
 import ConcertExpandedView from "../components/ConcertExpandView";
+=======
+>>>>>>> origin/main
 import WishListBubble from "../components/WishListBubble";
 import { parse } from 'flatted';
 
 const UserPage = () => {
     const [user, setUser] = useState(null);
     const [userConcerts, setUserConcerts] = useState([]);
+    const [wishList, setWishList] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+<<<<<<< HEAD
     const [isDarkMode, setIsDarkMode] = useState(true);
     const [selectedConcert, setSelectedConcert] = useState(null)
     const [wishList, setWishList] = useState([]);
+=======
+    const [selectedConcert, setSelectedConcert] = useState(null);
+>>>>>>> origin/main
     const navigate = useNavigate();
     const concertList = userConcerts
+
+    // Layout configuration for wish list bubbles
+    const wishListBubbleLayoutKey = {
+        0: [1.8, '280px', '200px'],
+        1: [1.24, '45px', '183px'],
+        2: [1.24, '470px', '340px'],
+        3: [1.24, '380px', '40px'],
+        4: [1, '170px', '30px'],
+        5: [1, '-10px', '0px'],
+        6: [1, '90px', '330px'],
+        7: [1, '90px', '330px'],
+        8: [1, '280px', '370px'],
+        9: [1, '520px', '190px'],
+        10: [1, '550px', '20px']
+    };
 
     useEffect(() => {
         // Check if user is logged in
@@ -161,10 +184,38 @@ const UserPage = () => {
         }
     };
 
+    const handleDragOver = (e) => {
+        e.preventDefault();
+    };
+
+    const handleDrop = (e) => {
+        e.preventDefault();
+        try {
+            const concertData = parse(e.dataTransfer.getData("concertData"));
+            const inWishList = wishList.some(item => item.id === concertData.id);
+            if (!inWishList) {
+                setWishList((prevList) => {
+                    const updatedList = [...prevList, concertData];
+                    return updatedList.sort((a, b) => new Date(a.date) - new Date(b.date));
+                });
+            }
+        } catch (err) {
+            console.error("Failed to parse concertData", err);
+        }
+    };
+
+    const concertItemClicked = (concert) => {
+        setSelectedConcert(concert);
+    };
+
+    const closeOverlay = () => {
+        setSelectedConcert(null);
+    };
+
     if (loading) {
         return (
             <div className="min-h-screen bg-gray-900 text-white">
-                <NavBar isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode} user={user} />
+                <NavBar isDarkMode={true} setIsDarkMode={() => {}} user={user} />
                 <div className="flex flex-col items-center justify-center h-[calc(100vh-64px)]">
                     <div className="flex flex-col items-center space-y-4">
                         <Loader2 className="w-12 h-12 animate-spin text-purple-500" />
@@ -178,7 +229,7 @@ const UserPage = () => {
     if (error) {
         return (
             <div className="min-h-screen bg-gray-900 text-white">
-                <NavBar isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode} user={user} />
+                <NavBar isDarkMode={true} setIsDarkMode={() => {}} user={user} />
                 <div className="flex flex-col items-center justify-center h-[calc(100vh-64px)]">
                     <div className="text-center space-y-4">
                         <h2 className="text-2xl font-bold text-red-500">Error Loading Profile</h2>
@@ -264,6 +315,7 @@ const UserPage = () => {
     };
 
     return (
+<<<<<<< HEAD
         <div>
             <div className="min-h-screen bg-gray-900 text-white">
                 <NavBar
@@ -313,6 +365,74 @@ const UserPage = () => {
                             <p className="text-3xl font-bold mt-2">
                                 {userConcerts.filter(concert => concert.favorite).length}
                             </p>
+=======
+        <div className="min-h-screen bg-gray-900 text-white">
+            <NavBar user={user} onLogout={handleLogout} />
+            
+            {/* Overlay Panel */}
+            {selectedConcert && (
+                <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
+                    <div className="bg-gray-800 p-6 rounded-lg shadow-lg w-[600px] h-[400px] flex flex-col items-center justify-center">
+                        <ConcertExpandedView concert={selectedConcert} closeOverlay={closeOverlay} />
+                    </div>
+                </div>
+            )}
+
+            <div className="flex justify-center space-x-6 p-6 relative">
+                <div className="w-[750px] flex flex-col space-y-6">
+                    {/* User Profile */}
+                    <div className="h-[400px] bg-gray-800 rounded-3xl shadow-lg p-6 transition-transform hover:scale-[1.005] hover:shadow-xl flex flex-row gap-6">
+                        <div className="h-[350px] w-[250px] flex flex-col items-center justify-between">
+                            <div className="text-3xl font-bold text-center text-white">
+                                {user?.fname} {user?.lname}
+                            </div>
+                            <div className="h-[200px] w-[200px] bg-gray-700 rounded-full flex items-center justify-center">
+                                <User className="w-20 h-20 text-purple-500" />
+                            </div>
+                            <button className="w-full text-center bg-purple-600 rounded-3xl py-2 hover:bg-purple-700 transition-colors">
+                                <span className="text-lg font-bold">Link to Spotify</span>
+                            </button>
+                        </div>
+
+                        <div className="h-[350px] w-[400px] flex flex-col justify-between">
+                            <div className="flex items-center gap-4">
+                                <div className="text-xl font-bold">Your City:</div>
+                                <input className="flex-1 border border-gray-600 bg-gray-700 rounded-lg p-2" />
+        </div>
+
+                            {/* Stats Cards */}
+                            <div className="grid grid-cols-3 gap-4">
+                                <div className="bg-gray-700 p-4 rounded-lg text-center">
+                                    <Calendar className="w-6 h-6 text-purple-500 mx-auto" />
+                                    <p className="mt-2 text-xl font-bold">{userConcerts.length}</p>
+                                    <p className="text-sm text-gray-400">Attended</p>
+                                </div>
+                                <div className="bg-gray-700 p-4 rounded-lg text-center">
+                                    <Star className="w-6 h-6 text-yellow-500 mx-auto" />
+                                    <p className="mt-2 text-xl font-bold">
+                                        {userConcerts.filter(concert => concert.review).length}
+                                    </p>
+                                    <p className="text-sm text-gray-400">Reviews</p>
+                                </div>
+                                <div className="bg-gray-700 p-4 rounded-lg text-center">
+                                    <Heart className="w-6 h-6 text-red-500 mx-auto" />
+                                    <p className="mt-2 text-xl font-bold">
+                                        {userConcerts.filter(concert => concert.favorite).length}
+                                    </p>
+                                    <p className="text-sm text-gray-400">Favorites</p>
+                                </div>
+                            </div>
+
+                            {/* Top Artists */}
+                            <div>
+                                <div className="text-xl font-bold mb-2">Your Top Artists:</div>
+                                <div className="grid grid-cols-4 gap-4">
+                                    {[1,2,3,4].map((_, i) => (
+                                        <div key={i} className="h-[75px] w-[75px] bg-gray-700 rounded-full border-4 border-gray-600 transform hover:scale-[1.2] transition-transform"></div>
+                                    ))}
+                                </div>
+                            </div>
+>>>>>>> origin/main
                         </div>
                     </div>
 
@@ -321,8 +441,13 @@ const UserPage = () => {
                         <h2 className="text-2xl font-bold mb-4">Concert History</h2>
                         <div className="space-y-4">
                             {userConcerts.map((concert, index) => (
+<<<<<<< HEAD
                                 <div
                                     key={index}
+=======
+                                <div 
+                                    key={index} 
+>>>>>>> origin/main
                                     className="bg-gray-700/50 rounded-lg p-4 hover:bg-gray-700 transition-colors"
                                 >
                                     <div className="flex justify-between items-start">
@@ -342,15 +467,24 @@ const UserPage = () => {
                                                     <button
                                                         key={star}
                                                         onClick={() => handleRating(concert.cid, star)}
+<<<<<<< HEAD
                                                         className={`focus:outline-none transition-colors ${(concert.review?.rating || 0) >= star
                                                             ? 'text-yellow-500'
                                                             : 'text-gray-600 hover:text-yellow-400'
                                                             }`}
+=======
+                                                        className={`focus:outline-none transition-colors ${
+                                                            (concert.review?.rating || 0) >= star 
+                                                                ? 'text-yellow-500' 
+                                                                : 'text-gray-600 hover:text-yellow-400'
+                                                        }`}
+>>>>>>> origin/main
                                                     >
                                                         <Star className="w-5 h-5" fill={concert.review?.rating >= star ? "currentColor" : "none"} />
                                                     </button>
                                                 ))}
                                             </div>
+<<<<<<< HEAD
 
                                             {/* Favorite Button */}
                                             <button
@@ -408,6 +542,62 @@ const UserPage = () => {
                             <span>Logout</span>
                         </button>
                     </div>
+=======
+                                            
+                                            {/* Favorite Button */}
+                                            <button
+                                                onClick={() => handleToggleFavorite(concert.cid)}
+                                                className={`focus:outline-none transition-colors ${
+                                                    concert.favorite ? 'text-red-500' : 'text-gray-600 hover:text-red-400'
+                                                }`}
+                                            >
+                                                <Heart 
+                                                    className="w-6 h-6" 
+                                                    fill={concert.favorite ? "currentColor" : "none"} 
+                                                />
+                                            </button>
+                                        </div>
+                                    </div>
+                                    
+                                    {/* Review Text Area */}
+                                    {concert.review?.rating > 0 && (
+                                        <div className="mt-3">
+                                            <textarea
+                                                placeholder="Add your thoughts about this concert..."
+                                                value={concert.review?.text || ''}
+                                                onChange={(e) => handleReviewText(concert.cid, e.target.value)}
+                                                className="w-full bg-gray-800 text-white rounded-lg p-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                                rows="2"
+                                            />
+                                        </div>
+                                    )}
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+
+                <div className="w-[750px] flex flex-col space-y-6">
+                    {/* Wish List */}
+                    <div className="h-[530px] bg-gray-800 rounded-3xl shadow-lg p-6 transition-transform hover:scale-[1.005] hover:shadow-xl flex flex-col items-center justify-center"
+                        onDragOver={handleDragOver}
+                        onDrop={handleDrop}>
+                        <h2 className="text-2xl font-bold mb-4">Wish List</h2>
+                        <div className="w-[650px] h-[450px] relative">
+                            {wishList.map((concertdata, index) => (
+                                <WishListBubble
+                                    key={index}
+                                    concertdata={concertdata}
+                                    clickItemFunc={concertItemClicked}
+                                    isSelected={true}
+                                    scale={wishListBubbleLayoutKey[index][0]}
+                                    left={wishListBubbleLayoutKey[index][1]}
+                                    top={wishListBubbleLayoutKey[index][2]}
+                                />
+                            ))}
+                        </div>
+                    </div>
+>>>>>>> origin/main
                 </div>
             </div>
 

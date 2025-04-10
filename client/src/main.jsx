@@ -14,7 +14,7 @@ const router = createBrowserRouter([
     element: <HomePage />,
   },
   {
-    path: "/artist/:artistId",
+    path: "/artist/:artistId", // Notice the :artistId parameter that will be accessible with useParams
     element: <ArtistPage />,
   },
   {

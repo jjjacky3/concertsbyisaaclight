@@ -1,7 +1,7 @@
 import { Menu, Upload, LogIn, LogOut, Sun, Moon, Database, User } from "lucide-react";
-import { useState } from "react";
-import PostgreSQLTestForm from "../pages/TestForm.jsx";
+import { useState, useEffect } from "react";
 import { X } from "lucide-react";
+import { logout } from '../services/apiService'; // Import the logout function
 
 const NavBar = ({ isDarkMode, setIsDarkMode, user, onLogout, onLogin }) => {
     // State for showing test form modal
@@ -14,6 +14,20 @@ const NavBar = ({ isDarkMode, setIsDarkMode, user, onLogout, onLogin }) => {
 
     const navigateToUser = () => {
         window.location.href = '/user';
+    };
+
+    // Handle user logout with better cleanup
+    const handleLogout = () => {
+        // Use the centralized logout function
+        logout();
+        
+        // Call the parent component's logout handler if provided
+        if (onLogout) {
+            onLogout();
+        } else {
+            // If no handler provided, reload the page
+            window.location.reload();
+        }
     };
 
     return (
@@ -36,15 +50,6 @@ const NavBar = ({ isDarkMode, setIsDarkMode, user, onLogout, onLogin }) => {
 
                 {/* Right Section - Buttons */}
                 <div className="flex items-center space-x-4">
-                    {/* Postgres Test Button */}
-                    <button 
-                        onClick={() => setShowTestForm(true)}
-                        className="flex items-center space-x-2 px-4 py-2 bg-green-600 text-white rounded-lg shadow-md hover:bg-green-700"
-                    >
-                        <Database className="w-4 h-4" />
-                        <span className="hidden sm:inline">Test DB</span>
-                    </button>
-
                     {/* Account Button (Only shown if user is logged in) */}
                     {user && (
                         <button 
@@ -59,7 +64,7 @@ const NavBar = ({ isDarkMode, setIsDarkMode, user, onLogout, onLogin }) => {
                     {/* Login / Logout Button */}
                     {user ? (
                         <button 
-                            onClick={onLogout}
+                            onClick={handleLogout}
                             className="flex items-center space-x-2 px-4 py-2 bg-gray-800 text-white rounded-lg shadow-md hover:bg-gray-700"
                         >
                             <LogOut className="w-4 h-4" />
@@ -84,21 +89,7 @@ const NavBar = ({ isDarkMode, setIsDarkMode, user, onLogout, onLogin }) => {
                     </button>
                 </div>
             </header>
-
-            {/* PostgreSQL Test Form Modal */}
-            {showTestForm && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-                    <div className="bg-gray-800 p-6 rounded-lg w-full max-w-5xl max-h-[90vh] overflow-y-auto relative">
-                        <button 
-                            onClick={() => setShowTestForm(false)}
-                            className="absolute top-4 right-4 p-2 rounded-full hover:bg-gray-700"
-                        >
-                            <X className="w-5 h-5 text-white" />
-                        </button>
-                        <PostgreSQLTestForm />
-                    </div>
-                </div>
-            )}
+            
         </>
     );
 };

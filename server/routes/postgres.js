@@ -138,6 +138,126 @@ router.get('/concert-details', async (req, res) => {
   }
 });
 
+// NEW ENDPOINT: Get artist reviews and ratings
+router.get('/artist-reviews/:artistName', async (req, res) => {
+  try {
+    const { artistName } = req.params;
+    
+    // Convert dash-separated artist name to proper case for DB query
+    const normalizedArtistName = artistName
+      .split('-')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+      .join(' ');
+    
+    console.log('Fetching reviews for artist:', normalizedArtistName);
+    
+    // First query: Get all reviews for the artist's concerts
+    const reviewsResult = await pool.query(`
+      SELECT 
+        r.rid,
+        r.rating,
+        r.review_text,
+        r.created_at,
+        u.uid,
+        u.fname as user_fname,
+        u.lname as user_lname,
+        c.cid,
+        t.name as tour_name,
+        v.name as venue_name,
+        v.city as venue_city,
+        c.date
+      FROM Review r
+      JOIN Concert c ON r.cid = c.cid
+      JOIN Artist a ON c.aid = a.aid
+      JOIN "User" u ON r.uid = u.uid
+      JOIN Tour t ON c.tid = t.tid
+      JOIN Venue v ON c.vid = v.vid
+      WHERE LOWER(a.fname || ' ' || a.lname) = LOWER($1)
+      ORDER BY r.created_at DESC
+    `, [normalizedArtistName]);
+    
+    // Second query: Get rating distribution
+    const ratingDistributionResult = await pool.query(`
+      SELECT 
+        r.rating,
+        COUNT(*) as count
+      FROM Review r
+      JOIN Concert c ON r.cid = c.cid
+      JOIN Artist a ON c.aid = a.aid
+      WHERE LOWER(a.fname || ' ' || a.lname) = LOWER($1)
+        AND r.rating IS NOT NULL
+      GROUP BY r.rating
+      ORDER BY r.rating DESC
+    `, [normalizedArtistName]);
+    
+    // Third query: Get percentage of "would go again" (ratings 4-5 as percentage of total)
+    const goAgainResult = await pool.query(`
+      SELECT
+        SUM(CASE WHEN r.rating >= 4 THEN 1 ELSE 0 END) * 100.0 / COUNT(*) as go_again_percentage
+      FROM Review r
+      JOIN Concert c ON r.cid = c.cid
+      JOIN Artist a ON c.aid = a.aid
+      WHERE LOWER(a.fname || ' ' || a.lname) = LOWER($1)
+        AND r.rating IS NOT NULL
+    `, [normalizedArtistName]);
+    
+    // Fourth query: Get rating distribution by tour
+    const tourRatingsResult = await pool.query(`
+      SELECT 
+        t.name as tour_name,
+        r.rating,
+        COUNT(*) as count
+      FROM Review r
+      JOIN Concert c ON r.cid = c.cid
+      JOIN Artist a ON c.aid = a.aid
+      JOIN Tour t ON c.tid = t.tid
+      WHERE LOWER(a.fname || ' ' || a.lname) = LOWER($1)
+        AND r.rating IS NOT NULL
+      GROUP BY t.name, r.rating
+      ORDER BY t.name, r.rating DESC
+    `, [normalizedArtistName]);
+    
+    // Format the rating distribution for frontend
+    const ratingDistribution = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
+    ratingDistributionResult.rows.forEach(row => {
+      ratingDistribution[row.rating] = parseInt(row.count);
+    });
+    
+    // Format tour ratings for frontend
+    const tourRatings = {};
+    tourRatingsResult.rows.forEach(row => {
+      if (!tourRatings[row.tour_name]) {
+        tourRatings[row.tour_name] = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
+      }
+      tourRatings[row.tour_name][row.rating] = parseInt(row.count);
+    });
+    
+    // Calculate go again percentage (default to 0 if no reviews)
+    const goAgainPercentage = goAgainResult.rows.length > 0 
+      ? goAgainResult.rows[0].go_again_percentage 
+      : 0;
+    
+    res.json({
+      success: true,
+      data: {
+        reviews: reviewsResult.rows,
+        ratingDistribution,
+        tourRatings,
+        goAgain: Math.round(goAgainPercentage),
+        totalReviews: reviewsResult.rows.length
+      }
+    });
+    
+  } catch (error) {
+    console.error('Error fetching artist reviews:', error);
+    res.status(500).json({ 
+      success: false,
+      message: 'Server error', 
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined 
+    });
+  }
+});
+
 // Create a complete concert (with artist, venue, tour)
 router.post('/complete-concert', validateConcert, handleValidationErrors, async (req, res) => {
   const { 
