@@ -1,5 +1,4 @@
 // components/AuthModal.jsx
-//testing commit feature...
 import React, { useState } from 'react';
 import { X, Mail, Lock, User, Eye, EyeOff } from 'lucide-react';
 
@@ -21,6 +20,8 @@ const AuthModal = ({ isOpen, onClose }) => {
 
     try {
       const endpoint = isLogin ? '/api/auth/login' : '/api/auth/register';
+      console.log(`Submitting to ${endpoint} with email: ${formData.email}`);
+      
       const response = await fetch(`http://localhost:3000${endpoint}`, {
         method: 'POST',
         headers: {
@@ -30,21 +31,37 @@ const AuthModal = ({ isOpen, onClose }) => {
         body: JSON.stringify(formData),
       });
 
-      const data = await response.json();
+      // Log the raw response for debugging
+      const rawData = await response.text();
+      console.log('Raw response:', rawData);
+      
+      // Parse the response as JSON
+      const data = JSON.parse(rawData);
 
       if (!response.ok) {
         throw new Error(data.message || 'Authentication failed');
       }
 
+      console.log('Authentication successful:', data);
+
+      // Ensure token exists before storing
+      if (!data.token) {
+        throw new Error('No token received from server');
+      }
+
       // Store token and user data
       localStorage.setItem('token', data.token);
       localStorage.setItem('user', JSON.stringify(data.user));
+      
+      // Set a flag to indicate successful login
+      localStorage.setItem('justLoggedIn', 'true');
 
       // Close modal and refresh page
       onClose();
       window.location.reload();
 
     } catch (err) {
+      console.error('Authentication error:', err);
       setError(err.message || 'An error occurred during authentication');
     } finally {
       setLoading(false);
@@ -60,6 +77,7 @@ const AuthModal = ({ isOpen, onClose }) => {
 
   const switchMode = () => {
     setIsLogin(!isLogin);
+    setError(''); // Clear any existing errors
   };
 
   if (!isOpen) return null;
