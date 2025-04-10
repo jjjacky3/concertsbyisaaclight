@@ -266,8 +266,8 @@ const UserPage = () => {
                             <div className="flex items-center gap-4">
                                 <div className="text-xl font-bold">Your City:</div>
                                 <input className="flex-1 border border-gray-600 bg-gray-700 rounded-lg p-2" />
-                            </div>
-                            
+        </div>
+
                             {/* Stats Cards */}
                             <div className="grid grid-cols-3 gap-4">
                                 <div className="bg-gray-700 p-4 rounded-lg text-center">

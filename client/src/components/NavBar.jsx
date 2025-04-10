@@ -36,15 +36,6 @@ const NavBar = ({ isDarkMode, setIsDarkMode, user, onLogout, onLogin }) => {
 
                 {/* Right Section - Buttons */}
                 <div className="flex items-center space-x-4">
-                    {/* Postgres Test Button */}
-                    <button 
-                        onClick={() => setShowTestForm(true)}
-                        className="flex items-center space-x-2 px-4 py-2 bg-green-600 text-white rounded-lg shadow-md hover:bg-green-700"
-                    >
-                        <Database className="w-4 h-4" />
-                        <span className="hidden sm:inline">Test DB</span>
-                    </button>
-
                     {/* Account Button (Only shown if user is logged in) */}
                     {user && (
                         <button 
@@ -84,21 +75,7 @@ const NavBar = ({ isDarkMode, setIsDarkMode, user, onLogout, onLogin }) => {
                     </button>
                 </div>
             </header>
-
-            {/* PostgreSQL Test Form Modal */}
-            {showTestForm && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-                    <div className="bg-gray-800 p-6 rounded-lg w-full max-w-5xl max-h-[90vh] overflow-y-auto relative">
-                        <button 
-                            onClick={() => setShowTestForm(false)}
-                            className="absolute top-4 right-4 p-2 rounded-full hover:bg-gray-700"
-                        >
-                            <X className="w-5 h-5 text-white" />
-                        </button>
-                        <PostgreSQLTestForm />
-                    </div>
-                </div>
-            )}
+            
         </>
     );
 };
