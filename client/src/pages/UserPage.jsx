@@ -440,26 +440,19 @@ const UserPage = () => {
                         <div className="h-[400px] bg-gray-800 rounded-3xl shadow-lg p-6 transition-transform transform hover:scale-[1.005] hover:shadow-xl flex flex-row gap-6">
 
                             <div className="h-[350px] w-[250px] flex flex-col items-center justify-between">
-                                <div className="text-3xl font-bold text-center text-white">NAME</div>
-                                <div className="h-[200px] w-[200px] bg-white rounded-full border-4 border-gray-800"></div>
-                                <div className="w-full text-center bg-white rounded-3xl py-2">
-                                    <span className="text-lg font-bold text-black">Link to Spotify</span>
+                                <div className="text-3xl font-bold text-center text-white">{user?.fname} {user?.lname}</div>
+                                <div className="w-[200px] h-[200px] bg-gray-700 rounded-full flex items-center justify-center">
+                                    <User className="w-[180px] h-[180px] text-purple-500" />
+                                </div>
+                                <div className="w-full text-center rounded-3xl py-2 bg-gray-700">
+                                    <span className="text-lg font-bold text-white ">{user?.email}</span>
                                 </div>
                             </div>
 
-                            <div className="h-[350px] w-[400px] flex flex-col justify-between">
+                            <div className="h-[350px] w-[450px] flex flex-col justify-between">
                                 <div className="flex items-center gap-4">
                                     <div className="text-1xl font-bold">Your City:</div>
                                     <input className="flex-1 border border-gray-400 rounded-lg p-2" />
-                                </div>
-                                <div className="text-1xl font-bold">Your Preferences (Key Words):</div>
-                                <div className="grid grid-cols-3 gap-4">
-                                    <div className="h-[50px] w-[120px] bg-white rounded-full border-4 border-gray-800 transition-transform transform hover:scale-[1.2] hover:shadow-xl"></div>
-                                    <div className="h-[50px] w-[120px] bg-white rounded-full border-4 border-gray-800 transition-transform transform hover:scale-[1.2] hover:shadow-xl"></div>
-                                    <div className="h-[50px] w-[120px] bg-white rounded-full border-4 border-gray-800 transition-transform transform hover:scale-[1.2] hover:shadow-xl"></div>
-                                    <div className="h-[50px] w-[120px] bg-white rounded-full border-4 border-gray-800 transition-transform transform hover:scale-[1.2] hover:shadow-xl"></div>
-                                    <div className="h-[50px] w-[120px] bg-white rounded-full border-4 border-gray-800 transition-transform transform hover:scale-[1.2] hover:shadow-xl"></div>
-                                    <div className="h-[50px] w-[120px] bg-white rounded-full border-4 border-gray-800 transition-transform transform hover:scale-[1.2] hover:shadow-xl"></div>
                                 </div>
                                 <div className="text-1xl font-bold">Your Top Artists:</div>
                                 <div className="grid grid-cols-4 gap-4">
@@ -468,6 +461,39 @@ const UserPage = () => {
                                     <div className="h-[75px] w-[75px] bg-white rounded-full border-4 border-gray-800 transform hover:scale-[1.2] hover:shadow-xl"></div>
                                     <div className="h-[75px] w-[75px] bg-white rounded-full border-4 border-gray-800 transform hover:scale-[1.2] hover:shadow-xl"></div>
                                 </div>
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-0">
+                                    {/* Card */}
+                                    <div className="bg-gray-700 rounded-lg shadow-lg p-4 transform hover:scale-105 transition-transform min-h-40 flex flex-col items-center justify-center">
+                                        <h2 className="text-2xl font-semibold mb-2 text-center">Concerts Attended</h2>
+                                        <div className="flex items-center space-y-1">
+                                            <Calendar className="w-7 h-7 text-purple-500" />
+                                            <p className="text-5xl font-bold p-2">{userConcerts.length}</p>
+                                        </div>
+                                    </div>
+
+                                    {/* Reviews */}
+                                    <div className="bg-gray-700 rounded-lg shadow-lg p-4 transform hover:scale-105 transition-transform min-h-40 flex flex-col items-center justify-center">
+                                        <h2 className="text-2xl font-semibold mb-2 text-center">Reviews</h2>
+                                        <div className="flex items-center space-y-1">
+                                            <Star className="w-7 h-7 text-yellow-500" />
+                                            <p className="text-5xl font-bold p-2">
+                                                {userConcerts.filter(concert => concert.review).length}
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    {/* Favorites */}
+                                    <div className="bg-gray-700 rounded-lg shadow-lg p-4 transform hover:scale-105 transition-transform min-h-40 flex flex-col items-center justify-center">
+                                        <h2 className="text-2xl font-semibold mb-2 text-center">Favorites</h2>
+                                        <div className="flex items-center space-y-1">
+                                            <Heart className="w-7 h-7 text-red-500" />
+                                            <p className="text-5xl font-bold p-2">
+                                                {userConcerts.filter(concert => concert.favorite).length}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+
                             </div>
 
                         </div>
@@ -513,7 +539,7 @@ const UserPage = () => {
                             onDrop={(e) => handleDrop(e)}>
                             <div className="text-2xl font-bold">Wish List</div>
                             <div className=" w-[650px] h-[450px] relative">
-                                {wishList.map((concertdata, index) => (
+                                {wishList.slice(0, 11).map((concertdata, index) => (
                                     <WishListBubble
                                         key={index}
                                         concertdata={concertdata}

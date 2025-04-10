@@ -18,6 +18,22 @@ const ConcertExpandedView = ({ concert, closeOverlay, editWishList, wishList }) 
         closeOverlay();
     };
 
+    const isInWish = wishList.some(item => item.id === concert.id);
+
+    const wishListButtonClicked = () => {
+        editWishList(isInWish ? "remove" : "add", concert);
+    };
+
+    const clicked = () => {
+        clickItemFunc(concert)
+    }
+
+    const navigateToArtist = () => {
+        const artistId = concert.artist.toLowerCase().replace(/\s+/g, '-');
+        navigate(`/artist/${artistId}`);
+        onClose();
+    };
+
     // Format the date using date-fns
     const formatDate = (dateStr) => {
         if (!dateStr) return '';
@@ -41,22 +57,6 @@ const ConcertExpandedView = ({ concert, closeOverlay, editWishList, wishList }) 
             style: 'currency',
             currency: 'USD'
         }).format(price);
-    };
-
-    const isInWish = wishList.some(item => item.id === concert.id);
-
-    const wishListButtonClicked = () => {
-        editWishList(isInWish ? "remove" : "add", concert);
-    };
-
-    const clicked = () => {
-        clickItemFunc(concert)
-    }
-
-    const navigateToArtist = () => {
-        const artistId = concert.artist.toLowerCase().replace(/\s+/g, '-');
-        navigate(`/artist/${artistId}`);
-        onClose();
     };
 
     let concertID = concert.cid
