@@ -36,7 +36,7 @@ const concertSchema = new mongoose.Schema({
     type: Number,
     default: 0
   },
-  image: {
+  image_url: {
     type: String,
     required: true
   },

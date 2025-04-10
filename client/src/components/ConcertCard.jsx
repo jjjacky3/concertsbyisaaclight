@@ -3,6 +3,7 @@ import { Calendar, MapPin, Star, Ticket, Heart, Share2, Loader2, Clock } from 'l
 import { format } from 'date-fns';
 
 const ConcertCard = ({ concert, onClick }) => {
+  console.log(concert);
   const [imageLoading, setImageLoading] = useState(true);
   const [imageError, setImageError] = useState(false);
 
@@ -33,7 +34,10 @@ const ConcertCard = ({ concert, onClick }) => {
 
   // Handle image source with fallback
   const getImageSrc = () => {
-    // For now, use a placeholder image
+    if (concert.image_url) {
+      return concert.image_url;
+    }
+    // Fallback to placeholder image
     return '/placeholder-concert.jpg';
   };
 
@@ -57,25 +61,27 @@ const ConcertCard = ({ concert, onClick }) => {
               <Loader2 className="w-8 h-8 animate-spin text-gray-400" />
             </div>
           )}
-          {!imageError ? (
-            <img
-              src={getImageSrc()}
-              alt={`${concert.artist} concert`}
-              loading="lazy"
-              className={`w-full h-48 object-cover transition-opacity duration-300 ${
-                imageLoading ? 'opacity-0' : 'opacity-100'
-              }`}
-              onLoad={() => setImageLoading(false)}
-              onError={() => {
-                setImageError(true);
-                setImageLoading(false);
-              }}
-            />
-          ) : (
+          <img
+            src={getImageSrc()}
+            alt={`${concert.artist} concert`}
+            loading="lazy"
+            className={`w-full h-48 object-cover transition-opacity duration-300 ${
+              imageLoading ? 'opacity-0' : 'opacity-100'
+            }`}
+            onLoad={() => {
+              setImageLoading(false);
+              setImageError(false);
+            }}
+            onError={() => {
+              setImageError(true);
+              setImageLoading(false);
+            }}
+          />
+          {imageError && (
             <div className="absolute inset-0 flex items-center justify-center">
               <div className="text-gray-400 text-center">
                 <div className="text-4xl mb-2">🎵</div>
-                <div className="text-sm">No Image Available</div>
+                <div className="text-sm">No Image Available {getImageSrc()}</div>
               </div>
             </div>
           )}

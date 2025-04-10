@@ -1,10 +1,19 @@
 const axios = require('axios');
 const { faker } = require('@faker-js/faker');
 const pool = require('../db');
+require('dotenv').config();
 
 class ConcertService {
     constructor() {
         this.useRealApi = process.env.USE_REAL_API === 'true';
+        this.clientId = process.env.CLIENT_ID;
+        
+        if (this.useRealApi && !this.clientId) {
+            console.error("Missing SEATGEEK_CLIENT_ID in .env");
+            process.exit(1);
+        }
+
+        // Fallback data in case API fails
         this.popularArtists = [
             { fname: 'Taylor', lname: 'Swift' },
             { fname: 'Ed', lname: 'Sheeran' },
@@ -45,11 +54,89 @@ class ConcertService {
         ];
     }
 
-    generateMockConcerts(count = 50) {
+    async fetchRealConcerts() {
+        try {
+            // const cities = ['New York', 'Los Angeles', 'Chicago', 'Atlanta', 'Miami'];
+            const cities = ['Atlanta']
+            let allEvents = [];
+
+            for (const city of cities) {
+                let page = 1;
+                let totalPages = 1;
+                while (page<=totalPages) {
+                    // const url = `https://api.seatgeek.com/2/events?venue.city=${encodeURIComponent(city)}&taxonomies.name=concert&client_id=${this.clientId}`;
+                    const url = `https://api.seatgeek.com/2/events?venue.city=${encodeURIComponent(city)}&per_page=20&page=${page}&taxonomies.name=concert&client_id=${this.clientId}`;
+                    const response = await axios.get(url);
+
+                    const meta = response.data.meta;
+                    totalPages = meta.total > 0 ? Math.ceil(meta.total / 20) : 0;
+                    
+                    const events = response.data.events.map(event => {
+                        const performer = event.performers[0] || {};
+                        const [fname, ...lnameParts] = (performer.name || '').split(' ');
+                        const lname = lnameParts.join(' ');
+                        
+                        return {
+                            artist: {
+                                fname: fname || '',
+                                lname: lname || ''
+                            },
+                            venue: {
+                                name: event.venue.name,
+                                city: event.venue.city
+                            },
+                            tourName: event.title,
+                            date: event.datetime_local.split('T')[0],
+                            time: event.datetime_local.split('T')[1].substring(0, 8),
+                            price: event.stats.average_price || faker.number.float({ min: 30, max: 300, precision: 2 }),
+                            image_url: performer.image || null
+                        };
+                    });
+
+                    allEvents = allEvents.concat(events);
+
+                    page+=1;
+                }
+            }
+
+            if (allEvents.length === 0) {
+                throw new Error('No events found from SeatGeek API');
+            }
+
+            return allEvents;
+        } catch (error) {
+            console.error('Error fetching real concert data:', error);
+            throw error;
+        }
+    }
+
+    async clearDatabase() {
+        const client = await pool.connect();
+        try {
+            await client.query('BEGIN');
+            
+            // Delete in reverse order of dependencies
+            await client.query('DELETE FROM Concert');
+            await client.query('DELETE FROM Tour');
+            await client.query('DELETE FROM Artist');
+            await client.query('DELETE FROM Venue');
+            
+            await client.query('COMMIT');
+            console.log('Successfully cleared all concert-related data from database');
+        } catch (error) {
+            await client.query('ROLLBACK');
+            console.error('Error clearing database:', error);
+            throw error;
+        } finally {
+            client.release();
+        }
+    }
+
+    async generateMockConcerts(count = 50) {
         const concerts = [];
         const startDate = new Date();
         const endDate = new Date();
-        endDate.setMonth(endDate.getMonth() + 6); // Generate concerts for next 6 months
+        endDate.setMonth(endDate.getMonth() + 6);
 
         for (let i = 0; i < count; i++) {
             const artist = faker.helpers.arrayElement(this.popularArtists);
@@ -66,7 +153,8 @@ class ConcertService {
                 tourName,
                 date: concertDate.toISOString().split('T')[0],
                 time: `${hours}:${minutes}:00`,
-                price: faker.number.float({ min: 30, max: 300, precision: 2 })
+                price: faker.number.float({ min: 30, max: 300, precision: 2 }),
+                image_url: faker.image.url()
             });
         }
 
@@ -76,10 +164,20 @@ class ConcertService {
     async syncMockConcertsToDatabase() {
         const client = await pool.connect();
         try {
-            const mockConcerts = this.generateMockConcerts();
+            // Clear existing data first
+            await this.clearDatabase();
+            
+            let concerts;
+            if (this.useRealApi) {
+                concerts = await this.fetchRealConcerts();
+                console.log("Fetched real concert data")
+            } else {
+                concerts = await this.generateMockConcerts();
+            }
+
             await client.query('BEGIN');
             
-            for (const concert of mockConcerts) {
+            for (const concert of concerts) {
                 // Insert or update artist
                 const artistRes = await client.query(
                     'INSERT INTO Artist (fname, lname) VALUES ($1, $2) ON CONFLICT (fname, lname) DO UPDATE SET updated_at = NOW() RETURNING aid',
@@ -101,23 +199,35 @@ class ConcertService {
                 );
                 const tourId = tourRes.rows[0].tid;
 
+                // Log the data being inserted
+                console.log('Inserting concert:', {
+                    date: concert.date,
+                    time: concert.time,
+                    artistId,
+                    venueId,
+                    tourId,
+                    price: concert.price,
+                    image_url: concert.image_url
+                });
+
                 // Insert or update concert
                 await client.query(
-                    `INSERT INTO Concert (date, time, aid, vid, tid, price) 
-                     VALUES ($1, $2, $3, $4, $5, $6)
+                    `INSERT INTO Concert (date, time, aid, vid, tid, price, image_url) 
+                     VALUES ($1, $2, $3, $4, $5, $6, $7)
                      ON CONFLICT (date, time, aid, vid) 
                      DO UPDATE SET 
-                        price = $6,
+                        price = EXCLUDED.price,
+                        image_url = EXCLUDED.image_url,
                         updated_at = NOW()`,
-                    [concert.date, concert.time, artistId, venueId, tourId, concert.price]
+                    [concert.date, concert.time, artistId, venueId, tourId, concert.price, concert.image_url]
                 );
             }
 
             await client.query('COMMIT');
-            return { message: 'Successfully synced mock concerts', count: mockConcerts.length };
+            return { message: 'Successfully synced concerts', count: concerts.length };
         } catch (error) {
             await client.query('ROLLBACK');
-            console.error('Error syncing mock concerts:', error);
+            console.error('Error syncing concerts:', error);
             throw error;
         } finally {
             client.release();
@@ -128,13 +238,14 @@ class ConcertService {
         try {
             const query = `
                 SELECT 
-                    c.cid,
+                    c.cid as id,
                     c.date,
                     c.time,
                     c.price,
-                    a.fname || ' ' || a.lname as artist_name,
-                    t.name as tour_name,
-                    v.name as venue_name,
+                    c.image_url as "image_url",
+                    a.fname || ' ' || a.lname as artist,
+                    t.name as "tourName",
+                    v.name as venue,
                     v.city
                 FROM Concert c
                 JOIN Artist a ON c.aid = a.aid
@@ -148,6 +259,9 @@ class ConcertService {
                 LIMIT $5 OFFSET $6
             `;
 
+            // Log the search parameters
+            console.log('Searching concerts with params:', params);
+
             const values = [
                 params.keyword ? `%${params.keyword}%` : null,
                 params.city || null,
@@ -158,6 +272,10 @@ class ConcertService {
             ];
 
             const result = await pool.query(query, values);
+            
+            // Log the search results
+            console.log('Search results:', result.rows);
+            
             return result.rows;
         } catch (error) {
             console.error('Error searching concerts:', error);
@@ -166,4 +284,4 @@ class ConcertService {
     }
 }
 
-module.exports = new ConcertService(); 
+module.exports = new ConcertService();

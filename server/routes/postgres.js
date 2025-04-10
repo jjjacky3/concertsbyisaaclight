@@ -119,6 +119,7 @@ router.get('/concert-details', async (req, res) => {
         c.date,
         c.time,
         c.price,
+        c.image_url as image_url,
         a.fname || ' ' || a.lname as artist_name,
         t.name as tour_name,
         v.name as venue_name,
@@ -147,7 +148,8 @@ router.post('/complete-concert', validateConcert, handleValidationErrors, async 
     tourName, 
     concertDate, 
     concertTime,
-    price 
+    price,
+    image_url
   } = req.body;
   
   const client = await pool.connect();
@@ -178,8 +180,10 @@ router.post('/complete-concert', validateConcert, handleValidationErrors, async 
     
     // Insert concert with price
     const concertRes = await client.query(
-      'INSERT INTO Concert (date, time, aID, vID, tID, price) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
-      [concertDate, concertTime, artistId, venueId, tourId, price]
+      `INSERT INTO Concert (date, time, aid, vid, tid, price, image_url) 
+       VALUES ($1, $2, $3, $4, $5, $6, $7) 
+       RETURNING *`,
+      [concertDate, concertTime, artistId, venueId, tourId, price, image_url]
     );
     
     await client.query('COMMIT');
@@ -218,6 +222,7 @@ router.get('/user-concerts', auth, async (req, res) => {
         c.date,
         c.time,
         c.price,
+        c.image_url,
         a.fname || ' ' || a.lname as artist_name,
         t.name as tour_name,
         v.name as venue_name,
