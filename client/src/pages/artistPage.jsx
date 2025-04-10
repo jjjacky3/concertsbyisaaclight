@@ -6,7 +6,7 @@ import ConcertItem from "../components/ConcertItem";
 import RatingModule from "../components/RatingModule";
 import CompareModule from "../components/CompareModule";
 import ConcertExpandedView from "../components/ConcertExpandView";
-import { Loader2 } from "lucide-react";
+import { Loader2, MessageCircle, User, Calendar, Star } from "lucide-react";
 
 const ArtistPage = () => {
   // Extract artistId from URL path
@@ -21,6 +21,8 @@ const ArtistPage = () => {
   const [comparedConcertOne, setComparedConcertOne] = useState(null);
   const [comparedConcertTwo, setComparedConcertTwo] = useState(null);
   const [selectedConcert, setSelectedConcert] = useState(null);
+  const [reviews, setReviews] = useState([]);
+  const [showReviews, setShowReviews] = useState(false);
 
   // Dark mode effect
   useEffect(() => {
@@ -66,60 +68,125 @@ const ArtistPage = () => {
           name: tourName 
         }));
         
-        // Calculate ratings distribution (1-5 stars)
-        const ratingsDistribution = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
-        artistConcerts.forEach(concert => {
-          // If we had actual ratings in the database, we would use those
-          // For now, we'll simulate some ratings based on concert price
-          const simulatedRating = Math.max(1, Math.min(5, Math.round(concert.price / 30)));
-          ratingsDistribution[simulatedRating]++;
-        });
+        // Fetch artist reviews
+        const reviewsResponse = await fetch(`http://localhost:3000/api/postgres/artist-reviews/${artistId}`);
         
-        // Create artist object with all necessary data
-        const artistData = {
-          name: normalizedArtistName,
-          image: artistConcerts[0].image_url || "https://via.placeholder.com/1200x300",
-          ratings: ratingsDistribution,
-          goAgain: 85, // This would come from actual data in a real implementation
-          tours: tours,
-          concerts: artistConcerts.map(concert => ({
-            id: concert.cid,
-            name: `${concert.artist_name} at ${concert.venue_name}`,
-            date: new Date(concert.date).toLocaleDateString(),
-            city: concert.city,
-            rating: (Math.random() * 2 + 3).toFixed(1), // Simulate a rating between 3.0-5.0
-            price: concert.price,
-            desc: `Experience ${concert.artist_name} live at ${concert.venue_name} in ${concert.city}`,
-            tour: { name: concert.tour_name },
-            image: concert.image_url
-          })),
-          avgRating: function() {
-            const total = Object.entries(this.ratings).reduce(
-              (sum, [rating, count]) => sum + (Number(rating) * count), 0
-            );
-            const count = Object.values(this.ratings).reduce((sum, count) => sum + count, 0);
-            return count > 0 ? (total / count).toFixed(1) : "N/A";
-          },
-          findTour: function(tourName) {
-            if (tourName === "All Tours") return this.ratings;
-            
-            // Filter concerts by tour and calculate rating distribution
-            const tourConcerts = this.concerts.filter(c => c.tour.name === tourName);
-            const tourRatings = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
-            
-            tourConcerts.forEach(concert => {
-              const rating = Math.round(parseFloat(concert.rating));
-              tourRatings[rating] = (tourRatings[rating] || 0) + 1;
-            });
-            
-            return tourRatings;
-          }
-        };
+        if (!reviewsResponse.ok) {
+          console.warn('Could not fetch artist reviews, using simulated data');
+          
+          // Calculate ratings distribution (1-5 stars) - using simulation as fallback
+          const ratingsDistribution = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
+          artistConcerts.forEach(concert => {
+            // If we had actual ratings in the database, we would use those
+            // For now, we'll simulate some ratings based on concert price
+            const simulatedRating = Math.max(1, Math.min(5, Math.round(concert.price / 30)));
+            ratingsDistribution[simulatedRating]++;
+          });
+          
+          // Create artist object with all necessary data
+          const artistData = {
+            name: normalizedArtistName,
+            image: artistConcerts[0].image_url || "https://via.placeholder.com/1200x300",
+            ratings: ratingsDistribution,
+            goAgain: 85, // This would come from actual data in a real implementation
+            tours: tours,
+            concerts: artistConcerts.map(concert => ({
+              id: concert.cid,
+              name: `${concert.artist_name} at ${concert.venue_name}`,
+              date: new Date(concert.date).toLocaleDateString(),
+              city: concert.city,
+              rating: (Math.random() * 2 + 3).toFixed(1), // Simulate a rating between 3.0-5.0
+              price: concert.price,
+              desc: `Experience ${concert.artist_name} live at ${concert.venue_name} in ${concert.city}`,
+              tour: { name: concert.tour_name },
+              image: concert.image_url
+            })),
+            avgRating: function() {
+              const total = Object.entries(this.ratings).reduce(
+                (sum, [rating, count]) => sum + (Number(rating) * count), 0
+              );
+              const count = Object.values(this.ratings).reduce((sum, count) => sum + count, 0);
+              return count > 0 ? (total / count).toFixed(1) : "N/A";
+            },
+            findTour: function(tourName) {
+              if (tourName === "All Tours") return this.ratings;
+              
+              // Filter concerts by tour and calculate rating distribution
+              const tourConcerts = this.concerts.filter(c => c.tour.name === tourName);
+              const tourRatings = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
+              
+              tourConcerts.forEach(concert => {
+                const rating = Math.round(parseFloat(concert.rating));
+                tourRatings[rating] = (tourRatings[rating] || 0) + 1;
+              });
+              
+              return tourRatings;
+            }
+          };
+          
+          // Set state with the artist data
+          setArtist(artistData);
+          setConcertsShown(artistData.concerts);
+          setRatingsDisplayed(artistData.ratings);
+          setReviews([]);
+        } else {
+          // Process real review data
+          const reviewsData = await reviewsResponse.json();
+          console.log('Artist reviews:', reviewsData);
+          
+          // Create artist object with real review data
+          const artistData = {
+            name: normalizedArtistName,
+            image: artistConcerts[0].image_url || "https://via.placeholder.com/1200x300",
+            ratings: reviewsData.data.ratingDistribution,
+            goAgain: reviewsData.data.goAgain,
+            tours: tours,
+            concerts: artistConcerts.map(concert => ({
+              id: concert.cid,
+              name: `${concert.artist_name} at ${concert.venue_name}`,
+              date: new Date(concert.date).toLocaleDateString(),
+              city: concert.city,
+              rating: calculateConcertAvgRating(reviewsData.data.reviews, concert.cid),
+              price: concert.price,
+              desc: `Experience ${concert.artist_name} live at ${concert.venue_name} in ${concert.city}`,
+              tour: { name: concert.tour_name },
+              image: concert.image_url
+            })),
+            avgRating: function() {
+              const total = Object.entries(this.ratings).reduce(
+                (sum, [rating, count]) => sum + (Number(rating) * count), 0
+              );
+              const count = Object.values(this.ratings).reduce((sum, count) => sum + count, 0);
+              return count > 0 ? (total / count).toFixed(1) : "N/A";
+            },
+            findTour: function(tourName) {
+              if (tourName === "All Tours") return this.ratings;
+              
+              // Use real tour ratings if available
+              if (reviewsData.data.tourRatings && reviewsData.data.tourRatings[tourName]) {
+                return reviewsData.data.tourRatings[tourName];
+              }
+              
+              // Fallback method
+              const tourConcerts = this.concerts.filter(c => c.tour.name === tourName);
+              const tourRatings = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
+              
+              tourConcerts.forEach(concert => {
+                const rating = Math.round(parseFloat(concert.rating));
+                tourRatings[rating] = (tourRatings[rating] || 0) + 1;
+              });
+              
+              return tourRatings;
+            }
+          };
+          
+          // Set state with the artist data
+          setArtist(artistData);
+          setConcertsShown(artistData.concerts);
+          setRatingsDisplayed(artistData.ratings);
+          setReviews(reviewsData.data.reviews);
+        }
         
-        // Set state with the artist data
-        setArtist(artistData);
-        setConcertsShown(artistData.concerts);
-        setRatingsDisplayed(artistData.ratings);
         setLoading(false);
         
       } catch (err) {
@@ -131,6 +198,17 @@ const ArtistPage = () => {
 
     fetchArtistData();
   }, [artistId]);
+
+  // Helper function to calculate average rating for a concert
+  const calculateConcertAvgRating = (reviews, concertId) => {
+    if (!reviews || reviews.length === 0) return (3.5).toFixed(1);
+    
+    const concertReviews = reviews.filter(review => review.cid === concertId);
+    if (concertReviews.length === 0) return (3.5).toFixed(1);
+    
+    const total = concertReviews.reduce((sum, review) => sum + review.rating, 0);
+    return (total / concertReviews.length).toFixed(1);
+  };
 
   // Update displayed concerts when selected tour changes
   useEffect(() => {
@@ -163,6 +241,17 @@ const ArtistPage = () => {
     } else if (side === 'right') {
       setComparedConcertTwo(concert);
     }
+  };
+
+  // Toggle reviews section visibility
+  const toggleReviewsSection = () => {
+    setShowReviews(!showReviews);
+  };
+
+  // Format date for display
+  const formatDate = (dateString) => {
+    const options = { year: 'numeric', month: 'long', day: 'numeric' };
+    return new Date(dateString).toLocaleDateString(undefined, options);
   };
 
   // Show loading state
@@ -251,6 +340,60 @@ const ArtistPage = () => {
               setConcertTwo={setComparedConcertTwo} 
             />
           </div>
+
+          {/* Show User Reviews Button */}
+          {reviews.length > 0 && (
+            <div className="bg-gray-800 rounded-3xl shadow-lg p-6 transition-transform transform hover:scale-[1.005] hover:shadow-xl">
+              <button
+                onClick={toggleReviewsSection}
+                className="w-full flex items-center justify-center space-x-2 py-3 px-4 bg-purple-600 rounded-lg hover:bg-purple-700 transition-colors"
+              >
+                <MessageCircle className="w-5 h-5" />
+                <span>{showReviews ? 'Hide Fan Reviews' : 'Show Fan Reviews'}</span>
+                <span className="ml-2 bg-purple-800 rounded-full px-2 py-1 text-xs">
+                  {reviews.length}
+                </span>
+              </button>
+
+              {/* Reviews Section */}
+              {showReviews && (
+                <div className="mt-6 max-h-[500px] overflow-y-auto">
+                  <h3 className="text-xl font-bold mb-4">Fan Reviews</h3>
+                  
+                  {reviews.map((review, index) => (
+                    <div key={index} className="mb-4 p-4 bg-gray-700 rounded-lg">
+                      <div className="flex justify-between items-start mb-2">
+                        <div className="flex items-center">
+                          <div className="w-10 h-10 rounded-full bg-purple-600 mr-3 flex items-center justify-center">
+                            <User className="w-6 h-6" />
+                          </div>
+                          <div>
+                            <div className="font-semibold">{review.user_fname} {review.user_lname}</div>
+                            <div className="text-gray-400 text-sm flex items-center">
+                              <Calendar className="w-3 h-3 mr-1" />
+                              {formatDate(review.date)}
+                            </div>
+                          </div>
+                        </div>
+                        <div className="flex items-center bg-gray-800 px-2 py-1 rounded-lg">
+                          <Star className="w-4 h-4 text-yellow-500 mr-1" fill="currentColor" />
+                          <span>{review.rating}</span>
+                        </div>
+                      </div>
+                      
+                      {review.review_text && (
+                        <p className="text-gray-300">{review.review_text}</p>
+                      )}
+                      
+                      <div className="mt-2 text-sm text-gray-400">
+                        <span className="font-semibold">{review.tour_name}</span> at {review.venue_name}, {review.venue_city}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
     </div>
