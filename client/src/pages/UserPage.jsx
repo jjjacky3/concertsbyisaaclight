@@ -4,6 +4,9 @@ import { useNavigate } from 'react-router-dom';
 import { User, Calendar, Star, Heart, Settings, LogOut, Loader2 } from 'lucide-react';
 import ConcertItem from "../components/ConcertItem";
 import ConcertCard from "../components/ConcertCard";
+import ConcertExpandedView from "../components/ConcertExpandView";
+import WishListBubble from "../components/WishListBubble";
+import { parse } from 'flatted';
 
 const UserPage = () => {
     const [user, setUser] = useState(null);
@@ -414,10 +417,14 @@ const UserPage = () => {
 
 
 
-            <div className="min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white">
+            <div className="min-h-screen bg-gray-900 text-white">
                 {/* Navbar */}
-                <NavBar />
-                <button onClick={testfunc}>Test</button>
+                <NavBar
+                    isDarkMode={isDarkMode}
+                    setIsDarkMode={setIsDarkMode}
+                    user={user}
+                    onLogout={handleLogout}
+                />
 
                 {/* Overlay Panel */}
                 {selectedConcert && (
@@ -476,7 +483,7 @@ const UserPage = () => {
                                         <ConcertCard
                                             key={index}
                                             concert={concert}
-                                            clickItemFunc={concertItemClicked}
+                                            onClick={concertItemClicked}
                                         />
                                     ))}
                                 </div>

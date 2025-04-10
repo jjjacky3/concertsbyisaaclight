@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Calendar, MapPin, Star, Ticket, Heart, Share2, Loader2, Clock } from 'lucide-react';
 import { format } from 'date-fns';
+import { stringify } from "flatted";
+
 
 const ConcertCard = ({ concert, onClick }) => {
   console.log(concert);
@@ -48,9 +50,17 @@ const ConcertCard = ({ concert, onClick }) => {
     window.location.href = `/artist/${artistId}`;
   };
 
+  // Function to Enable Dragging Features
+  const handleDragStart = (e) => {
+    e.dataTransfer.setData("concertData", stringify(concert));
+    console.log(e)
+  };
+
   return (
     <div
+      draggable
       onClick={() => onClick(concert)}
+      onDragStart={handleDragStart}
       className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden transform hover:scale-105 transition-transform duration-300 cursor-pointer"
     >
       <div className="relative group">
@@ -65,9 +75,8 @@ const ConcertCard = ({ concert, onClick }) => {
             src={getImageSrc()}
             alt={`${concert.artist} concert`}
             loading="lazy"
-            className={`w-full h-48 object-cover transition-opacity duration-300 ${
-              imageLoading ? 'opacity-0' : 'opacity-100'
-            }`}
+            className={`w-full h-48 object-cover transition-opacity duration-300 ${imageLoading ? 'opacity-0' : 'opacity-100'
+              }`}
             onLoad={() => {
               setImageLoading(false);
               setImageError(false);
@@ -111,7 +120,7 @@ const ConcertCard = ({ concert, onClick }) => {
       <div className="p-4 space-y-3">
         <div className="flex justify-between items-start">
           <div>
-            <h3 
+            <h3
               className="font-bold text-lg hover:text-blue-500 cursor-pointer"
               onClick={navigateToArtist}
             >
