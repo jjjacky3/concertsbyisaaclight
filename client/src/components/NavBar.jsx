@@ -1,7 +1,7 @@
 import { Menu, Upload, LogIn, LogOut, Sun, Moon, Database, User } from "lucide-react";
-import { useState } from "react";
-import PostgreSQLTestForm from "../pages/TestForm.jsx";
+import { useState, useEffect } from "react";
 import { X } from "lucide-react";
+import { logout } from '../services/apiService'; // Import the logout function
 
 const NavBar = ({ isDarkMode, setIsDarkMode, user, onLogout, onLogin }) => {
     // State for showing test form modal
@@ -14,6 +14,20 @@ const NavBar = ({ isDarkMode, setIsDarkMode, user, onLogout, onLogin }) => {
 
     const navigateToUser = () => {
         window.location.href = '/user';
+    };
+
+    // Handle user logout with better cleanup
+    const handleLogout = () => {
+        // Use the centralized logout function
+        logout();
+        
+        // Call the parent component's logout handler if provided
+        if (onLogout) {
+            onLogout();
+        } else {
+            // If no handler provided, reload the page
+            window.location.reload();
+        }
     };
 
     return (
@@ -50,7 +64,7 @@ const NavBar = ({ isDarkMode, setIsDarkMode, user, onLogout, onLogin }) => {
                     {/* Login / Logout Button */}
                     {user ? (
                         <button 
-                            onClick={onLogout}
+                            onClick={handleLogout}
                             className="flex items-center space-x-2 px-4 py-2 bg-gray-800 text-white rounded-lg shadow-md hover:bg-gray-700"
                         >
                             <LogOut className="w-4 h-4" />
