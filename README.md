@@ -16,5 +16,5 @@ node app.js
 ```
 
 # Contributors
-Aayam Kc, Damian Lo, Matthew Lafrance, Ihan Do, Jack Zhang, Isaac Light
+Aayam Kc, Damien Lo, Matthew Lafrance, Ihan Do, Jack Zhang, Isaac Light
 
