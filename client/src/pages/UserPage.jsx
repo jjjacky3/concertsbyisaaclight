@@ -201,12 +201,12 @@ const UserPage = () => {
 
     const editWishList = (command, concertData) => {
         if (command === "isIn") {
-            return wishList.some(item => item.id === concertData.id);
+            return wishList.some(item => item.cid === concertData.cid);
         }
 
         if (command === "add") {
             setWishList(prevList => {
-                const alreadyIn = prevList.some(item => item.id === concertData.id);
+                const alreadyIn = prevList.some(item => item.cid === concertData.cid);
                 if (alreadyIn) return prevList;
                 const updatedList = [...prevList, concertData].sort((a, b) => new Date(a.date) - new Date(b.date));
                 return updatedList;
@@ -215,7 +215,7 @@ const UserPage = () => {
         }
 
         if (command === "remove") {
-            setWishList(prevList => prevList.filter(item => item.id !== concertData.id));
+            setWishList(prevList => prevList.filter(item => item.cid !== concertData.cid));
             return true;
         }
 
@@ -482,7 +482,7 @@ const UserPage = () => {
                                         <ConcertCard
                                             key={index}
                                             concert={concert}
-                                            onClick={concertItemClicked}
+                                            onClick={setSelectedConcert}
                                         />
                                     ))}
                                 </div>

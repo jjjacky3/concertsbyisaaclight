@@ -1,21 +1,14 @@
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
-import { Calendar, MapPin, Star, StarOff, Ticket, Heart, Share2, X } from 'lucide-react';
+import { Calendar, MapPin, Star, StarOff, Ticket, Heart, Share2, X, User, ExternalLink } from 'lucide-react';
+import { format } from 'date-fns';
+
 
 const ConcertExpandedView = ({ concert, closeOverlay, editWishList, wishList }) => {
     const navigate = useNavigate();
 
     if (!concert) return null;
 
-    let concertArtist = concert.artist
-    let concertTour = concert.tourName
-    let concertVenue = concert.venue
-    let concertDate = concert.date
-    let concertPrice = concert.price
-    let concertRating = concert.rating
-    let concertReviews = concert.reviews
-    let concertImg = concert.image_url
-    let concertTags = concert.tags
 
 
     // Navigate to artist page
@@ -23,6 +16,31 @@ const ConcertExpandedView = ({ concert, closeOverlay, editWishList, wishList }) 
         const artistId = artistName.toLowerCase().replace(/\s+/g, '-');
         navigate(`/artist/${artistId}`);
         closeOverlay();
+    };
+
+    // Format the date using date-fns
+    const formatDate = (dateStr) => {
+        if (!dateStr) return '';
+        return format(new Date(dateStr), 'MMM d, yyyy');
+    };
+
+    // Format time to 12-hour format
+    const formatTime = (timeStr) => {
+        if (!timeStr) return '';
+        const [hours, minutes] = timeStr.split(':');
+        const hour = parseInt(hours);
+        const ampm = hour >= 12 ? 'PM' : 'AM';
+        const hour12 = hour % 12 || 12;
+        return `${hour12}:${minutes} ${ampm}`;
+    };
+
+    // Format price with proper currency
+    const formatPrice = (price) => {
+        if (!price) return 'N/A';
+        return new Intl.NumberFormat('en-US', {
+            style: 'currency',
+            currency: 'USD'
+        }).format(price);
     };
 
     const isInWish = wishList.some(item => item.id === concert.id);
@@ -34,6 +52,26 @@ const ConcertExpandedView = ({ concert, closeOverlay, editWishList, wishList }) 
     const clicked = () => {
         clickItemFunc(concert)
     }
+
+    const navigateToArtist = () => {
+        const artistId = concert.artist.toLowerCase().replace(/\s+/g, '-');
+        navigate(`/artist/${artistId}`);
+        onClose();
+    };
+
+    let concertID = concert.cid
+    let concertArtist = concert.artist_name
+    let concertCity = concert.city
+    let concertDate = formatDate(concert.date)
+    let concertFavorate = concert.favorate
+    let concertImg = concert.image_url
+    let concertPrice = formatPrice(concert.price)
+    let concertRating = concert.rating
+    let concertReview = concert.review
+    let concertReviewText = concert.review_text
+    let concertTime = formatTime(concert.time)
+    let concertTour = concert.tour_name
+    let concertVenue = concert.venue_name
 
     return (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
@@ -47,7 +85,18 @@ const ConcertExpandedView = ({ concert, closeOverlay, editWishList, wishList }) 
                 </button>
 
                 {/* Concert Info */}
-                <h2 className="text-2xl font-bold mb-2">CONCERT NAME</h2>
+                <h2 className="text-2xl font-bold mb-2">{concertArtist}</h2>
+
+                {/* Add a prominent button to navigate to artist page */}
+                <button
+                    onClick={navigateToArtist}
+                    className="mb-4 px-4 py-2 bg-purple-600 text-white rounded-lg flex items-center hover:bg-purple-700 transition-colors"
+                >
+                    <User className="w-4 h-4 mr-2" />
+                    View Artist Page
+                    <ExternalLink className="w-4 h-4 ml-2" />
+                </button>
+
                 <p className="text-gray-400">{concertTour}</p>
                 <div className="flex items-center space-x-3 mt-2">
                     <Calendar size={18} />
@@ -63,7 +112,7 @@ const ConcertExpandedView = ({ concert, closeOverlay, editWishList, wishList }) 
                 </div>
                 <div className="flex items-center space-x-3 mt-2">
                     <Ticket size={18} />
-                    <span>${concertPrice}</span>
+                    <span>{concertPrice}</span>
                 </div>
                 <p className="mt-4">DESCRIPTION</p>
 
