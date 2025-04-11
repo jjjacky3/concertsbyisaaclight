@@ -266,158 +266,6 @@ const UserPage = () => {
     return (
         <div>
             <div className="min-h-screen bg-gray-900 text-white">
-                <NavBar
-                    isDarkMode={isDarkMode}
-                    setIsDarkMode={setIsDarkMode}
-                    user={user}
-                    onLogout={handleLogout}
-                />
-
-                <div className="container mx-auto px-4 py-8">
-                    {/* User Profile Header */}
-                    <div className="bg-gray-800 rounded-lg shadow-lg p-6 mb-8">
-                        <div className="flex items-center space-x-4">
-                            <div className="w-20 h-20 bg-gray-700 rounded-full flex items-center justify-center">
-                                <User className="w-10 h-10 text-purple-500" />
-                            </div>
-                            <div>
-                                <h1 className="text-2xl font-bold">{user?.fname} {user?.lname}</h1>
-                                <p className="text-gray-400">{user?.email}</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* User Stats */}
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                        <div className="bg-gray-800 rounded-lg shadow-lg p-6 transform hover:scale-105 transition-transform">
-                            <div className="flex items-center space-x-2">
-                                <Calendar className="w-6 h-6 text-purple-500" />
-                                <h2 className="text-xl font-semibold">Concerts Attended</h2>
-                            </div>
-                            <p className="text-3xl font-bold mt-2">{userConcerts.length}</p>
-                        </div>
-                        <div className="bg-gray-800 rounded-lg shadow-lg p-6 transform hover:scale-105 transition-transform">
-                            <div className="flex items-center space-x-2">
-                                <Star className="w-6 h-6 text-yellow-500" />
-                                <h2 className="text-xl font-semibold">Reviews</h2>
-                            </div>
-                            <p className="text-3xl font-bold mt-2">
-                                {userConcerts.filter(concert => concert.review).length}
-                            </p>
-                        </div>
-                        <div className="bg-gray-800 rounded-lg shadow-lg p-6 transform hover:scale-105 transition-transform">
-                            <div className="flex items-center space-x-2">
-                                <Heart className="w-6 h-6 text-red-500" />
-                                <h2 className="text-xl font-semibold">Favorites</h2>
-                            </div>
-                            <p className="text-3xl font-bold mt-2">
-                                {userConcerts.filter(concert => concert.favorite).length}
-                            </p>
-                        </div>
-                    </div>
-
-                    {/* Concert History */}
-                    <div className="bg-gray-800 rounded-lg shadow-lg p-6">
-                        <h2 className="text-2xl font-bold mb-4">Concert History</h2>
-                        <div className="space-y-4">
-                            {userConcerts.map((concert, index) => (
-                                <div
-                                    key={index}
-                                    className="bg-gray-700/50 rounded-lg p-4 hover:bg-gray-700 transition-colors"
-                                >
-                                    <div className="flex justify-between items-start">
-                                        <div className="flex-grow">
-                                            <h3 className="font-semibold text-purple-400 text-lg">{concert.artist_name}</h3>
-                                            <p className="text-gray-300">{concert.venue_name}, {concert.city}</p>
-                                            <div className="flex items-center space-x-4 mt-1 text-gray-400">
-                                                <p>{new Date(concert.date).toLocaleDateString()}</p>
-                                                <p>{concert.time}</p>
-                                                <p className="text-green-400">${concert.price}</p>
-                                            </div>
-                                        </div>
-                                        <div className="flex items-center space-x-4">
-                                            {/* Rating Section */}
-                                            <div className="flex items-center space-x-1">
-                                                {[1, 2, 3, 4, 5].map((star) => (
-                                                    <button
-                                                        key={star}
-                                                        onClick={() => handleRating(concert.cid, star)}
-                                                        className={`focus:outline-none transition-colors ${(concert.review?.rating || 0) >= star
-                                                            ? 'text-yellow-500'
-                                                            : 'text-gray-600 hover:text-yellow-400'
-                                                            }`}
-                                                    >
-                                                        <Star className="w-5 h-5" fill={concert.review?.rating >= star ? "currentColor" : "none"} />
-                                                    </button>
-                                                ))}
-                                            </div>
-
-                                            {/* Favorite Button */}
-                                            <button
-                                                onClick={() => handleToggleFavorite(concert.cid)}
-                                                className={`focus:outline-none transition-colors ${concert.favorite ? 'text-red-500' : 'text-gray-600 hover:text-red-400'
-                                                    }`}
-                                            >
-                                                <Heart
-                                                    className="w-6 h-6"
-                                                    fill={concert.favorite ? "currentColor" : "none"}
-                                                />
-                                            </button>
-                                        </div>
-                                    </div>
-
-                                    {/* Review Text Area - Only show if rated */}
-                                    {concert.review?.rating > 0 && (
-                                        <div className="mt-3">
-                                            <textarea
-                                                placeholder="Add your thoughts about this concert..."
-                                                value={concert.review?.text || ''}
-                                                onChange={(e) => handleReviewText(concert.cid, e.target.value)}
-                                                className="w-full bg-gray-800 text-white rounded-lg p-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
-                                                rows="2"
-                                            />
-                                        </div>
-                                    )}
-                                </div>
-                            ))}
-
-                            {userConcerts.length === 0 && (
-                                <div className="text-center py-8 text-gray-400">
-                                    <Calendar className="w-16 h-16 mx-auto mb-4 opacity-50" />
-                                    <p className="text-lg">No concerts in your history yet</p>
-                                    <p className="text-sm">Concerts you attend will appear here</p>
-                                </div>
-                            )}
-                        </div>
-                    </div>
-
-                    {/* Action Buttons */}
-                    <div className="mt-8 flex justify-end space-x-4">
-                        <button
-                            onClick={() => navigate('/settings')}
-                            className="flex items-center space-x-2 px-4 py-2 bg-gray-700 rounded-lg hover:bg-gray-600 transition-colors"
-                        >
-                            <Settings className="w-5 h-5" />
-                            <span>Settings</span>
-                        </button>
-                        <button
-                            onClick={handleLogout}
-                            className="flex items-center space-x-2 px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
-                        >
-                            <LogOut className="w-5 h-5" />
-                            <span>Logout</span>
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-
-
-
-
-
-
-            <div className="min-h-screen bg-gray-900 text-white">
                 {/* Navbar */}
                 <NavBar
                     isDarkMode={isDarkMode}
@@ -568,6 +416,157 @@ const UserPage = () => {
 
 
 
+
+
+
+
+
+
+            <div className="min-h-screen bg-gray-900 text-white">
+                <NavBar
+                    isDarkMode={isDarkMode}
+                    setIsDarkMode={setIsDarkMode}
+                    user={user}
+                    onLogout={handleLogout}
+                />
+
+                <div className="container mx-auto px-4 py-8">
+                    {/* User Profile Header */}
+                    <div className="bg-gray-800 rounded-lg shadow-lg p-6 mb-8">
+                        <div className="flex items-center space-x-4">
+                            <div className="w-20 h-20 bg-gray-700 rounded-full flex items-center justify-center">
+                                <User className="w-10 h-10 text-purple-500" />
+                            </div>
+                            <div>
+                                <h1 className="text-2xl font-bold">{user?.fname} {user?.lname}</h1>
+                                <p className="text-gray-400">{user?.email}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* User Stats */}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                        <div className="bg-gray-800 rounded-lg shadow-lg p-6 transform hover:scale-105 transition-transform">
+                            <div className="flex items-center space-x-2">
+                                <Calendar className="w-6 h-6 text-purple-500" />
+                                <h2 className="text-xl font-semibold">Concerts Attended</h2>
+                            </div>
+                            <p className="text-3xl font-bold mt-2">{userConcerts.length}</p>
+                        </div>
+                        <div className="bg-gray-800 rounded-lg shadow-lg p-6 transform hover:scale-105 transition-transform">
+                            <div className="flex items-center space-x-2">
+                                <Star className="w-6 h-6 text-yellow-500" />
+                                <h2 className="text-xl font-semibold">Reviews</h2>
+                            </div>
+                            <p className="text-3xl font-bold mt-2">
+                                {userConcerts.filter(concert => concert.review).length}
+                            </p>
+                        </div>
+                        <div className="bg-gray-800 rounded-lg shadow-lg p-6 transform hover:scale-105 transition-transform">
+                            <div className="flex items-center space-x-2">
+                                <Heart className="w-6 h-6 text-red-500" />
+                                <h2 className="text-xl font-semibold">Favorites</h2>
+                            </div>
+                            <p className="text-3xl font-bold mt-2">
+                                {userConcerts.filter(concert => concert.favorite).length}
+                            </p>
+                        </div>
+                    </div>
+
+                    {/* Concert History */}
+                    <div className="bg-gray-800 rounded-lg shadow-lg p-6">
+                        <h2 className="text-2xl font-bold mb-4">Concert History</h2>
+                        <div className="space-y-4">
+                            {userConcerts.map((concert, index) => (
+                                <div
+                                    key={index}
+                                    className="bg-gray-700/50 rounded-lg p-4 hover:bg-gray-700 transition-colors"
+                                >
+                                    <div className="flex justify-between items-start">
+                                        <div className="flex-grow">
+                                            <h3 className="font-semibold text-purple-400 text-lg">{concert.artist_name}</h3>
+                                            <p className="text-gray-300">{concert.venue_name}, {concert.city}</p>
+                                            <div className="flex items-center space-x-4 mt-1 text-gray-400">
+                                                <p>{new Date(concert.date).toLocaleDateString()}</p>
+                                                <p>{concert.time}</p>
+                                                <p className="text-green-400">${concert.price}</p>
+                                            </div>
+                                        </div>
+                                        <div className="flex items-center space-x-4">
+                                            {/* Rating Section */}
+                                            <div className="flex items-center space-x-1">
+                                                {[1, 2, 3, 4, 5].map((star) => (
+                                                    <button
+                                                        key={star}
+                                                        onClick={() => handleRating(concert.cid, star)}
+                                                        className={`focus:outline-none transition-colors ${(concert.review?.rating || 0) >= star
+                                                            ? 'text-yellow-500'
+                                                            : 'text-gray-600 hover:text-yellow-400'
+                                                            }`}
+                                                    >
+                                                        <Star className="w-5 h-5" fill={concert.review?.rating >= star ? "currentColor" : "none"} />
+                                                    </button>
+                                                ))}
+                                            </div>
+
+                                            {/* Favorite Button */}
+                                            <button
+                                                onClick={() => handleToggleFavorite(concert.cid)}
+                                                className={`focus:outline-none transition-colors ${concert.favorite ? 'text-red-500' : 'text-gray-600 hover:text-red-400'
+                                                    }`}
+                                            >
+                                                <Heart
+                                                    className="w-6 h-6"
+                                                    fill={concert.favorite ? "currentColor" : "none"}
+                                                />
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    {/* Review Text Area - Only show if rated */}
+                                    {concert.review?.rating > 0 && (
+                                        <div className="mt-3">
+                                            <textarea
+                                                placeholder="Add your thoughts about this concert..."
+                                                value={concert.review?.text || ''}
+                                                onChange={(e) => handleReviewText(concert.cid, e.target.value)}
+                                                className="w-full bg-gray-800 text-white rounded-lg p-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                                rows="2"
+                                            />
+                                        </div>
+                                    )}
+                                </div>
+                            ))}
+
+                            {userConcerts.length === 0 && (
+                                <div className="text-center py-8 text-gray-400">
+                                    <Calendar className="w-16 h-16 mx-auto mb-4 opacity-50" />
+                                    <p className="text-lg">No concerts in your history yet</p>
+                                    <p className="text-sm">Concerts you attend will appear here</p>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+
+                    {/* Action Buttons */}
+                    <div className="mt-8 flex justify-end space-x-4">
+                        <button
+                            onClick={() => navigate('/settings')}
+                            className="flex items-center space-x-2 px-4 py-2 bg-gray-700 rounded-lg hover:bg-gray-600 transition-colors"
+                        >
+                            <Settings className="w-5 h-5" />
+                            <span>Settings</span>
+                        </button>
+                        <button
+                            onClick={handleLogout}
+                            className="flex items-center space-x-2 px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
+                        >
+                            <LogOut className="w-5 h-5" />
+                            <span>Logout</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
 
 
 
