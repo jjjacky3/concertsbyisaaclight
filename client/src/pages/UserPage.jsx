@@ -17,7 +17,8 @@ const UserPage = () => {
     const [selectedConcert, setSelectedConcert] = useState(null)
     const [wishList, setWishList] = useState([]);
     const navigate = useNavigate();
-    const concertList = userConcerts
+    const recomendedList = userConcerts
+    const pastList = userConcerts
 
     useEffect(() => {
         // Check if user is logged in
@@ -429,7 +430,12 @@ const UserPage = () => {
                 {selectedConcert && (
                     <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
                         <div className="bg-gray-800 p-6 rounded-lg shadow-lg w-[600px] h-[400px] flex flex-col items-center justify-center">
-                            <ConcertExpandedView concert={selectedConcert} closeOverlay={closeOverlay} editWishList={editWishList} wishList={wishList} />
+                            <ConcertExpandedView concert={selectedConcert}
+                                closeOverlay={closeOverlay}
+                                editWishList={editWishList}
+                                wishList={wishList}
+                                favoriteClicked={handleToggleFavorite}
+                                handleRating={handleRating} />
                         </div>
                     </div>
                 )}
@@ -504,7 +510,7 @@ const UserPage = () => {
 
                             <div className="flex-1 overflow-x-auto">
                                 <div className="grid grid-rows-1 grid-flow-col gap-x-4 gap-y-4 w-max">
-                                    {concertList.map((concert, index) => (
+                                    {recomendedList.map((concert, index) => (
                                         <ConcertCard
                                             key={index}
                                             concert={concert}
@@ -520,13 +526,13 @@ const UserPage = () => {
                         <div className="h-[250px] bg-gray-800 rounded-3xl shadow-lg p-6 transition-transform transform hover:scale-[1.005] hover:shadow-xl flex flex-col justify-center">
                             <div className="text-2xl font-bold text-white text-center mb-4">Past Concerts</div>
 
-                            <div className="flex-1 overflow-x-auto">
-                                <div className="grid grid-rows-1 grid-flow-col gap-x-4 gap-y-4 w-max">
-                                    {concertList.map((concert, index) => (
-                                        <ConcertCard
+                            <div className="flex-1 overflow-x-auto overflow-y-hidden">
+                                <div className="scale-75 origin-top-left grid grid-flow-col auto-cols-min gap-x-6 items-center w-max">
+                                    {pastList.map((concert, index) => (
+                                        <ConcertItem
                                             key={index}
                                             concert={concert}
-                                            clickItemFunc={concertItemClicked}
+                                            onClick={setSelectedConcert}
                                         />
                                     ))}
                                 </div>

@@ -50,6 +50,11 @@ const ConcertCard = ({ concert, onClick }) => {
     window.location.href = `/artist/${artistId}`;
   };
 
+  const favorateClicked = (e) => {
+    (e) => e.stopPropagation()
+    toggleFavourateFunction
+  }
+
   // Function to Enable Dragging Features
   const handleDragStart = (e) => {
     e.dataTransfer.setData("concertData", stringify(concert));

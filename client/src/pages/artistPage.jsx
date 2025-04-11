@@ -37,43 +37,43 @@ const ArtistPage = () => {
   useEffect(() => {
     const fetchArtistData = async () => {
       if (!artistId) return;
-      
+
       setLoading(true);
       setError(null);
-      
+
       try {
         // Normalize artistId to match database format (convert slug to proper name format)
         const normalizedArtistName = artistId
           .split('-')
           .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
           .join(' ');
-        
+
         // Fetch concerts for this artist
         const concertsResponse = await fetch(`http://localhost:3000/api/postgres/concert-details`);
         if (!concertsResponse.ok) throw new Error('Failed to fetch concert data');
-        
+
         const allConcertsData = await concertsResponse.json();
-        
+
         // Filter concerts for this artist
         const artistConcerts = allConcertsData.filter(
           concert => concert.artist_name.toLowerCase() === normalizedArtistName.toLowerCase()
         );
-        
+
         if (artistConcerts.length === 0) {
           throw new Error(`No concerts found for artist: ${normalizedArtistName}`);
         }
-        
+
         // Get unique tours from concerts
-        const tours = [...new Set(artistConcerts.map(concert => concert.tour_name))].map(tourName => ({ 
-          name: tourName 
+        const tours = [...new Set(artistConcerts.map(concert => concert.tour_name))].map(tourName => ({
+          name: tourName
         }));
-        
+
         // Fetch artist reviews
         const reviewsResponse = await fetch(`http://localhost:3000/api/postgres/artist-reviews/${artistId}`);
-        
+
         if (!reviewsResponse.ok) {
           console.warn('Could not fetch artist reviews, using simulated data');
-          
+
           // Calculate ratings distribution (1-5 stars) - using simulation as fallback
           const ratingsDistribution = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
           artistConcerts.forEach(concert => {
@@ -82,7 +82,7 @@ const ArtistPage = () => {
             const simulatedRating = Math.max(1, Math.min(5, Math.round(concert.price / 30)));
             ratingsDistribution[simulatedRating]++;
           });
-          
+
           // Create artist object with all necessary data
           const artistData = {
             name: normalizedArtistName,
@@ -101,29 +101,29 @@ const ArtistPage = () => {
               tour: { name: concert.tour_name },
               image: concert.image_url
             })),
-            avgRating: function() {
+            avgRating: function () {
               const total = Object.entries(this.ratings).reduce(
                 (sum, [rating, count]) => sum + (Number(rating) * count), 0
               );
               const count = Object.values(this.ratings).reduce((sum, count) => sum + count, 0);
               return count > 0 ? (total / count).toFixed(1) : "N/A";
             },
-            findTour: function(tourName) {
+            findTour: function (tourName) {
               if (tourName === "All Tours") return this.ratings;
-              
+
               // Filter concerts by tour and calculate rating distribution
               const tourConcerts = this.concerts.filter(c => c.tour.name === tourName);
               const tourRatings = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
-              
+
               tourConcerts.forEach(concert => {
                 const rating = Math.round(parseFloat(concert.rating));
                 tourRatings[rating] = (tourRatings[rating] || 0) + 1;
               });
-              
+
               return tourRatings;
             }
           };
-          
+
           // Set state with the artist data
           setArtist(artistData);
           setConcertsShown(artistData.concerts);
@@ -133,7 +133,7 @@ const ArtistPage = () => {
           // Process real review data
           const reviewsData = await reviewsResponse.json();
           console.log('Artist reviews:', reviewsData);
-          
+
           // Create artist object with real review data
           const artistData = {
             name: normalizedArtistName,
@@ -152,43 +152,43 @@ const ArtistPage = () => {
               tour: { name: concert.tour_name },
               image: concert.image_url
             })),
-            avgRating: function() {
+            avgRating: function () {
               const total = Object.entries(this.ratings).reduce(
                 (sum, [rating, count]) => sum + (Number(rating) * count), 0
               );
               const count = Object.values(this.ratings).reduce((sum, count) => sum + count, 0);
               return count > 0 ? (total / count).toFixed(1) : "N/A";
             },
-            findTour: function(tourName) {
+            findTour: function (tourName) {
               if (tourName === "All Tours") return this.ratings;
-              
+
               // Use real tour ratings if available
               if (reviewsData.data.tourRatings && reviewsData.data.tourRatings[tourName]) {
                 return reviewsData.data.tourRatings[tourName];
               }
-              
+
               // Fallback method
               const tourConcerts = this.concerts.filter(c => c.tour.name === tourName);
               const tourRatings = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
-              
+
               tourConcerts.forEach(concert => {
                 const rating = Math.round(parseFloat(concert.rating));
                 tourRatings[rating] = (tourRatings[rating] || 0) + 1;
               });
-              
+
               return tourRatings;
             }
           };
-          
+
           // Set state with the artist data
           setArtist(artistData);
           setConcertsShown(artistData.concerts);
           setRatingsDisplayed(artistData.ratings);
           setReviews(reviewsData.data.reviews);
         }
-        
+
         setLoading(false);
-        
+
       } catch (err) {
         console.error('Error fetching artist data:', err);
         setError(err.message);
@@ -202,10 +202,10 @@ const ArtistPage = () => {
   // Helper function to calculate average rating for a concert
   const calculateConcertAvgRating = (reviews, concertId) => {
     if (!reviews || reviews.length === 0) return (3.5).toFixed(1);
-    
+
     const concertReviews = reviews.filter(review => review.cid === concertId);
     if (concertReviews.length === 0) return (3.5).toFixed(1);
-    
+
     const total = concertReviews.reduce((sum, review) => sum + review.rating, 0);
     return (total / concertReviews.length).toFixed(1);
   };
@@ -213,7 +213,7 @@ const ArtistPage = () => {
   // Update displayed concerts when selected tour changes
   useEffect(() => {
     if (!artist) return;
-    
+
     if (selectedTour === "All Tours") {
       setConcertsShown(artist.concerts);
       setRatingsDisplayed(artist.ratings);
@@ -279,7 +279,7 @@ const ArtistPage = () => {
           <div className="text-center space-y-4">
             <h2 className="text-2xl font-bold text-red-500">Error Loading Artist</h2>
             <p className="text-gray-400">{error}</p>
-            <button 
+            <button
               onClick={() => window.location.reload()}
               className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
             >
@@ -317,8 +317,8 @@ const ArtistPage = () => {
 
         {/* Overlay Panel */}
         {selectedConcert && (
-          <ConcertExpandedView 
-            concert={selectedConcert} 
+          <ConcertExpandedView
+            concert={selectedConcert}
             closeOverlay={closeOverlay}
           />
         )}
@@ -332,12 +332,12 @@ const ArtistPage = () => {
 
           {/* Compare Module */}
           <div className="h-[380px] bg-gray-800 rounded-3xl shadow-lg p-6 transition-transform transform hover:scale-[1.005] hover:shadow-xl">
-            <CompareModule 
-              concert1={comparedConcertOne} 
-              concert2={comparedConcertTwo} 
-              onDropConcert={handleConcertDrop} 
-              setConcertOne={setComparedConcertOne} 
-              setConcertTwo={setComparedConcertTwo} 
+            <CompareModule
+              concert1={comparedConcertOne}
+              concert2={comparedConcertTwo}
+              onDropConcert={handleConcertDrop}
+              setConcertOne={setComparedConcertOne}
+              setConcertTwo={setComparedConcertTwo}
             />
           </div>
 
@@ -359,7 +359,7 @@ const ArtistPage = () => {
               {showReviews && (
                 <div className="mt-6 max-h-[500px] overflow-y-auto">
                   <h3 className="text-xl font-bold mb-4">Fan Reviews</h3>
-                  
+
                   {reviews.map((review, index) => (
                     <div key={index} className="mb-4 p-4 bg-gray-700 rounded-lg">
                       <div className="flex justify-between items-start mb-2">
@@ -380,11 +380,11 @@ const ArtistPage = () => {
                           <span>{review.rating}</span>
                         </div>
                       </div>
-                      
+
                       {review.review_text && (
                         <p className="text-gray-300">{review.review_text}</p>
                       )}
-                      
+
                       <div className="mt-2 text-sm text-gray-400">
                         <span className="font-semibold">{review.tour_name}</span> at {review.venue_name}, {review.venue_city}
                       </div>

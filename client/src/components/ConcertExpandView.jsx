@@ -4,7 +4,7 @@ import { Calendar, MapPin, Star, StarOff, Ticket, Heart, Share2, X, User, Extern
 import { format } from 'date-fns';
 
 
-const ConcertExpandedView = ({ concert, closeOverlay, editWishList, wishList }) => {
+const ConcertExpandedView = ({ concert, closeOverlay, editWishList, wishList, favoriteClicked, handleRating }) => {
     const navigate = useNavigate();
 
     if (!concert) return null;
@@ -63,7 +63,7 @@ const ConcertExpandedView = ({ concert, closeOverlay, editWishList, wishList }) 
     let concertArtist = concert.artist_name
     let concertCity = concert.city
     let concertDate = formatDate(concert.date)
-    let concertFavorate = concert.favorate
+    let concertFavorate = concert.favorite
     let concertImg = concert.image_url
     let concertPrice = formatPrice(concert.price)
     let concertRating = concert.rating
@@ -75,7 +75,7 @@ const ConcertExpandedView = ({ concert, closeOverlay, editWishList, wishList }) 
 
     return (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-            <div className="w-[700px] h-[450px] bg-gray-800 text-white rounded-xl shadow-2xl border border-gray-600/50 p-5 relative">
+            <div className="w-[700px] h-[600px] bg-gray-800 text-white rounded-xl shadow-2xl border border-gray-600/50 p-5 relative overflow-y-auto">
                 {/* Close Button */}
                 <button
                     className="absolute top-3 right-3 text-gray-300 hover:text-white"
@@ -107,8 +107,21 @@ const ConcertExpandedView = ({ concert, closeOverlay, editWishList, wishList }) 
                     <span>{concertVenue}</span>
                 </div>
                 <div className="flex items-center space-x-3 mt-2">
-                    <Star size={18} className="text-yellow-400" />
-                    <span>{concertRating} / 5</span>
+                    {/* Rating Section */}
+                    <div className="flex items-center space-x-1">
+                        {[1, 2, 3, 4, 5].map((star) => (
+                            <button
+                                key={star}
+                                onClick={() => handleRating(concert.cid, star)}
+                                className={`focus:outline-none transition-colors ${(concert.review?.rating || 0) >= star
+                                    ? 'text-yellow-500'
+                                    : 'text-gray-600 hover:text-yellow-400'
+                                    }`}
+                            >
+                                <Star className="w-5 h-5" fill={concert.review?.rating >= star ? "currentColor" : "none"} />
+                            </button>
+                        ))}
+                    </div>
                 </div>
                 <div className="flex items-center space-x-3 mt-2">
                     <Ticket size={18} />
@@ -118,8 +131,13 @@ const ConcertExpandedView = ({ concert, closeOverlay, editWishList, wishList }) 
 
                 {/* Action Buttons */}
                 <div className="flex space-x-4 mt-6">
-                    <button className="px-4 py-2 bg-red-500 rounded-lg shadow-md hover:bg-yellow-400">
-                        <Heart size={18} className="inline-block mr-2" /> Favorite
+                    <button className="px-4 py-2 bg-red-500 rounded-lg shadow-md hover:bg-yellow-400"
+                    // onClick={favoriteClicked(concertID)}
+                    >
+                        {concertFavorate
+                            ? <Heart size={18} className="text-red-400" fill="currentColor" />
+                            : <Heart size={18} />}
+                        Favorite
                     </button>
                     <button className="px-4 py-2 bg-blue-600 rounded-lg shadow-md hover:bg-blue-500">
                         <Share2 size={18} className="inline-block mr-2" /> Share
@@ -133,6 +151,13 @@ const ConcertExpandedView = ({ concert, closeOverlay, editWishList, wishList }) 
                             : <Star size={18} />}
                         <span>Wish List</span>
                     </button>
+                </div>
+                {/* Review Section */}
+                <div className="mt-5">
+                    <div className="text-2xl font-bold mb-2">Reviews</div>
+                    <div>
+                        Test {concertReviewText}
+                    </div>
                 </div>
             </div>
         </div>
