@@ -1,3 +1,20 @@
+/**
+ * 
+ * This component renders a detailed modal overlay for a selected concert with comprehensive event information.
+ * 
+ * It includes:
+ * - A concert title and artist information with navigation links to the artist page
+ * - Tour name identification for context about the broader performance series
+ * - Key event details with intuitive icons (date, location, rating, and ticket price)
+ * - A full concert description providing additional context about the event
+ * - Interactive action buttons for favoriting and sharing the concert
+ * - Multiple navigation paths to the related artist page with visual indicators
+ * 
+ * The component handles conditional rendering if concert data is missing, properly formats
+ * all display values, and provides multiple user interaction points to navigate to the artist
+ * page. The close button allows users to exit the modal overlay and return to the previous view.
+ */
+
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Calendar, MapPin, Star, Ticket, Heart, Share2, X, User, ExternalLink } from 'lucide-react';

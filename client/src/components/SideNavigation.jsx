@@ -1,3 +1,20 @@
+/**
+ * 
+ * This component renders a responsive sidebar navigation menu with two main sections:
+ * Discover and Genres.
+ * 
+ * It includes:
+ * - A "Discover" section with navigation options like All, New Tours, Recommended, etc.
+ * - A "Genres" section displaying music genres with accompanying icon visuals
+ * - Visual highlighting of the currently active selection
+ * - Interactive elements that trigger parent component state changes
+ * 
+ * The component applies conditional styling to highlight the active selection,
+ * provides hover effects for better user experience, and implements dark mode support
+ * with appropriate color transitions. Each menu item triggers the parent component's
+ * state update function to change the active genre/section.
+ */
+
 import React from 'react';
 import { Music } from 'lucide-react';
 

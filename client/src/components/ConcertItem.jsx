@@ -1,3 +1,22 @@
+/**
+ * 
+ * This component renders a compact, interactive concert card displaying essential event information
+ * in a visually appealing format.
+ * 
+ * It also includes:
+ * - A prominent concert title with tour name displayed beneath it
+ * - Date and location information with intuitive icon indicators
+ * - A rating display in the bottom-right corner with star visualization
+ * - Ticket pricing information in the bottom-left with ticket icon
+ * - Hover effects for improved user interaction feedback
+ * - Drag-and-drop functionality allowing the concert data to be transferred
+ * 
+ * The component handles formatting of price values (adding $ prefix), manages click events to
+ * trigger the parent component's handler, and implements drag start events that serialize
+ * the concert data. The design uses a space-efficient card layout that scales slightly on hover
+ * to provide visual feedback for interactive elements.
+ */
+
 import { useState } from "react";
 import { Calendar, MapPin, Star, Ticket, Heart, Share2 } from 'lucide-react';
 import { stringify } from "flatted";

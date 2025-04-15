@@ -1,3 +1,6 @@
+// highkey dont need this page delete
+
+
 import ArtistBanner from "../components/ArtistBanner"
 import Artist from "../../../server/models/Artist"
 import Tour from "../../../server/models/Tour"

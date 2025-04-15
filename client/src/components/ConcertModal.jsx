@@ -1,3 +1,23 @@
+/**
+ * 
+ * This component renders a focused modal overlay that displays detailed concert information in a clean,
+ * accessible format centered on the screen.
+ * 
+ * It also includes:
+ * - A prominent artist name header for immediate context
+ * - A highlighted call-to-action button for viewing the complete artist profile
+ * - Structured information fields for tour name, venue, date, price, and rating
+ * - Review count display providing social proof alongside the rating
+ * - Conditional rendering of categorization tags when available
+ * - A close button allowing users to dismiss the modal easily
+ * 
+ * The component handles navigation to artist pages by formatting artist names into URL-friendly slugs.
+ * It supports both light and dark mode through appropriate Tailwind classes, performs conditional rendering
+ * if concert data is missing, and automatically closes the modal after navigation to maintain a smooth
+ * user experience flow.
+ */
+
+
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { X, User, ExternalLink } from 'lucide-react';

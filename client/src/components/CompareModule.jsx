@@ -5,7 +5,7 @@ import { parse } from "flatted";
 const CompareModule = ({ concert1, concert2, onDropConcert, setConcertOne, setConcertTwo }) => {
 
     const handleDragOver = (e) => {
-        e.preventDefault(); // Required to allow dropping
+        e.preventDefault(); 
     };
 
     const handleDrop = (e, side) => {
@@ -23,8 +23,6 @@ const CompareModule = ({ concert1, concert2, onDropConcert, setConcertOne, setCo
         }
 
     };
-
-
 
 
 
