@@ -171,20 +171,50 @@ const UserPage = () => {
         }
     };
 
+    // Wishlist management functions from first version
+    const editWishList = (command, concertData) => {
+        if (command === "isIn") {
+            // Check if we need to use id or cid based on the data structure
+            const idProperty = concertData.cid !== undefined ? 'cid' : 'id';
+            return wishList.some(item => item[idProperty] === concertData[idProperty]);
+        }
+
+        if (command === "add") {
+            setWishList(prevList => {
+                // Check if we need to use id or cid based on the data structure
+                const idProperty = concertData.cid !== undefined ? 'cid' : 'id';
+                const alreadyIn = prevList.some(item => item[idProperty] === concertData[idProperty]);
+                if (alreadyIn) return prevList;
+                const updatedList = [...prevList, concertData].sort((a, b) => new Date(a.date) - new Date(b.date));
+                return updatedList;
+            });
+            return true;
+        }
+
+        if (command === "remove") {
+            setWishList(prevList => {
+                // Check if we need to use id or cid based on the data structure
+                const idProperty = concertData.cid !== undefined ? 'cid' : 'id';
+                return prevList.filter(item => item[idProperty] !== concertData[idProperty]);
+            });
+            return true;
+        }
+
+        return false;
+    };
+
     const handleDragOver = (e) => {
-        e.preventDefault();
+        e.preventDefault(); // Required to allow dropping
     };
 
     const handleDrop = (e) => {
         e.preventDefault();
         try {
             const concertData = parse(e.dataTransfer.getData("concertData"));
-            const inWishList = wishList.some(item => item.id === concertData.id);
-            if (!inWishList) {
-                setWishList((prevList) => {
-                    const updatedList = [...prevList, concertData];
-                    return updatedList.sort((a, b) => new Date(a.date) - new Date(b.date));
-                });
+            if (!editWishList("isIn", concertData)) {
+                editWishList("add", concertData);
+            } else {
+                console.log("Concert already in wishlist.");
             }
         } catch (err) {
             console.error("Failed to parse concertData", err);
@@ -202,7 +232,7 @@ const UserPage = () => {
     if (loading) {
         return (
             <div className="min-h-screen bg-gray-900 text-white">
-                <NavBar isDarkMode={true} setIsDarkMode={() => {}} user={user} />
+                <NavBar user={user} />
                 <div className="flex flex-col items-center justify-center h-[calc(100vh-64px)]">
                     <div className="flex flex-col items-center space-y-4">
                         <Loader2 className="w-12 h-12 animate-spin text-purple-500" />
@@ -216,7 +246,7 @@ const UserPage = () => {
     if (error) {
         return (
             <div className="min-h-screen bg-gray-900 text-white">
-                <NavBar isDarkMode={true} setIsDarkMode={() => {}} user={user} />
+                <NavBar user={user} />
                 <div className="flex flex-col items-center justify-center h-[calc(100vh-64px)]">
                     <div className="text-center space-y-4">
                         <h2 className="text-2xl font-bold text-red-500">Error Loading Profile</h2>
@@ -241,7 +271,15 @@ const UserPage = () => {
             {selectedConcert && (
                 <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
                     <div className="bg-gray-800 p-6 rounded-lg shadow-lg w-[600px] h-[400px] flex flex-col items-center justify-center">
-                        <ConcertExpandedView concert={selectedConcert} closeOverlay={closeOverlay} />
+                        {/* Pass necessary props for wishlist functionality */}
+                        <ConcertExpandedView 
+                            concert={selectedConcert} 
+                            closeOverlay={closeOverlay}
+                            editWishList={editWishList}
+                            wishList={wishList}
+                            favoriteClicked={handleToggleFavorite}
+                            handleRating={handleRating}
+                        />
                     </div>
                 </div>
             )}
@@ -266,7 +304,7 @@ const UserPage = () => {
                             <div className="flex items-center gap-4">
                                 <div className="text-xl font-bold">Your City:</div>
                                 <input className="flex-1 border border-gray-600 bg-gray-700 rounded-lg p-2" />
-        </div>
+                            </div>
 
                             {/* Stats Cards */}
                             <div className="grid grid-cols-3 gap-4">
@@ -369,6 +407,14 @@ const UserPage = () => {
                                     )}
                                 </div>
                             ))}
+
+                            {userConcerts.length === 0 && (
+                                <div className="text-center py-8 text-gray-400">
+                                    <Calendar className="w-16 h-16 mx-auto mb-4 opacity-50" />
+                                    <p className="text-lg">No concerts in your history yet</p>
+                                    <p className="text-sm">Concerts you attend will appear here</p>
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>
@@ -380,7 +426,7 @@ const UserPage = () => {
                         onDrop={handleDrop}>
                         <h2 className="text-2xl font-bold mb-4">Wish List</h2>
                         <div className="w-[650px] h-[450px] relative">
-                            {wishList.map((concertdata, index) => (
+                            {wishList.slice(0, 11).map((concertdata, index) => (
                                 <WishListBubble
                                     key={index}
                                     concertdata={concertdata}
