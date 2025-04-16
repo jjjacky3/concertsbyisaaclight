@@ -8,6 +8,8 @@ const ConcertExpandedView = ({ concert, closeOverlay, editWishList, wishList, fa
     const navigate = useNavigate();
 
     if (!concert) return null;
+    // If No wishlist is passed just say concert is not in wishlist
+    if (wishList == null) { wishList = [] }
 
 
 

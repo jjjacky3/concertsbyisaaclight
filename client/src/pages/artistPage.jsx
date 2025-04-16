@@ -7,6 +7,7 @@ import RatingModule from "../components/RatingModule";
 import CompareModule from "../components/CompareModule";
 import ConcertExpandedView from "../components/ConcertExpandView";
 import { Loader2, MessageCircle, User, Calendar, Star } from "lucide-react";
+import ConcertCard from "../components/ConcertCard";
 
 const ArtistPage = () => {
   // Extract artistId from URL path
@@ -144,7 +145,9 @@ const ArtistPage = () => {
             concerts: artistConcerts.map(concert => ({
               id: concert.cid,
               name: `${concert.artist_name} at ${concert.venue_name}`,
-              date: new Date(concert.date).toLocaleDateString(),
+              // date: new Date(concert.date).toLocaleDateString(),
+              date: concert.date,
+              time: concert.time,
               city: concert.city,
               rating: calculateConcertAvgRating(reviewsData.data.reviews, concert.cid),
               price: concert.price,
@@ -291,6 +294,8 @@ const ArtistPage = () => {
     );
   }
 
+
+
   // Show artist page if data is loaded
   return (
     <div className="min-h-screen bg-gray-900 text-white relative">
@@ -306,12 +311,14 @@ const ArtistPage = () => {
         <div className="w-[700px] h-[800px] bg-gray-800 rounded-lg shadow-lg overflow-y-auto p-4 
             grid grid-cols-2 gap-4">
           {concertsShown.map((concert, index) => (
-            <ConcertItem
-              key={index}
-              concert={concert}
-              clickItemFunc={concertItemClicked}
-              isSelected={concert === comparedConcertOne || concert === comparedConcertTwo}
-            />
+            <div
+              className="self-start">
+              <ConcertCard
+                key={index}
+                concert={concert}
+                onClick={setSelectedConcert}
+              />
+            </div>
           ))}
         </div>
 
@@ -396,7 +403,7 @@ const ArtistPage = () => {
           )}
         </div>
       </div>
-    </div>
+    </div >
   );
 };
 
