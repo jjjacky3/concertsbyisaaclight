@@ -144,7 +144,8 @@ const ArtistPage = () => {
             tours: tours,
             concerts: artistConcerts.map(concert => ({
               id: concert.cid,
-              name: `${concert.artist_name} at ${concert.venue_name}`,
+              artist: concert.artist_name,
+              tourName: concert.tour_name,
               // date: new Date(concert.date).toLocaleDateString(),
               date: concert.date,
               time: concert.time,
@@ -153,7 +154,7 @@ const ArtistPage = () => {
               price: concert.price,
               desc: `Experience ${concert.artist_name} live at ${concert.venue_name} in ${concert.city}`,
               tour: { name: concert.tour_name },
-              image: concert.image_url
+              image_url: concert.image_url
             })),
             avgRating: function () {
               const total = Object.entries(this.ratings).reduce(
