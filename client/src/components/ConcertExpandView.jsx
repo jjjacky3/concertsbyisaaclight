@@ -21,10 +21,20 @@ const ConcertExpandedView = ({ concert, closeOverlay, editWishList, wishList, fa
     };
 
     const isInWish = wishList.some(item => item.id === concert.id);
+    const [localStar, setLocalStar] = useState(concert.review?.rating || 0);
 
     const wishListButtonClicked = () => {
         editWishList(isInWish ? "remove" : "add", concert);
     };
+
+    useEffect(() => {
+        setLocalStar(concert.review?.rating || 0);
+    }, [concert]);
+
+    const starLocalUpdate = (star) => {
+        handleRating(concert.cid, star)
+        setLocalStar(star)
+    }
 
     const clicked = () => {
         clickItemFunc(concert)
@@ -114,13 +124,11 @@ const ConcertExpandedView = ({ concert, closeOverlay, editWishList, wishList, fa
                         {[1, 2, 3, 4, 5].map((star) => (
                             <button
                                 key={star}
-                                onClick={() => handleRating(concert.cid, star)}
-                                className={`focus:outline-none transition-colors ${(concert.review?.rating || 0) >= star
-                                    ? 'text-yellow-500'
-                                    : 'text-gray-600 hover:text-yellow-400'
+                                onClick={() => starLocalUpdate(star)}
+                                className={`focus:outline-none transition-colors ${localStar >= star ? 'text-yellow-500' : 'text-gray-600 hover:text-yellow-400'
                                     }`}
                             >
-                                <Star className="w-5 h-5" fill={concert.review?.rating >= star ? "currentColor" : "none"} />
+                                <Star className="w-5 h-5" fill={localStar >= star ? "currentColor" : "none"} />
                             </button>
                         ))}
                     </div>
@@ -154,13 +162,20 @@ const ConcertExpandedView = ({ concert, closeOverlay, editWishList, wishList, fa
                         <span>Wish List</span>
                     </button>
                 </div>
-                {/* Review Section */}
-                <div className="mt-5">
-                    <div className="text-2xl font-bold mb-2">Reviews</div>
-                    <div>
-                        Test {concertReviewText}
+
+                {/* Review Text Area - Only show if rated */}
+                <div className="text-2xl font-bold pt-3">Reviews</div>
+                {concert.review?.rating > 0 && (
+                    <div className="mt-3">
+                        <textarea
+                            placeholder="Add your thoughts about this concert..."
+                            value={concert.review?.text || ''}
+                            onChange={(e) => handleReviewText(concert.cid, e.target.value)}
+                            className="w-full bg-gray-800 text-white rounded-lg p-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 border"
+                            rows="2"
+                        />
                     </div>
-                </div>
+                )}
             </div>
         </div>
     );

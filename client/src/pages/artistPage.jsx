@@ -8,8 +8,10 @@ import CompareModule from "../components/CompareModule";
 import ConcertExpandedView from "../components/ConcertExpandView";
 import { Loader2, MessageCircle, User, Calendar, Star } from "lucide-react";
 import ConcertCard from "../components/ConcertCard";
+import { useNavigate } from 'react-router-dom';
 
 const ArtistPage = () => {
+  const [user, setUser] = useState(null);
   // Extract artistId from URL path
   const { artistId } = useParams();
   const [artist, setArtist] = useState(null);
@@ -24,6 +26,7 @@ const ArtistPage = () => {
   const [selectedConcert, setSelectedConcert] = useState(null);
   const [reviews, setReviews] = useState([]);
   const [showReviews, setShowReviews] = useState(false);
+  const navigate = useNavigate();
 
   // Dark mode effect
   useEffect(() => {
@@ -34,8 +37,35 @@ const ArtistPage = () => {
     }
   }, [isDarkMode]);
 
+
+  // Fetch User Data / Login status
+  useEffect(() => {
+    // Check if user is logged in
+    const storedUser = localStorage.getItem('user');
+    const token = localStorage.getItem('token');
+
+    console.log('Stored user:', storedUser);
+    console.log('Token exists:', !!token);
+
+    if (!storedUser || !token) {
+      console.log('No user or token found, redirecting to home');
+      navigate('/');
+      return;
+    }
+
+    setUser(JSON.parse(storedUser));
+  }, [navigate]);
+
+  const handleLogout = () => {
+    localStorage.removeItem('user');
+    localStorage.removeItem('token');
+    navigate('/');
+  };
+
+
   // Fetch artist data based on artistId
   useEffect(() => {
+
     const fetchArtistData = async () => {
       if (!artistId) return;
 
@@ -301,7 +331,7 @@ const ArtistPage = () => {
   return (
     <div className="min-h-screen bg-gray-900 text-white relative">
       {/* Navbar */}
-      <NavBar isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode} />
+      <NavBar isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode} user={user} />
 
       {/* Artist Banner */}
       <ArtistBanner artist={artist} selectedTour={selectedTour} changeTourFunc={handleChange} />

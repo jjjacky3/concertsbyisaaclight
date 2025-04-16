@@ -310,10 +310,34 @@ const UserPage = () => {
                                 </div>
                                 <div className="text-1xl font-bold">Your Top Artists:</div>
                                 <div className="grid grid-cols-4 gap-4">
-                                    <div className="h-[75px] w-[75px] bg-white rounded-full border-4 border-gray-800 transform hover:scale-[1.2] hover:shadow-xl"></div>
-                                    <div className="h-[75px] w-[75px] bg-white rounded-full border-4 border-gray-800 transform hover:scale-[1.2] hover:shadow-xl"></div>
-                                    <div className="h-[75px] w-[75px] bg-white rounded-full border-4 border-gray-800 transform hover:scale-[1.2] hover:shadow-xl"></div>
-                                    <div className="h-[75px] w-[75px] bg-white rounded-full border-4 border-gray-800 transform hover:scale-[1.2] hover:shadow-xl"></div>
+                                    <div className="h-[75px] w-[75px] bg-white rounded-full border-4 border-gray-800 transform hover:scale-[1.2] hover:shadow-xl"
+                                        style={{
+                                            backgroundImage: `url(${pastList[0].image_url})`,
+                                            backgroundSize: 'cover',
+                                            backgroundRepeat: 'no-repeat',
+                                            backgroundPosition: 'center'
+                                        }}></div>
+                                    <div className="h-[75px] w-[75px] bg-white rounded-full border-4 border-gray-800 transform hover:scale-[1.2] hover:shadow-xl"
+                                        style={{
+                                            backgroundImage: `url(${pastList[1].image_url})`,
+                                            backgroundSize: 'cover',
+                                            backgroundRepeat: 'no-repeat',
+                                            backgroundPosition: 'center'
+                                        }}></div>
+                                    <div className="h-[75px] w-[75px] bg-white rounded-full border-4 border-gray-800 transform hover:scale-[1.2] hover:shadow-xl"
+                                        style={{
+                                            backgroundImage: `url(${pastList[2].image_url})`,
+                                            backgroundSize: 'cover',
+                                            backgroundRepeat: 'no-repeat',
+                                            backgroundPosition: 'center'
+                                        }}></div>
+                                    <div className="h-[75px] w-[75px] bg-white rounded-full border-4 border-gray-800 transform hover:scale-[1.2] hover:shadow-xl"
+                                        style={{
+                                            backgroundImage: `url(${pastList[3].image_url})`,
+                                            backgroundSize: 'cover',
+                                            backgroundRepeat: 'no-repeat',
+                                            backgroundPosition: 'center'
+                                        }}></div>
                                 </div>
                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-0">
                                     {/* Card */}
