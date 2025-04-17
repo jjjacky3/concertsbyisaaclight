@@ -75,10 +75,11 @@ class ConcertService {
                         const performer = event.performers[0] || {};
                         const [fname, ...lnameParts] = (performer.name || '').split(' ');
                         const lname = lnameParts.join(' ');
+                        const currentYear = new Date().getFullYear();
 
-                        // Adjust the time if too great (cutoff is 2026 currently)
+                        // Adjust the time if too great (cutoff is current year)
                         let dateObj = new Date(event.datetime_local);
-                        if (dateObj.getFullYear() > 2025) {
+                        if (dateObj.getFullYear() > currentYear) {
                             dateObj.setFullYear(dateObj.getFullYear() - 10);
                         }
                         const adjustedDate = dateObj.toISOString().split('T')[0];
