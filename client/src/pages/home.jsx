@@ -1,3 +1,24 @@
+/**
+ * 
+ * This component renders the main concert discovery homepage with a comprehensive set of
+ * features for browsing, filtering, and interacting with concert listings.
+ * 
+ * It includes:
+ * - A responsive search and filter system for concert discovery
+ * - Visual category cards for quick filtering (Upcoming Shows, Popular Artists, etc.)
+ * - A paginated grid display of concert cards with dynamic filtering
+ * - Multiple modal components for authentication, filters, concert details, and uploads
+ * - Dark/light mode toggle with persistent user preferences
+ * - Loading and error states with appropriate visual feedback
+ * 
+ * The component manages concert data fetching, user authentication state, and filter logic.
+ * It implements pagination for large result sets and provides category-based quick filters
+ * with visual indicators. The interface adapts to different screen sizes and maintains
+ * consistent styling across both light and dark modes.
+ */
+
+
+
 import React, { useState, useEffect } from 'react';
 import ConcertCard from '../components/ConcertCard';
 import ConcertModal from '../components/ConcertModal';
@@ -107,8 +128,8 @@ const Home = ({ navigateToArtist }) => {
       id: 'trending', 
       name: 'Popular Artists', 
       icon: TrendingUp, 
-      color: 'from-pink-500 to-rose-500',
-      filter: (concert) => true // We'll show all concerts for now, but ideally would be based on popularity
+      color: 'from-pink-500 to-rose-500', 
+      filter: (concert) => true // We'll show all concerts for now,but ideally would be based on popularity
     },
     { 
       id: 'today', 

@@ -75,7 +75,16 @@ class ConcertService {
                         const performer = event.performers[0] || {};
                         const [fname, ...lnameParts] = (performer.name || '').split(' ');
                         const lname = lnameParts.join(' ');
-                        
+                        const currentYear = new Date().getFullYear();
+
+                        // Adjust the time if too great (cutoff is current year)
+                        let dateObj = new Date(event.datetime_local);
+                        if (dateObj.getFullYear() > currentYear) {
+                            dateObj.setFullYear(dateObj.getFullYear() - 10);
+                        }
+                        const adjustedDate = dateObj.toISOString().split('T')[0];
+                        const adjustedTime = dateObj.toISOString().split('T')[1].substring(0, 8);
+
                         return {
                             artist: {
                                 fname: fname || '',
@@ -86,8 +95,8 @@ class ConcertService {
                                 city: event.venue.city
                             },
                             tourName: event.title,
-                            date: event.datetime_local.split('T')[0],
-                            time: event.datetime_local.split('T')[1].substring(0, 8),
+                            date: adjustedDate,
+                            time: adjustedTime,
                             price: event.stats.average_price || faker.number.float({ min: 30, max: 300, precision: 2 }),
                             image_url: performer.image || null
                         };

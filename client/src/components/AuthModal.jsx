@@ -1,4 +1,23 @@
-// components/AuthModal.jsx
+
+/**  
+ * Renders a modal dialog that toggles between login and registration modes.
+ * It manages form state, validation, and API communication with a backend authentication system.
+ * Key features include:
+ * 
+ * - Toggle between login and signup flows with state preservation
+ * - Form validation and error handling with user feedback
+ * - Password visibility toggle for better UX
+ * - Loading states during authentication attempts
+ * - Token-based authentication with localStorage persistence
+ * - Automatic page refresh after successful authentication
+ * 
+ * The component makes API calls to local endpoints (/api/auth/login and /api/auth/register),
+ * stores authentication tokens and user data in localStorage, and handles various error states
+ * during the authentication process.
+ */
+
+
+
 import React, { useState } from 'react';
 import { X, Mail, Lock, User, Eye, EyeOff } from 'lucide-react';
 
@@ -31,11 +50,11 @@ const AuthModal = ({ isOpen, onClose }) => {
         body: JSON.stringify(formData),
       });
 
-      // Log the raw response for debugging
+     
       const rawData = await response.text();
       console.log('Raw response:', rawData);
       
-      // Parse the response as JSON
+
       const data = JSON.parse(rawData);
 
       if (!response.ok) {
@@ -44,19 +63,19 @@ const AuthModal = ({ isOpen, onClose }) => {
 
       console.log('Authentication successful:', data);
 
-      // Ensure token exists before storing
+
       if (!data.token) {
         throw new Error('No token received from server');
       }
 
-      // Store token and user data
+      
       localStorage.setItem('token', data.token);
       localStorage.setItem('user', JSON.stringify(data.user));
       
-      // Set a flag to indicate successful login
+    
       localStorage.setItem('justLoggedIn', 'true');
 
-      // Close modal and refresh page
+    
       onClose();
       window.location.reload();
 
@@ -77,7 +96,7 @@ const AuthModal = ({ isOpen, onClose }) => {
 
   const switchMode = () => {
     setIsLogin(!isLogin);
-    setError(''); // Clear any existing errors
+    setError(''); 
   };
 
   if (!isOpen) return null;

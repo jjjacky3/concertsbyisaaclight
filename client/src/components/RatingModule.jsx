@@ -1,3 +1,21 @@
+/**
+ * 
+ * This component renders a visual representation of concert ratings distribution with
+ * horizontally animated bar charts.
+ * 
+ * It also includes:
+ * - A prominent header with star icon emphasizing the ratings context
+ * - Five horizontal bar graphs representing rating counts from 5 to 1
+ * - Dynamically calculated bar widths proportional to the highest rating count
+ * - Clear labeling of each rating score with its corresponding review count
+ * - Error handling for missing or invalid ratings data
+ * 
+ * The component automatically normalizes bar lengths based on the maximum rating count,
+ * providing visual clarity even with widely varying review numbers. It features smooth
+ * animations for hover interactions, error messages for data integrity issues, and
+ * maintains consistent spacing and alignment across all rating bars for improved readability.
+ */
+
 import { Star } from "lucide-react";
 
 const RatingModule = ({ ratings, onDropConcert }) => {
