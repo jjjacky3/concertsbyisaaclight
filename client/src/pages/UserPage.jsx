@@ -20,6 +20,8 @@ const UserPage = () => {
     const recomendedList = userConcerts
     const pastList = userConcerts
 
+
+
     useEffect(() => {
         // Check if user is logged in
         const storedUser = localStorage.getItem('user');
@@ -68,6 +70,11 @@ const UserPage = () => {
             setLoading(false);
         }
     };
+
+    //Wishlist
+
+
+
 
     const handleLogout = () => {
         localStorage.removeItem('user');
