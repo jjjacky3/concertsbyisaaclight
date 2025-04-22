@@ -1,13 +1,29 @@
+/**
+ * 
+ * This component renders a responsive navigation header with authentication controls and theme
+ * toggling functionality.
+ * 
+ * It also includes:
+ * - A clickable application title that navigates users to the home page
+ * - Conditional rendering of account access button for authenticated users
+ * - Dynamic login/logout button that changes based on authentication state
+ * - A theme toggle button for switching between light and dark modes
+ * - Mobile-responsive design with collapsible menu for smaller screens
+ * 
+ * The component handles authentication state changes by communicating with the parent component,
+ * manages navigation to different application routes, and implements proper logout functionality
+ * through the API service. Button visibility adapts based on user authentication status, and
+ * mobile responsiveness is maintained through selective text display at different breakpoints.
+ */
+
+
 import { Menu, Upload, LogIn, LogOut, Sun, Moon, Database, User } from "lucide-react";
 import { useState, useEffect } from "react";
-import { X } from "lucide-react";
-import { logout } from '../services/apiService'; // Import the logout function
+import { logout } from '../services/apiService'; 
 
 const NavBar = ({ isDarkMode, setIsDarkMode, user, onLogout, onLogin }) => {
-    // State for showing test form modal
     const [showTestForm, setShowTestForm] = useState(false);
     
-    // Handle navigation without using React Router
     const navigateToHome = () => {
         window.location.href = '/';
     };
@@ -16,16 +32,12 @@ const NavBar = ({ isDarkMode, setIsDarkMode, user, onLogout, onLogin }) => {
         window.location.href = '/user';
     };
 
-    // Handle user logout with better cleanup
     const handleLogout = () => {
-        // Use the centralized logout function
         logout();
         
-        // Call the parent component's logout handler if provided
         if (onLogout) {
             onLogout();
         } else {
-            // If no handler provided, reload the page
             window.location.reload();
         }
     };

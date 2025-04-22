@@ -1,3 +1,23 @@
+/**
+ * 
+ * This component renders a responsive concert card displaying essential concert information in an
+ * interactive format.
+ * 
+ * It also includes:
+ * - Loading state handling with spinner during image load
+ * - Fallback display for missing images
+ * - Interactive hover effects with like and share buttons
+ * - Formatted date, time and price displays
+ * - Click navigation to both concert details and artist pages
+ * - Responsive design with hover animations
+ * 
+ * The component handles image loading states and errors, formats dates using date-fns,
+ * properly displays pricing information with currency formatting, and includes interactive elements
+ * to navigate between different parts of the application. It features accessibility-focused button
+ * implementations and smooth visual transitions through CSS.
+ */
+
+
 import React, { useState } from 'react';
 import { Calendar, MapPin, Star, Ticket, Heart, Share2, Loader2, Clock } from 'lucide-react';
 import { format } from 'date-fns';
@@ -9,13 +29,12 @@ const ConcertCard = ({ concert, onClick }) => {
   const [imageLoading, setImageLoading] = useState(true);
   const [imageError, setImageError] = useState(false);
 
-  // Format the date using date-fns
   const formatDate = (dateStr) => {
     if (!dateStr) return '';
     return format(new Date(dateStr), 'MMM d, yyyy');
   };
 
-  // Format time to 12-hour format
+  
   const formatTime = (timeStr) => {
     if (!timeStr) return '';
     const [hours, minutes] = timeStr.split(':');
@@ -25,7 +44,7 @@ const ConcertCard = ({ concert, onClick }) => {
     return `${hour12}:${minutes} ${ampm}`;
   };
 
-  // Format price with proper currency
+  
   const formatPrice = (price) => {
     if (!price) return 'N/A';
     return new Intl.NumberFormat('en-US', {
@@ -34,16 +53,14 @@ const ConcertCard = ({ concert, onClick }) => {
     }).format(price);
   };
 
-  // Handle image source with fallback
   const getImageSrc = () => {
     if (concert.image_url) {
       return concert.image_url;
     }
-    // Fallback to placeholder image
+    
     return '/placeholder-concert.jpg';
   };
 
-  // Function to navigate to artist page
   const navigateToArtist = (e) => {
     e.stopPropagation();
     const artistId = concert.artist.toLowerCase().replace(/\s+/g, '-');
@@ -69,7 +86,6 @@ const ConcertCard = ({ concert, onClick }) => {
       className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden transform hover:scale-105 transition-transform duration-300 cursor-pointer"
     >
       <div className="relative group">
-        {/* Image Container with Loading State */}
         <div className="relative w-full h-48 bg-gray-200 dark:bg-gray-700">
           {imageLoading && (
             <div className="absolute inset-0 flex items-center justify-center">

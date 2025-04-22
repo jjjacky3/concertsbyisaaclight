@@ -1,3 +1,22 @@
+/**
+ * 
+ * This service provides a centralized API handling layer for making HTTP requests
+ * to the backend server with consistent authentication, error handling, and response processing.
+ * 
+ * It includes:
+ * - Authentication token management with local storage integration
+ * - Standardized HTTP request methods (GET, POST) with proper headers
+ * - Consistent error handling with special cases for authentication failures
+ * - User session management (login, logout, verification)
+ * - Automatic credential inclusion for authenticated requests
+ * 
+ * The service handles authentication edge cases by clearing invalid tokens on 401 responses
+ * and provides centralized logging for all API interactions. It properly processes
+ * response data, handles empty responses safely, and maintains consistent API request
+ * patterns across the application to reduce code duplication and improve maintainability.
+ */
+
+
 // services/apiService.js - Centralized API handling
 const API_BASE_URL = 'http://localhost:3000/api';
 
@@ -49,6 +68,7 @@ const handleResponse = async (response) => {
       localStorage.removeItem('token');
       localStorage.removeItem('user');
     }
+
     
     throw new Error(data.message || 'API request failed');
   }

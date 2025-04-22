@@ -1,3 +1,22 @@
+/**
+ * 
+ * This component renders a comprehensive filtering interface modal for concert search 
+ * with multiple interactive filtering options.
+ * 
+ * It also includes:
+ * - A price range selector with min/max numeric inputs for budget constraints
+ * - A distance slider allowing users to limit search radius from their location
+ * - A minimum rating filter with visual slider control and real-time feedback
+ * - A date range dropdown for temporal filtering across various time periods
+ * - A venue type selector with checkboxes for filtering by performance space category
+ * - A prominent apply button that consolidates all filter selections
+ * 
+ * The component manages multiple state values for different filter criteria, performs input validation
+ * to ensure logical filter combinations (e.g., min price ≤ max price), and formats filter data before
+ * passing it to the parent component. The modal design features a dark theme with purple accents,
+ * intuitive icons for each filter category, and responsive controls with clear visual feedback.
+ */
+
 import React, { useState } from 'react';
 import { X, DollarSign, Calendar, MapPin, Star, Music2 } from 'lucide-react';
 
