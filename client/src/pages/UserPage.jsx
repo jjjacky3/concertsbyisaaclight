@@ -1,3 +1,21 @@
+/**
+ * 
+ * This component renders the main user page displaying the users details, interactions, past concerts, recomendations 
+ * and wish list.
+ * 
+ * It includes:
+ * - Icons representing potential top artists
+ * - Counter for concerts attended, reviews, and favourated concerts
+ * - Rolling past and recomended concert views
+ * - Draggable concert cards to be added to the wishlist
+ * - Wishlist bubble format showing the top 10 wishlist concerts by upcoming data
+ * - Review tracker concert list format to rate concerts by star and write a review
+ * 
+ * The reviews and stars are then used in the artist page to update the artists ratings as well as are viewable by other accounts.
+ */
+
+
+
 import React, { useState, useEffect } from "react";
 import NavBar from '../components/NavBar';
 import { useNavigate } from 'react-router-dom';
@@ -70,11 +88,6 @@ const UserPage = () => {
             setLoading(false);
         }
     };
-
-    //Wishlist
-
-
-
 
     const handleLogout = () => {
         localStorage.removeItem('user');

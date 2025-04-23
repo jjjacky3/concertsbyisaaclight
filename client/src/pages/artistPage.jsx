@@ -1,3 +1,19 @@
+/**
+ * 
+ * This component renders the artist summary page for any given artists including the artist's total rating and review metrics,
+ * avaliable concerts and tours and comparsion tool.
+ * 
+ * It includes:
+ * - Automatically updated total rating averaging all ratings of user reviews for thier concerts
+ * - Automatic updated would go again providng a percentage ratings above 3 starts
+ * - List of all concerts avaliable on the website under the artist
+ * - List of all tours and ability to sort concerts by tours
+ * - Rating module displaying number of reviews for each rating category with bar line
+ * - Comparision module to drag and compare two of the aritst's concerts in categories such as: (costs, rating, setlist)
+ * - Concert cards can be clicked to open the expanded concert view to add the concert to favourates, wishlist or share
+ * - Module to view all written reviews for the artists
+ */
+
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import NavBar from '../components/NavBar';
