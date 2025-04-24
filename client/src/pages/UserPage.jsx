@@ -105,29 +105,72 @@ const UserPage = () => {
 
     const handleToggleFavorite = async (concertId) => {
         try {
+            console.log("Toggle favorite for concert ID:", concertId);
             const token = localStorage.getItem('token');
-            const concert = userConcerts.find(c => c.cid === concertId);
+            console.log("Token:", token ? "Token exists" : "No token found");
+            
+            // Ensure concertId is a number
+            const id = typeof concertId === 'string' ? parseInt(concertId, 10) : concertId;
+            console.log("Normalized concert ID:", id);
+            
+            const concert = userConcerts.find(c => c.cid === id);
+            
+            if (!concert) {
+                console.error("Concert not found with ID:", id);
+                return;
+            }
+            
+            console.log("Current favorite status:", concert.favorite);
             const newFavoriteStatus = !concert.favorite;
+            console.log("New favorite status will be:", newFavoriteStatus);
 
-            const response = await fetch(`http://localhost:3000/api/postgres/concerts/${concertId}/favorite`, {
+            const requestBody = { favorite: newFavoriteStatus };
+            console.log("Request body:", JSON.stringify(requestBody));
+            
+            const url = `http://localhost:3000/api/postgres/concerts/${id}/favorite`;
+            console.log("Request URL:", url);
+            
+            const response = await fetch(url, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ favorite: newFavoriteStatus })
+                body: JSON.stringify(requestBody)
             });
 
-            if (!response.ok) throw new Error('Failed to update favorite status');
+            console.log("API response status:", response.status);
+            
+            if (!response.ok) {
+                const errorText = await response.text();
+                console.error("API error response:", errorText);
+                throw new Error('Failed to update favorite status');
+            }
+
+            const responseData = await response.json();
+            console.log("API response data:", responseData);
 
             // Update local state
-            setUserConcerts(concerts =>
-                concerts.map(c =>
-                    c.cid === concertId
+            setUserConcerts(prevConcerts => {
+                const updatedConcerts = prevConcerts.map(c =>
+                    c.cid === id
                         ? { ...c, favorite: newFavoriteStatus }
                         : c
-                )
-            );
+                );
+                console.log("Updated concert in state:", updatedConcerts.find(c => c.cid === id));
+                return updatedConcerts;
+            });
+            
+            // Force a re-render by updating a state variable
+            setSelectedConcert(prev => prev ? {...prev} : null);
+            
+            // If the selected concert is the one being favorited, update it too
+            if (selectedConcert && selectedConcert.cid === id) {
+                setSelectedConcert(prev => ({
+                    ...prev,
+                    favorite: newFavoriteStatus
+                }));
+            }
         } catch (err) {
             console.error('Error updating favorite status:', err);
             // You might want to show an error toast here

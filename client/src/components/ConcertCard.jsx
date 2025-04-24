@@ -68,9 +68,18 @@ const ConcertCard = ({ concert, onClick, onFavoriteClick, onRatingClick }) => {
   };
 
   const handleFavoriteClick = (e) => {
+    e.preventDefault();
     e.stopPropagation();
+    console.log("Favorite button clicked for concert:", concert.cid);
+    console.log("Concert object:", concert);
+    
     if (onFavoriteClick) {
-      onFavoriteClick(concert.cid);
+      console.log("Calling onFavoriteClick with concert ID:", concert.cid);
+      // Ensure concert.cid is a number if it's a string
+      const concertId = typeof concert.cid === 'string' ? parseInt(concert.cid, 10) : concert.cid;
+      onFavoriteClick(concertId);
+    } else {
+      console.error("onFavoriteClick prop is not defined");
     }
   };
 
@@ -126,6 +135,7 @@ const ConcertCard = ({ concert, onClick, onFavoriteClick, onRatingClick }) => {
               onClick={handleFavoriteClick}
               className="p-2 bg-gray-700 hover:bg-gray-600 rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
               aria-label="Like"
+              type="button"
             >
               <Heart className={`w-6 h-6 ${concert.favorite ? 'text-red-500 fill-current' : 'text-red-500'}`} />
             </button>
@@ -133,6 +143,7 @@ const ConcertCard = ({ concert, onClick, onFavoriteClick, onRatingClick }) => {
               onClick={(e) => e.stopPropagation()}
               className="p-2 bg-gray-700 hover:bg-gray-600 rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
               aria-label="Share"
+              type="button"
             >
               <Share2 className="w-6 h-6 text-blue-500" />
             </button>
@@ -151,12 +162,23 @@ const ConcertCard = ({ concert, onClick, onFavoriteClick, onRatingClick }) => {
             </h3>
             <p className="text-sm text-gray-600 dark:text-gray-400">{concert.tourName}</p>
           </div>
-          {concert.review?.rating > 0 && (
-            <div className="flex items-center">
-              <Star className="w-4 h-4 text-yellow-500 fill-current" />
-              <span className="ml-1 text-sm">{concert.review.rating}/5</span>
-            </div>
-          )}
+          <div className="flex items-center space-x-2">
+            {concert.review?.rating > 0 && (
+              <div className="flex items-center">
+                <Star className="w-4 h-4 text-yellow-500 fill-current" />
+                <span className="ml-1 text-sm">{concert.review.rating}/5</span>
+              </div>
+            )}
+            {/* Always visible favorite button */}
+            <button
+              onClick={handleFavoriteClick}
+              className="p-1 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              aria-label="Like"
+              type="button"
+            >
+              <Heart className={`w-5 h-5 ${concert.favorite ? 'text-red-500 fill-current' : 'text-red-500'}`} />
+            </button>
+          </div>
         </div>
 
         <div className="flex items-center space-x-4 text-sm text-gray-600 dark:text-gray-400">

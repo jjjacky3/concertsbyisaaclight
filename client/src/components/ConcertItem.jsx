@@ -54,7 +54,7 @@ const ConcertItem = ({ concert, onClick, isSelected, scale, onFavoriteClick, onR
     let concertCity = concert.city
     // let concertDate = formatDate(concert.date)
     let concertDate = concert.date
-    let concertFavorate = concert.favorite
+    let concertFavorite = concert.favorite // Fixed typo: changed 'Favorate' to 'Favorite'
     let concertImg = concert.image_url
     let concertPrice = formatPrice(concert.price)
     let concertRating = concert.rating
@@ -71,9 +71,18 @@ const ConcertItem = ({ concert, onClick, isSelected, scale, onFavoriteClick, onR
     };
 
     const handleFavoriteClick = (e) => {
+        e.preventDefault();
         e.stopPropagation();
+        console.log("Favoriting concert ID:", concertID);
+        console.log("Concert object:", concert);
+        
         if (onFavoriteClick) {
-            onFavoriteClick(concertID);
+            console.log("Calling onFavoriteClick with concert ID:", concertID);
+            // Ensure concertID is a number if it's a string
+            const id = typeof concertID === 'string' ? parseInt(concertID, 10) : concertID;
+            onFavoriteClick(id);
+        } else {
+            console.error("onFavoriteClick prop is not defined");
         }
     };
 
@@ -93,10 +102,12 @@ const ConcertItem = ({ concert, onClick, isSelected, scale, onFavoriteClick, onR
                 {/* Favorite Button */}
                 <button
                     onClick={handleFavoriteClick}
-                    className="focus:outline-none transition-colors"
+                    className="focus:outline-none transition-colors p-2 hover:bg-gray-600/50 rounded-full"
+                    aria-label="Toggle favorite"
+                    type="button"
                 >
                     <Heart
-                        className={`w-6 h-6 ${concertFavorate ? 'text-red-500 fill-current' : 'text-gray-400 hover:text-red-400'}`}
+                        className={`w-6 h-6 ${concertFavorite ? 'text-red-500 fill-current' : 'text-gray-400 hover:text-red-400'}`}
                     />
                 </button>
             </div>
