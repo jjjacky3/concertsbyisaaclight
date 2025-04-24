@@ -483,17 +483,21 @@ router.post('/concerts/:id/favorite', auth, async (req, res) => {
     const { id } = req.params;
     const { favorite } = req.body;
     const userId = req.user.uid;
+    
+    console.log(`Favorite request - User ID: ${userId}, Concert ID: ${id}, Favorite: ${favorite}`);
 
     await client.query('BEGIN');
 
     if (favorite) {
       // Add to favorites
+      console.log(`Adding concert ${id} to favorites for user ${userId}`);
       await client.query(
         'INSERT INTO Favorite (uID, cID) VALUES ($1, $2) ON CONFLICT (uID, cID) DO NOTHING',
         [userId, id]
       );
     } else {
       // Remove from favorites
+      console.log(`Removing concert ${id} from favorites for user ${userId}`);
       await client.query(
         'DELETE FROM Favorite WHERE uID = $1 AND cID = $2',
         [userId, id]
@@ -501,6 +505,7 @@ router.post('/concerts/:id/favorite', auth, async (req, res) => {
     }
 
     await client.query('COMMIT');
+    console.log(`Successfully updated favorite status for concert ${id}`);
     res.json({ success: true, favorite });
 
   } catch (error) {
@@ -508,7 +513,7 @@ router.post('/concerts/:id/favorite', auth, async (req, res) => {
     console.error('Error updating favorite status:', error);
     res.status(500).json({ 
       message: 'Server error', 
-      error: process.env.NODE_ENV === 'development' ? error.message : undefined 
+      error: error.message 
     });
   } finally {
     client.release();

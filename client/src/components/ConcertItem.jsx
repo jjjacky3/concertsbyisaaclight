@@ -22,7 +22,7 @@ import { Calendar, MapPin, Star, Ticket, Heart, Share2 } from 'lucide-react';
 import { stringify } from "flatted";
 import { format } from 'date-fns';
 
-const ConcertItem = ({ concert, onClick, isSelected, scale }) => {
+const ConcertItem = ({ concert, onClick, isSelected, scale, onFavoriteClick, onRatingClick }) => {
 
     // Format the date using date-fns
     const formatDate = (dateStr) => {
@@ -54,7 +54,7 @@ const ConcertItem = ({ concert, onClick, isSelected, scale }) => {
     let concertCity = concert.city
     // let concertDate = formatDate(concert.date)
     let concertDate = concert.date
-    let concertFavorate = concert.favorite
+    let concertFavorite = concert.favorite // Fixed typo: changed 'Favorate' to 'Favorite'
     let concertImg = concert.image_url
     let concertPrice = formatPrice(concert.price)
     let concertRating = concert.rating
@@ -70,6 +70,22 @@ const ConcertItem = ({ concert, onClick, isSelected, scale }) => {
         console.log(e)
     };
 
+    const handleFavoriteClick = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        console.log("Favoriting concert ID:", concertID);
+        console.log("Concert object:", concert);
+        
+        if (onFavoriteClick) {
+            console.log("Calling onFavoriteClick with concert ID:", concertID);
+            // Ensure concertID is a number if it's a string
+            const id = typeof concertID === 'string' ? parseInt(concertID, 10) : concertID;
+            onFavoriteClick(id);
+        } else {
+            console.error("onFavoriteClick prop is not defined");
+        }
+    };
+
     return (
         <div
             draggable
@@ -83,11 +99,17 @@ const ConcertItem = ({ concert, onClick, isSelected, scale }) => {
             {/* Top Section: Artist Name + Rating */}
             <div className="flex justify-between items-center">
                 <h3 className="text-2xl font-bold">{concertArtist}</h3>
-                {/* ⭐ Fixed Rating Box - Positioned in the Top-Right
-                <div className="absolute bottom-3 right-3 flex items-center space-x-2 bg-gray-700 px-5 py-3 rounded-lg text-lg shadow-md">
-                    <Star className="w-6 h-6 text-yellow-500" />
-                    <span className="font-semibold">{concertRating}</span>
-                </div> */}
+                {/* Favorite Button */}
+                <button
+                    onClick={handleFavoriteClick}
+                    className="focus:outline-none transition-colors p-2 hover:bg-gray-600/50 rounded-full"
+                    aria-label="Toggle favorite"
+                    type="button"
+                >
+                    <Heart
+                        className={`w-6 h-6 ${concertFavorite ? 'text-red-500 fill-current' : 'text-gray-400 hover:text-red-400'}`}
+                    />
+                </button>
             </div>
 
             {/* Tour Name */}
@@ -128,6 +150,14 @@ const ConcertItem = ({ concert, onClick, isSelected, scale }) => {
                     <Ticket className="w-4 h-4 text-green-500" />
                     <span className="font-medium text-green-500">{concertPrice}+</span>
                 </div>
+
+                {/* Rating Display */}
+                {concertReview?.rating > 0 && (
+                    <div className="flex items-center space-x-1 absolute bottom-5 right-3">
+                        <Star className="w-4 h-4 text-yellow-500 fill-current" />
+                        <span className="text-sm">{concertReview.rating}/5</span>
+                    </div>
+                )}
             </div>
 
         </div >

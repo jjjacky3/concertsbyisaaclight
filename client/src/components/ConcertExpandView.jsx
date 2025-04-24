@@ -21,24 +21,23 @@ import { Calendar, MapPin, Star, StarOff, Ticket, Heart, Share2, X, User, Extern
 import { format } from 'date-fns';
 
 
-const ConcertExpandedView = ({ concert, closeOverlay, editWishList, wishList, favoriteClicked, handleRating }) => {
+const ConcertExpandedView = ({ concert, closeOverlay, editWishList, wishList, favoriteClicked, handleRating, handleReviewText }) => {
     const navigate = useNavigate();
 
     if (!concert) return null;
     // If No wishlist is passed just say concert is not in wishlist
     if (wishList == null) { wishList = [] }
 
-
-
     // Navigate to artist page
     const goToArtistPage = () => {
-        const artistId = artistName.toLowerCase().replace(/\s+/g, '-');
+        const artistId = concert.artist_name.toLowerCase().replace(/\s+/g, '-');
         navigate(`/artist/${artistId}`);
         closeOverlay();
     };
 
-    const isInWish = wishList.some(item => item.id === concert.id);
+    const isInWish = wishList.some(item => item.cid === concert.cid);
     const [localStar, setLocalStar] = useState(concert.review?.rating || 0);
+    const [reviewText, setReviewText] = useState(concert.review?.text || '');
 
     const wishListButtonClicked = () => {
         editWishList(isInWish ? "remove" : "add", concert);
@@ -46,6 +45,7 @@ const ConcertExpandedView = ({ concert, closeOverlay, editWishList, wishList, fa
 
     useEffect(() => {
         setLocalStar(concert.review?.rating || 0);
+        setReviewText(concert.review?.text || '');
     }, [concert]);
 
     const starLocalUpdate = (star) => {
@@ -53,14 +53,24 @@ const ConcertExpandedView = ({ concert, closeOverlay, editWishList, wishList, fa
         setLocalStar(star)
     }
 
-    const clicked = () => {
-        clickItemFunc(concert)
-    }
+    const handleFavoriteClick = () => {
+        if (favoriteClicked) {
+            favoriteClicked(concert.cid);
+        }
+    };
+
+    const handleReviewTextChange = (e) => {
+        const newText = e.target.value;
+        setReviewText(newText);
+        if (handleReviewText) {
+            handleReviewText(concert.cid, newText);
+        }
+    };
 
     const navigateToArtist = () => {
-        const artistId = concert.artist.toLowerCase().replace(/\s+/g, '-');
+        const artistId = concert.artist_name.toLowerCase().replace(/\s+/g, '-');
         navigate(`/artist/${artistId}`);
-        onClose();
+        closeOverlay();
     };
 
     // Format the date using date-fns
@@ -158,8 +168,9 @@ const ConcertExpandedView = ({ concert, closeOverlay, editWishList, wishList, fa
 
                 {/* Action Buttons */}
                 <div className="flex space-x-4 mt-6">
-                    <button className="px-4 py-2 bg-red-500 rounded-lg shadow-md hover:bg-yellow-400"
-                    // onClick={favoriteClicked(concertID)}
+                    <button 
+                        className="px-4 py-2 bg-red-500 rounded-lg shadow-md hover:bg-yellow-400"
+                        onClick={handleFavoriteClick}
                     >
                         {concertFavorate
                             ? <Heart size={18} className="text-red-400" fill="currentColor" />
@@ -180,95 +191,20 @@ const ConcertExpandedView = ({ concert, closeOverlay, editWishList, wishList, fa
                     </button>
                 </div>
 
-                {/* Review Text Area - Only show if rated */}
+                {/* Review Text Area - Always show, not just when rated */}
                 <div className="text-2xl font-bold pt-3">Reviews</div>
-                {concert.review?.rating > 0 && (
-                    <div className="mt-3">
-                        <textarea
-                            placeholder="Add your thoughts about this concert..."
-                            value={concert.review?.text || ''}
-                            onChange={(e) => handleReviewText(concert.cid, e.target.value)}
-                            className="w-full bg-gray-800 text-white rounded-lg p-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 border"
-                            rows="2"
-                        />
-                    </div>
-                )}
+                <div className="mt-3">
+                    <textarea
+                        placeholder="Add your thoughts about this concert..."
+                        value={reviewText}
+                        onChange={handleReviewTextChange}
+                        className="w-full bg-gray-800 text-white rounded-lg p-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 border"
+                        rows="2"
+                    />
+                </div>
             </div>
         </div>
     );
-
-    // return (
-    //     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-    //         <div className="w-[700px] h-[450px] bg-gray-800 text-white rounded-xl shadow-2xl border border-gray-600/50 p-5 relative">
-    //             {/* Close Button */}
-    //             <button
-    //                 className="absolute top-3 right-3 text-gray-300 hover:text-white"
-    //                 onClick={closeOverlay}
-    //             >
-    //                 <X size={24} />
-    //             </button>
-
-    //             {/* Concert Info */}
-    //             <h2 className="text-2xl font-bold mb-2">{concertTitle}</h2>
-
-    //             {/* Featured Artist Link - Make this more prominent */}
-    //             <div
-    //                 className="flex items-center space-x-2 text-blue-400 hover:text-blue-300 cursor-pointer mb-2 
-    //                 transform hover:scale-105 transition-transform p-1"
-    //                 onClick={goToArtistPage}
-    //             >
-    //                 <User size={18} />
-    //                 <span className="underline font-medium">Artist: {artistName}</span>
-    //                 <ExternalLink size={14} />
-    //             </div>
-
-    //             <p className="text-gray-400">{concert.tour?.name}</p>
-
-    //             <div className="flex items-center space-x-3 mt-2">
-    //                 <Calendar size={18} />
-    //                 <span>{concertDate}</span>
-    //             </div>
-    //             <div className="flex items-center space-x-3 mt-2">
-    //                 <MapPin size={18} />
-    //                 <span>{concertCity}</span>
-    //             </div>
-    //             <div className="flex items-center space-x-3 mt-2">
-    //                 <Star size={18} />
-    //                 <span>{concertRate} / 5</span>
-    //             </div>
-    //             <div className="flex items-center space-x-3 mt-2">
-    //                 <Ticket size={18} />
-    //                 <span>${concert.price}</span>
-    //             </div>
-    //             <p className="mt-4">{concertDes}</p>
-
-    //             {/* Action Buttons - Prominent Artist View Button */}
-    //             <div className="flex space-x-4 mt-6">
-    //                 <button className="px-4 py-2 bg-yellow-500 rounded-lg shadow-md hover:bg-yellow-400">
-    //                     <Heart size={18} className="inline-block mr-2" /> Favorite
-    //                 </button>
-    //                 <button className="px-4 py-2 bg-blue-600 rounded-lg shadow-md hover:bg-blue-500">
-    //                     <Share2 size={18} className="inline-block mr-2" /> Share
-    //                 </button>
-    //                 {/* Make the artist button more prominent */}
-    //                 <button
-    //                     className="px-4 py-2 bg-purple-600 rounded-lg shadow-md hover:bg-purple-500 transform 
-    //                     hover:scale-105 transition-transform flex-grow flex items-center justify-center"
-    //                     onClick={goToArtistPage}
-    //                 >
-    //                     <User size={18} className="inline-block mr-2" />
-    //                     View Artist Page
-    //                     <ExternalLink size={16} className="ml-2" />
-    //                 </button>
-    //             </div>
-
-    //             {/* Add an additional text hint */}
-    //             <div className="text-center mt-3 text-gray-400 text-sm">
-    //                 Click on artist name or button to view all concerts by this artist
-    //             </div>
-    //         </div>
-    //     </div>
-    // );
 };
 
 export default ConcertExpandedView;

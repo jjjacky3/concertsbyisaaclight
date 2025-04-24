@@ -361,11 +361,11 @@ const ArtistPage = () => {
       <ArtistBanner artist={artist} selectedTour={selectedTour} changeTourFunc={handleChange} />
       <div className="flex justify-center space-x-6 p-6 relative">
         <div className="w-[700px] h-[800px] bg-gray-800 rounded-lg shadow-lg overflow-y-auto p-4 grid grid-cols-2 gap-4">
-          {concertsShown.map((concert, index) => (
+          {concertsShown.map((concert) => (
             <div
+              key={concert.cid}
               className="self-start">
               <ConcertCard
-                key={index}
                 concert={concert}
                 onClick={setSelectedConcert}
               />
@@ -430,7 +430,6 @@ const ArtistPage = () => {
                       <div className="mt-2 text-sm text-gray-400">
                         <span className="font-semibold">{review.tour_name}</span> at {review.venue_name}, {review.venue_city}
                       </div>
-                      <div>{review.review_text}</div>
                     </div>
                   ))}
                 </div>
