@@ -191,19 +191,17 @@ const ConcertExpandedView = ({ concert, closeOverlay, editWishList, wishList, fa
                     </button>
                 </div>
 
-                {/* Review Text Area - Only show if rated */}
+                {/* Review Text Area - Always show, not just when rated */}
                 <div className="text-2xl font-bold pt-3">Reviews</div>
-                {concert.review?.rating > 0 && (
-                    <div className="mt-3">
-                        <textarea
-                            placeholder="Add your thoughts about this concert..."
-                            value={reviewText}
-                            onChange={handleReviewTextChange}
-                            className="w-full bg-gray-800 text-white rounded-lg p-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 border"
-                            rows="2"
-                        />
-                    </div>
-                )}
+                <div className="mt-3">
+                    <textarea
+                        placeholder="Add your thoughts about this concert..."
+                        value={reviewText}
+                        onChange={handleReviewTextChange}
+                        className="w-full bg-gray-800 text-white rounded-lg p-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 border"
+                        rows="2"
+                    />
+                </div>
             </div>
         </div>
     );
