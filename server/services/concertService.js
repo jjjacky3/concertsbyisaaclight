@@ -124,6 +124,19 @@ class ConcertService {
         try {
             await client.query('BEGIN');
             
+            // First, save all reviews with their associated concert details
+            const savedReviews = await client.query(`
+                SELECT r.*, 
+                       a.fname || ' ' || a.lname as artist_name,
+                       v.name as venue_name,
+                       c.date as concert_date
+                FROM Review r
+                JOIN Concert c ON r.cid = c.cid
+                JOIN Artist a ON c.aid = a.aid
+                JOIN Venue v ON c.vid = v.vid
+            `);
+            console.log(`Saved ${savedReviews.rows.length} reviews to restore later`);
+            
             // Delete in reverse order of dependencies
             await client.query('DELETE FROM Concert');
             await client.query('DELETE FROM Tour');
@@ -132,6 +145,9 @@ class ConcertService {
             
             await client.query('COMMIT');
             console.log('Successfully cleared all concert-related data from database');
+            
+            // Return the saved reviews to be restored after new data is inserted
+            return savedReviews.rows;
         } catch (error) {
             await client.query('ROLLBACK');
             console.error('Error clearing database:', error);
@@ -173,67 +189,141 @@ class ConcertService {
     async syncMockConcertsToDatabase() {
         const client = await pool.connect();
         try {
-            // Clear existing data first
-            await this.clearDatabase();
+            // Check if database is empty first
+            const { rows } = await client.query('SELECT COUNT(*) FROM Concert');
+            const concertCount = parseInt(rows[0].count);
             
-            let concerts;
-            if (this.useRealApi) {
-                concerts = await this.fetchRealConcerts();
-                console.log("Fetched real concert data")
-            } else {
-                concerts = await this.generateMockConcerts();
+            // Only clear and sync if database is empty
+            if (concertCount === 0) {
+                console.log('Database is empty, performing initial sync...');
+                const savedReviews = await this.clearDatabase();
+                
+                let concerts;
+                if (this.useRealApi) {
+                    concerts = await this.fetchRealConcerts();
+                    console.log("Fetched real concert data")
+                } else {
+                    concerts = await this.generateMockConcerts();
+                }
+
+                await client.query('BEGIN');
+                
+                for (const concert of concerts) {
+                    // Insert or update artist
+                    const artistRes = await client.query(
+                        'INSERT INTO Artist (fname, lname) VALUES ($1, $2) ON CONFLICT (fname, lname) DO UPDATE SET updated_at = NOW() RETURNING aid',
+                        [concert.artist.fname, concert.artist.lname]
+                    );
+                    const artistId = artistRes.rows[0].aid;
+
+                    // Insert or update venue
+                    const venueRes = await client.query(
+                        'INSERT INTO Venue (name, city) VALUES ($1, $2) ON CONFLICT (name, city) DO UPDATE SET updated_at = NOW() RETURNING vid',
+                        [concert.venue.name, concert.venue.city]
+                    );
+                    const venueId = venueRes.rows[0].vid;
+
+                    // Insert or update tour
+                    const tourRes = await client.query(
+                        'INSERT INTO Tour (aid, name) VALUES ($1, $2) ON CONFLICT (aid, name) DO UPDATE SET updated_at = NOW() RETURNING tid',
+                        [artistId, concert.tourName]
+                    );
+                    const tourId = tourRes.rows[0].tid;
+
+                    // Log the data being inserted
+                    console.log('Inserting concert:', {
+                        date: concert.date,
+                        time: concert.time,
+                        artistId,
+                        venueId,
+                        tourId,
+                        price: concert.price,
+                        image_url: concert.image_url
+                    });
+
+                    // Insert or update concert
+                    await client.query(
+                        `INSERT INTO Concert (date, time, aid, vid, tid, price, image_url) 
+                         VALUES ($1, $2, $3, $4, $5, $6, $7)
+                         ON CONFLICT (date, time, aid, vid) 
+                         DO UPDATE SET 
+                            price = EXCLUDED.price,
+                            image_url = EXCLUDED.image_url,
+                            updated_at = NOW()`,
+                        [concert.date, concert.time, artistId, venueId, tourId, concert.price, concert.image_url]
+                    );
+                }
+
+                await client.query('COMMIT');
+                
+                // Restore reviews if there were any
+                if (savedReviews && savedReviews.length > 0) {
+                    console.log(`Restoring ${savedReviews.length} reviews...`);
+                    await client.query('BEGIN');
+                    
+                    let restoredCount = 0;
+                    let skippedCount = 0;
+                    
+                    for (const review of savedReviews) {
+                        // Find the corresponding concert by matching artist, venue, and date
+                        const concertResult = await client.query(`
+                            SELECT c.cid 
+                            FROM Concert c
+                            JOIN Artist a ON c.aid = a.aid
+                            JOIN Venue v ON c.vid = v.vid
+                            WHERE LOWER(a.fname || ' ' || a.lname) = LOWER($1)
+                            AND LOWER(v.name) = LOWER($2)
+                            AND c.date = $3
+                            LIMIT 1
+                        `, [review.artist_name, review.venue_name, review.concert_date]);
+                        
+                        if (concertResult.rows.length > 0) {
+                            const newConcertId = concertResult.rows[0].cid;
+                            
+                            // Insert the review with the new concert ID
+                            await client.query(`
+                                INSERT INTO Review (uid, cid, rating, review_text)
+                                VALUES ($1, $2, $3, $4)
+                                ON CONFLICT (uid, cid) DO UPDATE
+                                SET rating = $3, review_text = $4, updated_at = NOW()
+                            `, [review.uid, newConcertId, review.rating, review.review_text]);
+                            
+                            restoredCount++;
+                        } else {
+                            // If we can't find an exact match, try to find a similar concert by the same artist
+                            const similarConcertResult = await client.query(`
+                                SELECT c.cid 
+                                FROM Concert c
+                                JOIN Artist a ON c.aid = a.aid
+                                WHERE LOWER(a.fname || ' ' || a.lname) = LOWER($1)
+                                LIMIT 1
+                            `, [review.artist_name]);
+                            
+                            if (similarConcertResult.rows.length > 0) {
+                                const newConcertId = similarConcertResult.rows[0].cid;
+                                
+                                // Insert the review with the new concert ID
+                                await client.query(`
+                                    INSERT INTO Review (uid, cid, rating, review_text)
+                                    VALUES ($1, $2, $3, $4)
+                                    ON CONFLICT (uid, cid) DO UPDATE
+                                    SET rating = $3, review_text = $4, updated_at = NOW()
+                                `, [review.uid, newConcertId, review.rating, review.review_text]);
+                                
+                                restoredCount++;
+                            } else {
+                                console.log(`Could not find a matching concert for review: ${review.rid}`);
+                                skippedCount++;
+                            }
+                        }
+                    }
+                    
+                    await client.query('COMMIT');
+                    console.log(`Reviews restored successfully: ${restoredCount} restored, ${skippedCount} skipped`);
+                }
+                
+                return { message: 'Successfully synced concerts', count: concerts.length };
             }
-
-            await client.query('BEGIN');
-            
-            for (const concert of concerts) {
-                // Insert or update artist
-                const artistRes = await client.query(
-                    'INSERT INTO Artist (fname, lname) VALUES ($1, $2) ON CONFLICT (fname, lname) DO UPDATE SET updated_at = NOW() RETURNING aid',
-                    [concert.artist.fname, concert.artist.lname]
-                );
-                const artistId = artistRes.rows[0].aid;
-
-                // Insert or update venue
-                const venueRes = await client.query(
-                    'INSERT INTO Venue (name, city) VALUES ($1, $2) ON CONFLICT (name, city) DO UPDATE SET updated_at = NOW() RETURNING vid',
-                    [concert.venue.name, concert.venue.city]
-                );
-                const venueId = venueRes.rows[0].vid;
-
-                // Insert or update tour
-                const tourRes = await client.query(
-                    'INSERT INTO Tour (aid, name) VALUES ($1, $2) ON CONFLICT (aid, name) DO UPDATE SET updated_at = NOW() RETURNING tid',
-                    [artistId, concert.tourName]
-                );
-                const tourId = tourRes.rows[0].tid;
-
-                // Log the data being inserted
-                console.log('Inserting concert:', {
-                    date: concert.date,
-                    time: concert.time,
-                    artistId,
-                    venueId,
-                    tourId,
-                    price: concert.price,
-                    image_url: concert.image_url
-                });
-
-                // Insert or update concert
-                await client.query(
-                    `INSERT INTO Concert (date, time, aid, vid, tid, price, image_url) 
-                     VALUES ($1, $2, $3, $4, $5, $6, $7)
-                     ON CONFLICT (date, time, aid, vid) 
-                     DO UPDATE SET 
-                        price = EXCLUDED.price,
-                        image_url = EXCLUDED.image_url,
-                        updated_at = NOW()`,
-                    [concert.date, concert.time, artistId, venueId, tourId, concert.price, concert.image_url]
-                );
-            }
-
-            await client.query('COMMIT');
-            return { message: 'Successfully synced concerts', count: concerts.length };
         } catch (error) {
             await client.query('ROLLBACK');
             console.error('Error syncing concerts:', error);

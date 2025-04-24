@@ -22,10 +22,9 @@
 import React, { useState, useEffect } from 'react';
 import ConcertCard from '../components/ConcertCard';
 import ConcertModal from '../components/ConcertModal';
-import FilterModal from '../components/FilterModal';
 import AuthModal from '../components/AuthModal';
 import UploadConcertModal from '../components/UploadConcertModal';
-import { Filter, Calendar, Star, MapPin, Ticket, Music, TrendingUp, Clock, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Calendar, Star, MapPin, Ticket, Music, TrendingUp, Clock, ChevronLeft, ChevronRight } from 'lucide-react';
 import NavBar from '../components/NavBar';
 import { initDarkMode } from '../utils/themeUtils';
 
@@ -33,7 +32,6 @@ const Home = ({ navigateToArtist }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [isDarkMode, setIsDarkMode] = useState(initDarkMode());
   const [selectedConcert, setSelectedConcert] = useState(null);
-  const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const [user, setUser] = useState(null);
@@ -43,13 +41,6 @@ const Home = ({ navigateToArtist }) => {
   const [activeCategory, setActiveCategory] = useState('all');
   const [currentPage, setCurrentPage] = useState(1);
   const concertsPerPage = 9;
-  const [activeFilters, setActiveFilters] = useState({
-    priceRange: [0, 1000],
-    distance: 50,
-    minRating: 0,
-    dateRange: 'all',
-    venueTypes: []
-  });
 
   // Check for existing user session
   useEffect(() => {
@@ -143,19 +134,12 @@ const Home = ({ navigateToArtist }) => {
     }
   ];
 
-  const handleApplyFilters = (filters) => {
-    setActiveFilters(filters);
-    setIsFilterModalOpen(false);
-  };
-
-  // Filter concerts based on search term, active category, and filters
+  // Filter concerts based on search term and active category
   const filteredConcerts = concerts.filter(concert => {
     const matchesSearch = concert.artist_name?.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesCategory = activeCategory === 'all' || 
       (categories.find(cat => cat.id === activeCategory)?.filter(concert) ?? true);
-    const price = parseFloat(concert.price);
-    const matchesPrice = price >= activeFilters.priceRange[0] && price <= activeFilters.priceRange[1];
-    return matchesSearch && matchesCategory && matchesPrice;
+    return matchesSearch && matchesCategory;
   });
 
   // Calculate pagination
@@ -163,11 +147,6 @@ const Home = ({ navigateToArtist }) => {
   const startIndex = (currentPage - 1) * concertsPerPage;
   const endIndex = startIndex + concertsPerPage;
   const currentConcerts = filteredConcerts.slice(startIndex, endIndex);
-
-  // Reset to first page when filters change
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [searchTerm, activeCategory, activeFilters]);
 
   if (loading) {
     return (
@@ -214,7 +193,7 @@ const Home = ({ navigateToArtist }) => {
       />
 
       <main className="container mx-auto px-4 py-8">
-        {/* Search and Filter */}
+        {/* Search */}
         <div className="flex justify-between items-center mb-8">
           <input
             type="text"
@@ -223,12 +202,6 @@ const Home = ({ navigateToArtist }) => {
             onChange={(e) => setSearchTerm(e.target.value)}
             className="w-full max-w-md px-4 py-2 rounded-lg bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700"
           />
-          <button
-            onClick={() => setIsFilterModalOpen(true)}
-            className="ml-4 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700"
-          >
-            <Filter className="w-5 h-5" />
-          </button>
         </div>
 
         {/* Categories */}
@@ -408,15 +381,6 @@ const Home = ({ navigateToArtist }) => {
           concert={selectedConcert} 
           onClose={() => setSelectedConcert(null)} 
           navigateToArtist={navigateToArtist} 
-        />
-      )}
-
-      {isFilterModalOpen && (
-        <FilterModal 
-          isOpen={isFilterModalOpen}
-          onClose={() => setIsFilterModalOpen(false)}
-          onApplyFilters={handleApplyFilters}
-          currentFilters={activeFilters}
         />
       )}
 
