@@ -348,20 +348,15 @@ const UserPage = () => {
                     {/* User Profile */}
                     <div className={`h-[400px] ${isDarkMode ? 'bg-gray-800' : 'bg-white'} rounded-3xl shadow-lg p-6 transition-transform transform hover:scale-[1.005] hover:shadow-xl flex flex-row gap-6`}>
                         <div className="h-[350px] w-[250px] flex flex-col items-center justify-between">
-                            <div className="text-3xl font-bold text-center text-white">{user?.fname} {user?.lname}</div>
                             <div className="w-[200px] h-[200px] bg-gray-700 rounded-full flex items-center justify-center">
                                 <User className="w-[180px] h-[180px] text-purple-500" />
                             </div>
                             <div className="w-full text-center rounded-3xl py-2 bg-gray-700">
-                                <span className="text-lg font-bold text-white ">{user?.email}</span>
+                                <span className="text-lg font-bold text-white ">{user?.fname}</span>
                             </div>
                         </div>
 
                         <div className="h-[350px] w-[450px] flex flex-col justify-between">
-                            <div className="flex items-center gap-4">
-                                <div className="text-1xl font-bold">Your City:</div>
-                                <input className="flex-1 border border-gray-400 rounded-lg p-2" />
-                            </div>
                             <div className="text-1xl font-bold">Your Top Artists:</div>
                             <div className="grid grid-cols-4 gap-4">
                                 {pastList.length > 0 && pastList.slice(0, 4).map((concert, index) => (
