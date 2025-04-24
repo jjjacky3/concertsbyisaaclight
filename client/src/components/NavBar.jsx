@@ -18,18 +18,22 @@
 
 
 import { Menu, Upload, LogIn, LogOut, Sun, Moon, Database, User } from "lucide-react";
-import { useState, useEffect } from "react";
-import { logout } from '../services/apiService'; 
+import { useState } from "react";
+import { useNavigate } from 'react-router-dom';
+import { logout } from '../services/apiService';
+import { useTheme } from '../context/ThemeContext';
 
-const NavBar = ({ isDarkMode, setIsDarkMode, user, onLogout, onLogin }) => {
+const NavBar = ({ user, onLogout, onLogin }) => {
     const [showTestForm, setShowTestForm] = useState(false);
+    const { isDarkMode, toggleDarkMode } = useTheme();
+    const navigate = useNavigate();
     
     const navigateToHome = () => {
-        window.location.href = '/';
+        navigate('/');
     };
 
     const navigateToUser = () => {
-        window.location.href = '/user';
+        navigate('/user');
     };
 
     const handleLogout = () => {
@@ -38,7 +42,7 @@ const NavBar = ({ isDarkMode, setIsDarkMode, user, onLogout, onLogin }) => {
         if (onLogout) {
             onLogout();
         } else {
-            window.location.reload();
+            navigate('/');
         }
     };
 
@@ -94,14 +98,13 @@ const NavBar = ({ isDarkMode, setIsDarkMode, user, onLogout, onLogin }) => {
 
                     {/* Dark Mode Toggle */}
                     <button 
-                        onClick={() => setIsDarkMode(!isDarkMode)}
+                        onClick={toggleDarkMode}
                         className="p-2 rounded-full bg-gray-800 focus:outline-none focus:ring-2 focus:ring-indigo-500"
                     >
                         {isDarkMode ? <Sun className="w-5 h-5 text-white" /> : <Moon className="w-5 h-5 text-white" />}
                     </button>
                 </div>
             </header>
-            
         </>
     );
 };

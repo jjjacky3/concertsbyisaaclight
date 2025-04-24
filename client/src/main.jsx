@@ -1,20 +1,20 @@
 import { StrictMode, useEffect } from "react";
 import { createRoot } from "react-dom/client";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import App from "./App.jsx";
 import HomePage from "./pages/home.jsx";
 import ArtistPage from "./pages/artistPage.jsx";
 import UserPage from "./pages/UserPage.jsx";
 import "./index.css";
+import { ThemeProvider } from './context/ThemeContext';
 
-// Define routes with a nested structure that preserves your existing App component
+// Define routes
 const router = createBrowserRouter([
   {
     path: "/",
     element: <HomePage />,
   },
   {
-    path: "/artist/:artistId", // Notice the :artistId parameter that will be accessible with useParams
+    path: "/artist/:artistId",
     element: <ArtistPage />,
   },
   {
@@ -23,8 +23,8 @@ const router = createBrowserRouter([
   }
 ]);
 
-// Wrapper to handle post-login initialization
-const AppWithLoginCheck = () => {
+// Wrapper to handle post-login initialization and theme
+const AppWithProviders = () => {
   useEffect(() => {
     // Check if user just logged in
     const justLoggedIn = localStorage.getItem('justLoggedIn');
@@ -36,12 +36,14 @@ const AppWithLoginCheck = () => {
   }, []);
 
   return (
-    <RouterProvider router={router} />
+    <ThemeProvider>
+      <RouterProvider router={router} />
+    </ThemeProvider>
   );
 };
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
-    <AppWithLoginCheck />
+    <AppWithProviders />
   </StrictMode>
 );

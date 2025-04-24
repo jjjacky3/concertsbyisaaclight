@@ -26,6 +26,7 @@ import AuthModal from '../components/AuthModal';
 import { Loader2, MessageCircle, User, Calendar, Star } from "lucide-react";
 import ConcertCard from "../components/ConcertCard";
 import { useNavigate } from 'react-router-dom';
+import { useTheme } from '../context/ThemeContext';
 
 const ArtistPage = () => {
   // Extract artistId from URL path
@@ -33,7 +34,7 @@ const ArtistPage = () => {
   const [artist, setArtist] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [isDarkMode, setIsDarkMode] = useState(true);
+  const { isDarkMode } = useTheme();
   const [selectedTour, setSelectedTour] = useState("All Tours");
   const [concertsShown, setConcertsShown] = useState([]);
   const [ratingsDisplayed, setRatingsDisplayed] = useState({});
@@ -62,16 +63,6 @@ const ArtistPage = () => {
     localStorage.removeItem('user');
     setUser(null);
   };
-
-  // Dark mode effect
-  useEffect(() => {
-    if (isDarkMode) {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-  }, [isDarkMode]);
-
 
   // Fetch User Data / Login status
   useEffect(() => {
@@ -306,8 +297,6 @@ const ArtistPage = () => {
     return (
       <div className="min-h-screen bg-gray-900 text-white">
         <NavBar
-          isDarkMode={isDarkMode}
-          setIsDarkMode={setIsDarkMode}
           user={user}
           onLogin={() => setIsAuthModalOpen(true)}
           onLogout={handleLogout}
@@ -327,8 +316,6 @@ const ArtistPage = () => {
     return (
       <div className="min-h-screen bg-gray-900 text-white">
         <NavBar
-          isDarkMode={isDarkMode}
-          setIsDarkMode={setIsDarkMode}
           user={user}
           onLogin={() => setIsAuthModalOpen(true)}
           onLogout={handleLogout}
@@ -350,17 +337,15 @@ const ArtistPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white relative">
+    <div className={`min-h-screen ${isDarkMode ? 'bg-gray-900 text-white' : 'bg-gray-50 text-gray-900'} relative`}>
       <NavBar
-        isDarkMode={isDarkMode}
-        setIsDarkMode={setIsDarkMode}
         user={user}
         onLogin={() => setIsAuthModalOpen(true)}
         onLogout={handleLogout}
       />
       <ArtistBanner artist={artist} selectedTour={selectedTour} changeTourFunc={handleChange} />
       <div className="flex justify-center space-x-6 p-6 relative">
-        <div className="w-[700px] h-[800px] bg-gray-800 rounded-lg shadow-lg overflow-y-auto p-4 grid grid-cols-2 gap-4">
+        <div className={`w-[700px] h-[800px] ${isDarkMode ? 'bg-gray-800' : 'bg-white'} rounded-lg shadow-lg overflow-y-auto p-4 grid grid-cols-2 gap-4`}>
           {concertsShown.map((concert) => (
             <div
               key={concert.cid}
@@ -379,10 +364,10 @@ const ArtistPage = () => {
           />
         )}
         <div className="w-[750px] flex flex-col space-y-6">
-          <div className="h-[400px] bg-gray-800 rounded-3xl shadow-lg p-6 transition-transform transform hover:scale-[1.005] hover:shadow-xl">
+          <div className={`h-[400px] ${isDarkMode ? 'bg-gray-800' : 'bg-white'} rounded-3xl shadow-lg p-6 transition-transform transform hover:scale-[1.005] hover:shadow-xl`}>
             <RatingModule ratings={ratingsDisplayed} />
           </div>
-          <div className="h-[380px] bg-gray-800 rounded-3xl shadow-lg p-6 transition-transform transform hover:scale-[1.005] hover:shadow-xl">
+          <div className={`h-[380px] ${isDarkMode ? 'bg-gray-800' : 'bg-white'} rounded-3xl shadow-lg p-6 transition-transform transform hover:scale-[1.005] hover:shadow-xl`}>
             <CompareModule
               concert1={comparedConcertOne}
               concert2={comparedConcertTwo}
@@ -392,7 +377,7 @@ const ArtistPage = () => {
             />
           </div>
           {reviews.length > 0 && (
-            <div className="bg-gray-800 rounded-3xl shadow-lg p-6 transition-transform transform hover:scale-[1.005] hover:shadow-xl">
+            <div className={`${isDarkMode ? 'bg-gray-800' : 'bg-white'} rounded-3xl shadow-lg p-6 transition-transform transform hover:scale-[1.005] hover:shadow-xl`}>
               <button
                 onClick={toggleReviewsSection}
                 className="w-full flex items-center justify-center space-x-2 py-3 px-4 bg-purple-600 rounded-lg hover:bg-purple-700 transition-colors"

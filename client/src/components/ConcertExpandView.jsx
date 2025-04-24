@@ -23,6 +23,10 @@ import { format } from 'date-fns';
 
 const ConcertExpandedView = ({ concert, closeOverlay, editWishList, wishList, favoriteClicked, handleRating, handleReviewText }) => {
     const navigate = useNavigate();
+    const [isDarkMode, setIsDarkMode] = useState(() => {
+        const savedMode = localStorage.getItem('darkMode');
+        return savedMode === 'true';
+    });
 
     if (!concert) return null;
     // If No wishlist is passed just say concert is not in wishlist
@@ -114,10 +118,10 @@ const ConcertExpandedView = ({ concert, closeOverlay, editWishList, wishList, fa
 
     return (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-            <div className="w-[700px] h-[600px] bg-gray-800 text-white rounded-xl shadow-2xl border border-gray-600/50 p-5 relative overflow-y-auto">
+            <div className={`w-[700px] h-[600px] ${isDarkMode ? 'bg-gray-800 text-white' : 'bg-white text-gray-900'} rounded-xl shadow-2xl border ${isDarkMode ? 'border-gray-600/50' : 'border-gray-200/50'} p-5 relative overflow-y-auto`}>
                 {/* Close Button */}
                 <button
-                    className="absolute top-3 right-3 text-gray-300 hover:text-white"
+                    className={`absolute top-3 right-3 ${isDarkMode ? 'text-gray-300 hover:text-white' : 'text-gray-600 hover:text-gray-900'}`}
                     onClick={closeOverlay}
                 >
                     <X size={24} />
@@ -136,7 +140,7 @@ const ConcertExpandedView = ({ concert, closeOverlay, editWishList, wishList, fa
                     <ExternalLink className="w-4 h-4 ml-2" />
                 </button>
 
-                <p className="text-gray-400">{concertTour}</p>
+                <p className={isDarkMode ? 'text-gray-400' : 'text-gray-600'}>{concertTour}</p>
                 <div className="flex items-center space-x-3 mt-2">
                     <Calendar size={18} />
                     <span>{concertDate}</span>
@@ -152,8 +156,7 @@ const ConcertExpandedView = ({ concert, closeOverlay, editWishList, wishList, fa
                             <button
                                 key={star}
                                 onClick={() => starLocalUpdate(star)}
-                                className={`focus:outline-none transition-colors ${localStar >= star ? 'text-yellow-500' : 'text-gray-600 hover:text-yellow-400'
-                                    }`}
+                                className={`focus:outline-none transition-colors ${localStar >= star ? 'text-yellow-500' : isDarkMode ? 'text-gray-600 hover:text-yellow-400' : 'text-gray-400 hover:text-yellow-400'}`}
                             >
                                 <Star className="w-5 h-5" fill={localStar >= star ? "currentColor" : "none"} />
                             </button>
@@ -198,8 +201,7 @@ const ConcertExpandedView = ({ concert, closeOverlay, editWishList, wishList, fa
                         placeholder="Add your thoughts about this concert..."
                         value={reviewText}
                         onChange={handleReviewTextChange}
-                        className="w-full bg-gray-800 text-white rounded-lg p-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 border"
-                        rows="2"
+                        className={`w-full p-2 rounded-lg ${isDarkMode ? 'bg-gray-700 text-white border-gray-600' : 'bg-gray-50 text-gray-900 border-gray-200'} border focus:outline-none focus:ring-2 focus:ring-purple-500`}
                     />
                 </div>
             </div>

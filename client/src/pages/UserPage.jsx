@@ -25,13 +25,14 @@ import ConcertCard from "../components/ConcertCard";
 import ConcertExpandedView from "../components/ConcertExpandView";
 import WishListBubble from "../components/WishListBubble";
 import { parse } from 'flatted';
+import { useTheme } from '../context/ThemeContext';
 
 const UserPage = () => {
     const [user, setUser] = useState(null);
     const [userConcerts, setUserConcerts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [isDarkMode, setIsDarkMode] = useState(true);
+    const { isDarkMode } = useTheme();
     const [selectedConcert, setSelectedConcert] = useState(null)
     const [wishList, setWishList] = useState([]);
     const navigate = useNavigate();
@@ -226,7 +227,7 @@ const UserPage = () => {
     if (loading) {
         return (
             <div className="min-h-screen bg-gray-900 text-white">
-                <NavBar isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode} user={user} />
+                <NavBar user={user} onLogout={handleLogout} />
                 <div className="flex flex-col items-center justify-center h-[calc(100vh-64px)]">
                     <div className="flex flex-col items-center space-y-4">
                         <Loader2 className="w-12 h-12 animate-spin text-purple-500" />
@@ -240,7 +241,7 @@ const UserPage = () => {
     if (error) {
         return (
             <div className="min-h-screen bg-gray-900 text-white">
-                <NavBar isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode} user={user} />
+                <NavBar user={user} onLogout={handleLogout} />
                 <div className="flex flex-col items-center justify-center h-[calc(100vh-64px)]">
                     <div className="text-center space-y-4">
                         <h2 className="text-2xl font-bold text-red-500">Error Loading Profile</h2>
@@ -321,11 +322,8 @@ const UserPage = () => {
     };
 
     return (
-        <div className="min-h-screen bg-gray-900 text-white">
-            {/* Navbar */}
+        <div className={`min-h-screen ${isDarkMode ? 'bg-gray-900 text-white' : 'bg-gray-50 text-gray-900'}`}>
             <NavBar
-                isDarkMode={isDarkMode}
-                setIsDarkMode={setIsDarkMode}
                 user={user}
                 onLogout={handleLogout}
             />
@@ -333,7 +331,7 @@ const UserPage = () => {
             {/* Overlay Panel */}
             {selectedConcert && (
                 <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
-                    <div className="bg-gray-800 p-6 rounded-lg shadow-lg w-[600px] h-[400px] flex flex-col items-center justify-center">
+                    <div className={`${isDarkMode ? 'bg-gray-800' : 'bg-white'} p-6 rounded-lg shadow-lg w-[600px] h-[400px] flex flex-col items-center justify-center`}>
                         <ConcertExpandedView concert={selectedConcert}
                             closeOverlay={closeOverlay}
                             editWishList={editWishList}
@@ -348,7 +346,7 @@ const UserPage = () => {
             <div className="flex justify-center space-x-6 p-6 relative">
                 <div className="w-[750px] flex flex-col space-y-6">
                     {/* User Profile */}
-                    <div className="h-[400px] bg-gray-800 rounded-3xl shadow-lg p-6 transition-transform transform hover:scale-[1.005] hover:shadow-xl flex flex-row gap-6">
+                    <div className={`h-[400px] ${isDarkMode ? 'bg-gray-800' : 'bg-white'} rounded-3xl shadow-lg p-6 transition-transform transform hover:scale-[1.005] hover:shadow-xl flex flex-row gap-6`}>
                         <div className="h-[350px] w-[250px] flex flex-col items-center justify-between">
                             <div className="text-3xl font-bold text-center text-white">{user?.fname} {user?.lname}</div>
                             <div className="w-[200px] h-[200px] bg-gray-700 rounded-full flex items-center justify-center">
@@ -412,7 +410,7 @@ const UserPage = () => {
                     </div>
 
                     {/* Recommended Concerts */}
-                    <div className="h-[380px] bg-gray-800 rounded-3xl shadow-lg p-6 transition-transform transform hover:scale-[1.005] hover:shadow-xl flex flex-col justify-center">
+                    <div className={`h-[380px] ${isDarkMode ? 'bg-gray-800' : 'bg-white'} rounded-3xl shadow-lg p-6 transition-transform transform hover:scale-[1.005] hover:shadow-xl flex flex-col justify-center`}>
                         <div className="text-2xl font-bold text-white text-center mb-4">Recommended Concerts</div>
 
                         <div className="flex-1 overflow-x-auto">
@@ -432,7 +430,7 @@ const UserPage = () => {
                 </div>
                 <div className="w-[750px] flex flex-col space-y-6">
                     {/* Past Concerts */}
-                    <div className="h-[250px] bg-gray-800 rounded-3xl shadow-lg p-6 transition-transform transform hover:scale-[1.005] hover:shadow-xl flex flex-col justify-center">
+                    <div className={`h-[250px] ${isDarkMode ? 'bg-gray-800' : 'bg-white'} rounded-3xl shadow-lg p-6 transition-transform transform hover:scale-[1.005] hover:shadow-xl flex flex-col justify-center`}>
                         <div className="text-2xl font-bold text-white text-center mb-4">Past Concerts</div>
 
                         <div className="flex-1 overflow-x-auto overflow-y-hidden">
@@ -451,7 +449,7 @@ const UserPage = () => {
                     </div>
 
                     {/* Wish List */}
-                    <div className="h-[530px] bg-gray-800 rounded-3xl shadow-lg p-6 transition-transform transform hover:scale-[1.005] hover:shadow-xl flex flex-col items-center justify-center"
+                    <div className={`h-[530px] ${isDarkMode ? 'bg-gray-800' : 'bg-white'} rounded-3xl shadow-lg p-6 transition-transform transform hover:scale-[1.005] hover:shadow-xl flex flex-col items-center justify-center`}
                         onDragOver={handleDragOver}
                         onDrop={(e) => handleDrop(e)}>
                         <div className="text-2xl font-bold">Wish List</div>

@@ -27,10 +27,11 @@ import AuthModal from '../components/AuthModal';
 import UploadConcertModal from '../components/UploadConcertModal';
 import { Filter, Calendar, Star, MapPin, Ticket, Music, TrendingUp, Clock, ChevronLeft, ChevronRight } from 'lucide-react';
 import NavBar from '../components/NavBar';
+import { initDarkMode } from '../utils/themeUtils';
 
 const Home = ({ navigateToArtist }) => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [isDarkMode, setIsDarkMode] = useState(true);
+  const [isDarkMode, setIsDarkMode] = useState(initDarkMode());
   const [selectedConcert, setSelectedConcert] = useState(null);
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
@@ -91,15 +92,6 @@ const Home = ({ navigateToArtist }) => {
 
     fetchConcerts();
   }, []);
-
-  // Dark mode effect
-  useEffect(() => {
-    if (isDarkMode) {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-  }, [isDarkMode]);
 
   const handleLogout = () => {
     localStorage.removeItem('token');
